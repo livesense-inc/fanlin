@@ -1,4 +1,7 @@
 # fanlin
+
+[![Circle CI](https://circleci.com/gh/jobtalk/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/jobtalk/fanlin/tree/master)
+
 ## 概要
 
 ## 環境

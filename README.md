@@ -11,10 +11,6 @@
 ## master pushの悲劇を防ぐために
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
 ## 事前に入れるもの
-```
-$ cd {{repo}}/proxy
-$ gom install
-```
 
 ## Linux用にクロスコンパイルする
 go1.5の場合  

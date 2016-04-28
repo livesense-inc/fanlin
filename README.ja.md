@@ -21,8 +21,7 @@
 go1.5の場合  
 1.4はやり方が変わります  
 ```
-$ cd {{repository}}/proxy
-$ GOOS=linux GOARCH=amd64 go build -o ../bin/proxy
+$ GOOS=linux GOARCH=amd64 go build github.com/jobtalk/fanlin/cmd/fanlin
 ```
 
 ## サーバーに配布するもの

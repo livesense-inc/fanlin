@@ -24,7 +24,7 @@ $ GOOS=linux GOARCH=amd64 go build github.com/jobtalk/fanlin/cmd/fanlin
 ```
 
 ## configure
-On Unix, Linux and OS X, fanlin programs read startup options from the following files, in the specified order.
+On Unix, Linux and OS X, fanlin programs read startup options from the following files, in the specified order(top files are read first, and precedence).
 
 ```
 /etc/fanlin.json

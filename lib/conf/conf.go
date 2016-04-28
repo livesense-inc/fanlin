@@ -27,7 +27,7 @@ func (c *Conf) Get(k string) interface{} {
 func (c *Conf) UA() string {
 	ua := c.c["user_agent"]
 	if ua == nil {
-		ua = fmt.Sprintf("Mozilla/5.0 (img-proxy; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 img-proxy", runtime.GOARCH, runtime.GOOS, runtime.Version())
+		ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())
 	}
 	return ua.(string)
 }

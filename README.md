@@ -4,6 +4,9 @@
 
 English | [日本語](README.ja.md)
 
+## abstract
+fanlin is image proxy server in native Go language.
+
 ## Support
 ### OS
 * Linux (x86 and amd64)

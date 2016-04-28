@@ -49,15 +49,15 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
     "max_width": 1000,
     "max_height": 1000,
     "404_img_path": "/usr/local/lvimg/404.png",
-    "access_log_path": "logの書き出し先",
-    "error_log_path": "logの書き出し先",
+    "access_log_path": "log path",
+    "error_log_path": "error log path",
     "externals": [
         {
             "key" : "{{external contents server path}}"
         }
     ],
     "include": [
-        "include先のパス"
+        "include configure path"
     ],
     "s3_bucket_name": "bucket name",
     "s3_region": "Tokyo",

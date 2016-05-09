@@ -69,7 +69,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 			fmt.Fprintf(w, "%s", "")
 		}
 	}()
-
 	accessLogger := loggers["access"]
 	accessLogger.WithFields(logrus.Fields{
 		"UA":        r.UserAgent(),

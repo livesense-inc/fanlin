@@ -2,8 +2,10 @@ package web
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/jobtalk/fanlin/lib/content"
@@ -11,17 +13,14 @@ import (
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
+var ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())
+
 type Web struct {
-	ua string
 }
 
 var client = http.Client{
 	Transport: &http.Transport{MaxIdleConnsPerHost: 64},
 	Timeout:   time.Duration(10) * time.Second,
-}
-
-func New(ua string) *Web {
-	return &Web{ua}
 }
 
 func isErrorCode(status int) bool {
@@ -38,6 +37,7 @@ func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
+	req.Header.Set("User-Agent", ua)
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)

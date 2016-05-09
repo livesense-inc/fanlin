@@ -32,6 +32,13 @@ func (c *Conf) UA() string {
 	return ua.(string)
 }
 
+func (c *Conf) Providers() map[string]interface{} {
+	if providers, ok := c.c["providers"].(map[string]interface{}); ok {
+		return providers
+	}
+	return nil
+}
+
 func (c *Conf) NotFoundImagePath() string {
 	path := c.c["404_img_path"]
 	if path == nil {

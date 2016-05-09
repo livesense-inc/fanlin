@@ -1,11 +1,6 @@
 package content
 
-import (
-	"testing"
-
-	"github.com/jobtalk/fanlin/lib/conf"
-)
-
+/*
 var (
 	GetSourceURL = getSourceURL
 )
@@ -105,3 +100,4 @@ func TestGetSourceURL5(t *testing.T) {
 		t.Fatalf("source URL is \"%v\".", GetSourceURL(urlPath4, conf))
 	}
 }
+*/

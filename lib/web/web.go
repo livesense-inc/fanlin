@@ -1,4 +1,4 @@
-package client
+package web
 
 import (
 	"errors"
@@ -6,13 +6,22 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jobtalk/fanlin/lib/conf"
+	"github.com/jobtalk/fanlin/lib/content"
+	"github.com/jobtalk/fanlin/lib/contentinfo"
 	"github.com/jobtalk/fanlin/lib/error"
 )
+
+type Web struct {
+	ua string
+}
 
 var client = http.Client{
 	Transport: &http.Transport{MaxIdleConnsPerHost: 64},
 	Timeout:   time.Duration(10) * time.Second,
+}
+
+func New(ua string) *Web {
+	return &Web{ua}
 }
 
 func isErrorCode(status int) bool {
@@ -24,13 +33,11 @@ func isErrorCode(status int) bool {
 	}
 }
 
-func HttpImageGetter(url string, conf *configure.Conf) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Add("User-Agent", conf.UA())
+func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
+	req, err := http.NewRequest("GET", c.ContentPlace, nil)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
-
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
@@ -44,4 +51,8 @@ func HttpImageGetter(url string, conf *configure.Conf) ([]byte, error) {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
 	return data, nil
+}
+
+func init() {
+	content.RegisterContentType("web", GetContent)
 }

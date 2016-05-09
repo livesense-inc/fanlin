@@ -8,9 +8,12 @@ import (
 
 	"github.com/jobtalk/fanlin/lib/conf"
 	"github.com/jobtalk/fanlin/lib/content"
+	"github.com/jobtalk/fanlin/lib/contentinfo"
 	"github.com/jobtalk/fanlin/lib/error"
 	"github.com/jobtalk/fanlin/lib/image"
 	"github.com/jobtalk/fanlin/lib/query"
+	_ "github.com/jobtalk/fanlin/lib/s3"
+	_ "github.com/jobtalk/fanlin/lib/web"
 	"github.com/sirupsen/logrus"
 )
 
@@ -75,10 +78,10 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	}).Info()
 
 	q := query.NewQueryFromGet(r)
+	info := contentinfo.GetContentInfo(r.URL.Path, conf)
+	imageBuffer, err := content.GetContent(info)
 
-	imageBuffer, ok := content.GetContent(r.URL.Path, conf)
-
-	if !ok {
+	if err != nil {
 		imageBuffer = nil
 		panic(imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data")))
 	}

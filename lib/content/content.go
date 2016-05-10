@@ -7,10 +7,6 @@ import (
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
-type Content interface {
-	GetContent(c contentinfo.ContentInfo) ([]byte, error)
-}
-
 type contentType struct {
 	name       string
 	getContent func(*contentinfo.ContentInfo) ([]byte, error)
@@ -18,6 +14,8 @@ type contentType struct {
 
 var contentTypes []contentType
 
+// RegisterContentType registers an content type for use by GetContent.
+// Name is the name of the content type, like "web" or "s3".
 func RegisterContentType(name string, getContent func(*contentinfo.ContentInfo) ([]byte, error)) {
 	contentTypes = append(contentTypes, contentType{
 		name,
@@ -25,6 +23,7 @@ func RegisterContentType(name string, getContent func(*contentinfo.ContentInfo) 
 	})
 }
 
+// Sniff determines the contentType of c's data.
 func sniff(c *contentinfo.ContentInfo) contentType {
 	for _, ci := range contentTypes {
 		if ci.name == c.ContentType {

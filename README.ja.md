@@ -26,7 +26,7 @@ $ GOOS=linux GOARCH=amd64 go build github.com/jobtalk/fanlin/cmd/fanlin
 
 ## サーバーに配布するもの
 ビルドして作った実行ファイル  
-conf.json  
+設定ファイル
 
 ## API
 getパラメータに値を渡して操作する  
@@ -57,8 +57,8 @@ $ go test -cover ./...
     "max_width": 1000,
     "max_height": 1000,
     "404_img_path": "/path/to/404/image",
-    "access_log_path": "/dev/null",
-    "error_log_path": "/dev/null",
+    "access_log_path": "/path/to/access/log",
+    "error_log_path": "/path/to/error/log",
     "providers": {
         "alias/0" : {
             "type" : "web",

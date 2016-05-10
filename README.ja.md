@@ -54,26 +54,25 @@ $ go test -cover ./...
 ```
 {
     "port": 8080,
-    "local_image_path": "ローカルのファイルの設置場所",
     "max_width": 1000,
     "max_height": 1000,
-    "404_img_path": "/usr/local/lvimg/404.png",
-    "access_log_path": "logの書き出し先",
-    "error_log_path": "logの書き出し先",
-    "externals": [
-        {
-            "key" : "proxy先のURL"
+    "404_img_path": "/path/to/404/image",
+    "access_log_path": "/dev/null",
+    "error_log_path": "/dev/null",
+    "providers": {
+        "alias/0" : {
+            "type" : "web",
+            "src" : "http://aaa.com/bbb"
+        },
+        "alias/1" : {
+            "type" : "web",
+            "src" : "https://ccc.com"
+        },
+        "alias/3" : {
+            "type" : "s3",
+            "src" : "s3://bucket/path",
+            "region" : "ap-northeast-1"
         }
-    ],
-    "include": [
-        "include先のパス"
-    ],
-    "s3_bucket_name": "s3のバケット名",
-    "s3_region": "未指定の時は東京になる. 以下のように指定ができる",
-    "s3_region": "Tokyo",
-    "s3_region": "Tokyo",
-    "s3_region": "ap-northeast-1",
-    "s3_region": "asia-pacific"
+    }
 }
-
 ```

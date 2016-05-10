@@ -48,24 +48,25 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
 ```
 {
     "port": 8080,
-    "local_image_path": "{{local_image_path}}",
     "max_width": 1000,
     "max_height": 1000,
-    "404_img_path": "/usr/local/lvimg/404.png",
-    "access_log_path": "log path",
-    "error_log_path": "error log path",
-    "externals": [
-        {
-            "key" : "{{external contents server path}}"
+    "404_img_path": "/path/to/404/image",
+    "access_log_path": "/dev/null",
+    "error_log_path": "/dev/null",
+    "providers": {
+        "alias/0" : {
+            "type" : "web",
+            "src" : "http://aaa.com/bbb"
+        },
+        "alias/1" : {
+            "type" : "web",
+            "src" : "https://ccc.com"
+        },
+        "alias/3" : {
+            "type" : "s3",
+            "src" : "s3://bucket/path",
+            "region" : "ap-northeast-1"
         }
-    ],
-    "include": [
-        "include configure path"
-    ],
-    "s3_bucket_name": "bucket name",
-    "s3_region": "Tokyo",
-    "s3_region": "Tokyo",
-    "s3_region": "ap-northeast-1",
-    "s3_region": "asia-pacific"
+    }
 }
 ```

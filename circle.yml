@@ -13,7 +13,6 @@ dependencies:
         - go get -u -v github.com/jmespath/go-jmespath
         - go get -u -v github.com/mymch/formatter
         - go get -u -v github.com/google/btree
-        - go get -u -v go get github.com/golang/mock/gomock
         #- go get -u -v github.com/mattn/gom
         #- cd proxy && pwd && gom install
     override:

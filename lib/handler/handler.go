@@ -8,11 +8,11 @@ import (
 
 	"github.com/jobtalk/fanlin/lib/conf"
 	"github.com/jobtalk/fanlin/lib/content"
+	_ "github.com/jobtalk/fanlin/lib/content/s3"
+	_ "github.com/jobtalk/fanlin/lib/content/web"
 	"github.com/jobtalk/fanlin/lib/error"
 	"github.com/jobtalk/fanlin/lib/image"
 	"github.com/jobtalk/fanlin/lib/query"
-	_ "github.com/jobtalk/fanlin/lib/s3"
-	_ "github.com/jobtalk/fanlin/lib/web"
 	"github.com/sirupsen/logrus"
 )
 

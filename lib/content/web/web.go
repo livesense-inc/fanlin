@@ -14,9 +14,6 @@ import (
 
 var ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())
 
-type Web struct {
-}
-
 var client = http.Client{
 	Transport: &http.Transport{MaxIdleConnsPerHost: 64},
 	Timeout:   time.Duration(10) * time.Second,

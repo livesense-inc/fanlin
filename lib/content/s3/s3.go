@@ -14,9 +14,6 @@ import (
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
-type S3 struct {
-}
-
 func GetSource(c *content.Content) ([]byte, error) {
 	s3url := c.SourcePlace
 	u, err := url.Parse(s3url)

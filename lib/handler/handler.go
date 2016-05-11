@@ -8,7 +8,6 @@ import (
 
 	"github.com/jobtalk/fanlin/lib/conf"
 	"github.com/jobtalk/fanlin/lib/content"
-	"github.com/jobtalk/fanlin/lib/contentinfo"
 	"github.com/jobtalk/fanlin/lib/error"
 	"github.com/jobtalk/fanlin/lib/image"
 	"github.com/jobtalk/fanlin/lib/query"
@@ -77,8 +76,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	}).Info()
 
 	q := query.NewQueryFromGet(r)
-	info := contentinfo.GetContentInfo(r.URL.Path, conf)
-	imageBuffer, err := content.GetContent(info)
+	info := content.GetContent(r.URL.Path, conf)
+	imageBuffer, err := content.GetSource(info)
 
 	if err != nil {
 		imageBuffer = nil

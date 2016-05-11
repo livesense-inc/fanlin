@@ -11,15 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/jobtalk/fanlin/lib/content"
-	"github.com/jobtalk/fanlin/lib/contentinfo"
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
 type S3 struct {
 }
 
-func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
-	s3url := c.ContentPlace
+func GetSource(c *content.Content) ([]byte, error) {
+	s3url := c.SourcePlace
 	u, err := url.Parse(s3url)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not parse s3 url"))
@@ -54,5 +53,5 @@ func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
 }
 
 func init() {
-	content.RegisterContentType("s3", GetContent)
+	content.RegisterContentType("s3", GetSource)
 }

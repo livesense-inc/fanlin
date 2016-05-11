@@ -33,9 +33,6 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
 /usr/local/etc/fanlin.json
 /usr/local/etc/fanlin.cnf
 /usr/local/etc/fanlin.conf
-/usr/local/lvimg/fanlin.json
-/usr/local/lvimg/fanlin.cnf
-/usr/local/lvimg/fanlin.conf
 ./fanlin.json
 ./fanlin.cnf
 ./fanlin.conf
@@ -55,20 +52,26 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
     "404_img_path": "/path/to/404/image",
     "access_log_path": "/path/to/access/log",
     "error_log_path": "/path/to/error/log",
-    "providers": {
-        "alias/0" : {
-            "type" : "web",
-            "src" : "http://aaa.com/bbb"
+    "providers": [
+        {
+            "alias/0" : {
+                "type" : "web",
+                "src" : "http://aaa.com/bbb"
+            }
         },
-        "alias/1" : {
-            "type" : "web",
-            "src" : "https://ccc.com"
+        {
+            "alias/1" : {
+                "type" : "web",
+                "src" : "https://ccc.com"
+            }
         },
-        "alias/3" : {
-            "type" : "s3",
-            "src" : "s3://bucket/path",
-            "region" : "ap-northeast-1"
+        {
+            "alias/3" : {
+                "type" : "s3",
+                "src" : "s3://bucket/path",
+                "region" : "ap-northeast-1"
+            }
         }
-    }
+    ]
 }
 ```

@@ -1,46 +1,82 @@
 package content
 
 import (
-	"errors"
+	"strings"
 
-	"github.com/jobtalk/fanlin/lib/contentinfo"
-	"github.com/jobtalk/fanlin/lib/error"
+	"github.com/jobtalk/fanlin/lib/conf"
 )
 
-type contentType struct {
-	name       string
-	getContent func(*contentinfo.ContentInfo) ([]byte, error)
+type Content struct {
+	SourcePlace string
+	SourceType  string
+	Meta        map[string]interface{}
 }
 
-var contentTypes []contentType
-
-// RegisterContentType registers an content type for use by GetContent.
-// Name is the name of the content type, like "web" or "s3".
-func RegisterContentType(name string, getContent func(*contentinfo.ContentInfo) ([]byte, error)) {
-	contentTypes = append(contentTypes, contentType{
-		name,
-		getContent,
-	})
+type provider struct {
+	alias string
+	meta  interface{}
 }
 
-// Sniff determines the contentType of c's data.
-func sniff(c *contentinfo.ContentInfo) contentType {
-	for _, ci := range contentTypes {
-		if ci.name == c.ContentType {
-			return ci
+func getProviders(c *configure.Conf) []provider {
+	ret := []provider{}
+	for _, p := range c.Providers() {
+		for alias, meta := range convertInterfaceToMap(p) {
+			ret = append(ret, provider{alias, meta})
 		}
 	}
-	return contentType{}
+	return ret
 }
 
-func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
-	f := sniff(c)
-	if f.getContent == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("unknown content type"))
+func getContent(urlPath string, p []provider) *Content {
+	var ret Content
+	ret.Meta = map[string]interface{}{}
+	index := serachProviderIndex(urlPath, p)
+	if index < 0 {
+		return nil
 	}
-	m, err := f.getContent(c)
-	if err != nil {
-		return nil, err
+	targetProvider := p[index]
+	for k, v := range convertInterfaceToMap(targetProvider.meta) {
+		switch k {
+		case "src":
+			src := v.(string)
+			path := urlPath[len(targetProvider.alias):]
+			if !strings.HasPrefix(path, "/") {
+				path = "/" + path
+			}
+			ret.SourcePlace = src + path
+		case "type":
+			ret.SourceType = v.(string)
+		default:
+			ret.Meta[k] = v
+		}
 	}
-	return m, nil
+	return &ret
+}
+
+func serachProviderIndex(urlPath string, p []provider) int {
+	for i, v := range p {
+		if strings.Contains(urlPath, v.alias) {
+			return i
+		}
+	}
+	return -1
+}
+
+func convertInterfaceToMap(i interface{}) map[string]interface{} {
+	if ret, ok := i.(map[string]interface{}); ok {
+		return ret
+	}
+	return map[string]interface{}(nil)
+}
+
+func GetContent(urlPath string, conf *configure.Conf) *Content {
+	if urlPath == "" {
+		return nil
+	}
+	if conf == nil {
+		return nil
+	}
+	providers := getProviders(conf)
+
+	return getContent(urlPath, providers)
 }

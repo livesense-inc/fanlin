@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/jobtalk/fanlin/lib/content"
-	"github.com/jobtalk/fanlin/lib/contentinfo"
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
@@ -32,8 +31,8 @@ func isErrorCode(status int) bool {
 	}
 }
 
-func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
-	req, err := http.NewRequest("GET", c.ContentPlace, nil)
+func GetSource(c *content.Content) ([]byte, error) {
+	req, err := http.NewRequest("GET", c.SourcePlace, nil)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
@@ -54,5 +53,5 @@ func GetContent(c *contentinfo.ContentInfo) ([]byte, error) {
 }
 
 func init() {
-	content.RegisterContentType("web", GetContent)
+	content.RegisterContentType("web", GetSource)
 }

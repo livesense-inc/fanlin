@@ -34,7 +34,7 @@ func GetContentInfo(urlPath string, conf *configure.Conf) *ContentInfo {
 	if conf == nil {
 		return nil
 	}
-
+	// TODO: Review of the priorities of routing
 	var bt = btree.New(4)
 	for k, v := range conf.Providers() {
 		bt.ReplaceOrInsert(Providers{

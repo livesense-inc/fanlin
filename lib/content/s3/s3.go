@@ -14,7 +14,17 @@ import (
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
+var s3GetSourceFunc = getS3Source
+
+// Test dedicated function
+func setS3GetFunc(f func(region, bucket, key string, file *os.File) ([]byte, error)) {
+	s3GetSourceFunc = f
+}
+
 func GetSource(c *content.Content) ([]byte, error) {
+	if c == nil {
+		return nil, errors.New("content is nil")
+	}
 	s3url := c.SourcePlace
 	u, err := url.Parse(s3url)
 	if err != nil {
@@ -33,20 +43,24 @@ func GetSource(c *content.Content) ([]byte, error) {
 	bucket := u.Host
 
 	if region, ok := c.Meta["region"].(string); ok {
-		downloader := s3manager.NewDownloader(session.New(&aws.Config{Region: aws.String(region)}))
-		_, err = downloader.Download(file,
-			&s3.GetObjectInput{
-				Bucket: aws.String(bucket),
-				Key:    aws.String(u.EscapedPath()),
-			},
-		)
-		if err != nil {
-			return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
-		}
-		bin, err := ioutil.ReadFile(file.Name())
-		return bin, imgproxyerr.New(imgproxyerr.ERROR, err)
+		return s3GetSourceFunc(region, bucket, u.EscapedPath(), file)
 	}
 	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
+}
+
+func getS3Source(region, bucket, key string, file *os.File) ([]byte, error) {
+	downloader := s3manager.NewDownloader(session.New(&aws.Config{Region: aws.String(region)}))
+	_, err := downloader.Download(file,
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(key),
+		},
+	)
+	if err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
+	}
+	bin, err := ioutil.ReadFile(file.Name())
+	return bin, imgproxyerr.New(imgproxyerr.ERROR, err)
 }
 
 func init() {

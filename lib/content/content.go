@@ -28,6 +28,9 @@ func getProviders(c *configure.Conf) []provider {
 }
 
 func getContent(urlPath string, p []provider) *Content {
+	if urlPath == "/" || urlPath == "" {
+		return nil
+	}
 	var ret Content
 	ret.Meta = map[string]interface{}{}
 	index := serachProviderIndex(urlPath, p)

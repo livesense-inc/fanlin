@@ -55,7 +55,7 @@ func getContent(urlPath string, p []provider) *Content {
 
 func serachProviderIndex(urlPath string, p []provider) int {
 	for i, v := range p {
-		if strings.Contains(urlPath, v.alias) {
+		if strings.HasPrefix(urlPath, v.alias) {
 			return i
 		}
 	}

@@ -1,7 +1,6 @@
 package web
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -19,6 +18,41 @@ var client = http.Client{
 	Timeout:   time.Duration(10) * time.Second,
 }
 
+var httpClient = Client{
+	Http: new(RealWebClient),
+}
+
+type RealWebClient struct {
+}
+
+type WebClient interface {
+	Get(string) ([]byte, error)
+}
+
+type Client struct {
+	Http WebClient
+}
+
+func (r *RealWebClient) Get(url string) ([]byte, error) {
+	var body []byte
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
+	}
+	req.Header.Set("User-Agent", ua)
+
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
+	}
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
+	}
+	return body, nil
+}
+
 func isErrorCode(status int) bool {
 	switch status / 100 {
 	case 4, 5:
@@ -29,24 +63,11 @@ func isErrorCode(status int) bool {
 }
 
 func GetSource(c *content.Content) ([]byte, error) {
-	req, err := http.NewRequest("GET", c.SourcePlace, nil)
-	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
-	}
-	req.Header.Set("User-Agent", ua)
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
-	} else if isErrorCode(res.StatusCode) {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("Image can not get"))
-	}
+	return httpClient.Http.Get(c.SourcePlace)
+}
 
-	data, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
-	}
-	return data, nil
+func setHttpClient(c Client) {
+	httpClient = c
 }
 
 func init() {

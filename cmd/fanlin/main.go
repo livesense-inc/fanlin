@@ -20,6 +20,7 @@ var confList = []string{
 	"/usr/local/etc/fanlin.json",
 	"/usr/local/etc/fanlin.cnf",
 	"/usr/local/etc/fanlin.conf",
+	"/usr/local/fanlin/fanlin.json",
 	"/usr/local/fanlin.json",
 	"/usr/local/fanlin.conf",
 	"./fanlin.json",

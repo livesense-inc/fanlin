@@ -62,7 +62,7 @@ func isErrorCode(status int) bool {
 	}
 }
 
-func GetSource(c *content.Content) ([]byte, error) {
+func GetImageBinary(c *content.Content) ([]byte, error) {
 	return httpClient.Http.Get(c.SourcePlace)
 }
 
@@ -71,5 +71,5 @@ func setHttpClient(c Client) {
 }
 
 func init() {
-	content.RegisterContentType("web", GetSource)
+	content.RegisterContentType("web", GetImageBinary)
 }

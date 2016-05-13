@@ -14,14 +14,14 @@ import (
 	"github.com/jobtalk/fanlin/lib/error"
 )
 
-var s3GetSourceFunc = getS3Source
+var s3GetSourceFunc = getS3ImageBinary
 
 // Test dedicated function
 func setS3GetFunc(f func(region, bucket, key string, file *os.File) ([]byte, error)) {
 	s3GetSourceFunc = f
 }
 
-func GetSource(c *content.Content) ([]byte, error) {
+func GetImageBinary(c *content.Content) ([]byte, error) {
 	if c == nil {
 		return nil, errors.New("content is nil")
 	}
@@ -48,7 +48,7 @@ func GetSource(c *content.Content) ([]byte, error) {
 	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
 }
 
-func getS3Source(region, bucket, key string, file *os.File) ([]byte, error) {
+func getS3ImageBinary(region, bucket, key string, file *os.File) ([]byte, error) {
 	downloader := s3manager.NewDownloader(session.New(&aws.Config{Region: aws.String(region)}))
 	_, err := downloader.Download(file,
 		&s3.GetObjectInput{
@@ -64,5 +64,5 @@ func getS3Source(region, bucket, key string, file *os.File) ([]byte, error) {
 }
 
 func init() {
-	content.RegisterContentType("s3", GetSource)
+	content.RegisterContentType("s3", GetImageBinary)
 }

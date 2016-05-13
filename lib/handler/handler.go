@@ -76,8 +76,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	}).Info()
 
 	q := query.NewQueryFromGet(r)
-	info := content.GetContent(r.URL.Path, conf)
-	imageBuffer, err := content.GetSource(info)
+	imageBuffer, err := content.GetImageBinary(content.GetContent(r.URL.Path, conf))
 
 	if err != nil {
 		imageBuffer = nil

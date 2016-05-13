@@ -51,14 +51,14 @@ func newTestContent() *content.Content {
 	}
 }
 
-func TestGetSource(t *testing.T) {
+func TestGetImageBinary(t *testing.T) {
 	initialize()
 	c := newTestContent()
-	if _, err := GetSource(c); err != nil {
+	if _, err := GetImageBinary(c); err != nil {
 		t.Log("normal pattern.")
 		t.Fatal(err)
 	}
-	if _, err := GetSource(nil); err == nil {
+	if _, err := GetImageBinary(nil); err == nil {
 		t.Log("abnormal pattern.")
 		t.Fatal("err is nil.")
 	}

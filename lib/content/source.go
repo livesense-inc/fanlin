@@ -7,18 +7,18 @@ import (
 )
 
 type source struct {
-	name       string
-	getContent func(*Content) ([]byte, error)
+	name           string
+	getImageBinary func(*Content) ([]byte, error)
 }
 
 var sources []source
 
 // RegisterContentType registers an content type for use by GetContent.
 // Name is the name of the content type, like "web" or "s3".
-func RegisterContentType(name string, getContent func(*Content) ([]byte, error)) {
+func RegisterContentType(name string, getImageBinary func(*Content) ([]byte, error)) {
 	sources = append(sources, source{
 		name,
-		getContent,
+		getImageBinary,
 	})
 }
 
@@ -32,12 +32,12 @@ func sniff(c *Content) source {
 	return source{}
 }
 
-func GetSource(c *Content) ([]byte, error) {
+func GetImageBinary(c *Content) ([]byte, error) {
 	f := sniff(c)
-	if f.getContent == nil {
+	if f.getImageBinary == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("unknown content type"))
 	}
-	m, err := f.getContent(c)
+	m, err := f.getImageBinary(c)
 	if err != nil {
 		return nil, err
 	}

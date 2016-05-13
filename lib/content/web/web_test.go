@@ -45,12 +45,12 @@ func TestIsErrorCode(t *testing.T) {
 	}
 }
 
-func TestGetSource(t *testing.T) {
+func TestGetImageBinary(t *testing.T) {
 	SetHttpClient(*getTestClient())
 	c := &content.Content{
 		SourcePlace: targetURL,
 	}
-	result, err := GetSource(c)
+	result, err := GetImageBinary(c)
 	if err != nil {
 		t.Fatal(err)
 	}

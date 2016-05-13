@@ -8,6 +8,8 @@ import (
 
 	"github.com/jobtalk/fanlin/lib/conf"
 	"github.com/jobtalk/fanlin/lib/content"
+	_ "github.com/jobtalk/fanlin/lib/content/s3"
+	_ "github.com/jobtalk/fanlin/lib/content/web"
 	"github.com/jobtalk/fanlin/lib/error"
 	"github.com/jobtalk/fanlin/lib/image"
 	"github.com/jobtalk/fanlin/lib/query"
@@ -66,7 +68,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 			fmt.Fprintf(w, "%s", "")
 		}
 	}()
-
 	accessLogger := loggers["access"]
 	accessLogger.WithFields(logrus.Fields{
 		"UA":        r.UserAgent(),
@@ -75,10 +76,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	}).Info()
 
 	q := query.NewQueryFromGet(r)
+	imageBuffer, err := content.GetImageBinary(content.GetContent(r.URL.Path, conf))
 
-	imageBuffer, ok := content.GetContent(r.URL.Path, conf)
-
-	if !ok {
+	if err != nil {
 		imageBuffer = nil
 		panic(imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data")))
 	}

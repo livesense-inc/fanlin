@@ -1,70 +1,85 @@
 package content
 
 import (
-	"io/ioutil"
-	"path/filepath"
 	"strings"
 
-	"github.com/jobtalk/fanlin/lib/client"
 	"github.com/jobtalk/fanlin/lib/conf"
 )
 
 type Content struct {
-	data []byte
+	SourcePlace string
+	SourceType  string
+	Meta        map[string]interface{}
 }
 
-func getSourceURL(urlPath string, conf *configure.Conf) (ret string) {
-	if urlPath == "" {
-		return ""
-	}
-	if conf == nil {
-		return ""
-	}
-	for k, v := range conf.Externals() {
-		searchWord := "/" + k + "/"
-		if strings.HasPrefix(urlPath, searchWord) {
-			return v + urlPath[len(searchWord):]
+type provider struct {
+	alias string
+	meta  interface{}
+}
+
+func getProviders(c *configure.Conf) []provider {
+	ret := []provider{}
+	for _, p := range c.Providers() {
+		for alias, meta := range convertInterfaceToMap(p) {
+			ret = append(ret, provider{alias, meta})
 		}
 	}
-	return ""
+	return ret
 }
 
-func (c *Content) getExternalContent(urlPath string, conf *configure.Conf) ([]byte, bool) {
-	bin, err := client.HttpImageGetter(getSourceURL(urlPath, conf), conf)
-	return bin, err == nil
+func getContent(urlPath string, p []provider) *Content {
+	if urlPath == "/" || urlPath == "" {
+		return nil
+	}
+	var ret Content
+	ret.Meta = map[string]interface{}{}
+	index := serachProviderIndex(urlPath, p)
+	if index < 0 {
+		return nil
+	}
+	targetProvider := p[index]
+	for k, v := range convertInterfaceToMap(targetProvider.meta) {
+		switch k {
+		case "src":
+			src := v.(string)
+			path := urlPath[len(targetProvider.alias):]
+			if !strings.HasPrefix(path, "/") {
+				path = "/" + path
+			}
+			ret.SourcePlace = src + path
+		case "type":
+			ret.SourceType = v.(string)
+		default:
+			ret.Meta[k] = v
+		}
+	}
+	return &ret
 }
 
-func (c *Content) getLocalContent(urlPath string, conf *configure.Conf) ([]byte, bool) {
-	localPath, err := filepath.Abs(conf.LocalImagePath())
-	if err != nil {
-		return nil, err == nil
+func serachProviderIndex(urlPath string, p []provider) int {
+	for i, v := range p {
+		if strings.HasPrefix(urlPath, v.alias) {
+			return i
+		}
 	}
-	requestPath, err := filepath.Abs(localPath + urlPath)
-	if err != nil {
-		return nil, err == nil
-	}
-	if strings.Contains(requestPath, localPath) {
-		bin, err := ioutil.ReadFile(requestPath)
-		return bin, err == nil
-	}
-	return nil, false
+	return -1
 }
 
-func (c *Content) getS3Content(urlPath string, conf *configure.Conf) ([]byte, bool) {
-	if bin, err := client.S3ImageGetter(urlPath, conf); err == nil {
-		return bin, true
+func convertInterfaceToMap(i interface{}) map[string]interface{} {
+	if ret, ok := i.(map[string]interface{}); ok {
+		return ret
 	}
-	return nil, false
+	return map[string]interface{}(nil)
 }
 
-func GetContent(urlPath string, conf *configure.Conf) ([]byte, bool) {
-	c := &Content{}
-	if ret, ok := c.getExternalContent(urlPath, conf); ok {
-		return ret, ok
-	} else if ret, ok := c.getS3Content(urlPath, conf); ok {
-		return ret, ok
-	} else if ret, ok := c.getLocalContent(urlPath, conf); ok {
-		return ret, ok
+func GetContent(urlPath string, conf *configure.Conf) *Content {
+	if urlPath == "" {
+		return nil
 	}
-	return nil, false
+	if conf == nil {
+		return nil
+	}
+	providers := getProviders(conf)
+
+	return getContent(urlPath, providers)
 }

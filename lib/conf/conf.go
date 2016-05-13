@@ -32,6 +32,13 @@ func (c *Conf) UA() string {
 	return ua.(string)
 }
 
+func (c *Conf) Providers() []interface{} {
+	if providers, ok := c.c["providers"].([]interface{}); ok {
+		return providers
+	}
+	return nil
+}
+
 func (c *Conf) NotFoundImagePath() string {
 	path := c.c["404_img_path"]
 	if path == nil {
@@ -192,10 +199,12 @@ func NewConfigure(confPath string) *Conf {
 	var conf map[string]interface{}
 	bin, err := ioutil.ReadFile(confPath)
 	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	err = json.Unmarshal(bin, &conf)
 	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	p, _ := filepath.Abs(confPath)

@@ -13,6 +13,7 @@ import (
 	"github.com/jobtalk/fanlin/lib/error"
 	"github.com/jobtalk/fanlin/lib/image"
 	"github.com/jobtalk/fanlin/lib/query"
+	_ "github.com/jobtalk/fanlin/plugin"
 	"github.com/sirupsen/logrus"
 )
 

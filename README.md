@@ -1,6 +1,7 @@
 # fanlin
 
 [![Circle CI](https://circleci.com/gh/jobtalk/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/jobtalk/fanlin/tree/master)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 English | [日本語](README.ja.md)
 
@@ -75,3 +76,6 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
     ]
 }
 ```
+
+## LICENSE
+Written in Go and licensed under [the MIT License](https://opensource.org/licenses/MIT), it can also be used as a library.

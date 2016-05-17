@@ -1,10 +1,13 @@
 # fanlin
 
 [![Circle CI](https://circleci.com/gh/jobtalk/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/jobtalk/fanlin/tree/master)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 [English](README.md) | 日本語
 
 ## 概要
+fanlinはGo言語で作られた軽量画像プロキシです.
+Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工することができます.
 
 ## 環境
 * 確認済み

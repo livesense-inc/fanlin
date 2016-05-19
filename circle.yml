@@ -13,6 +13,8 @@ dependencies:
         - go get -u -v github.com/jmespath/go-jmespath
         - go get -u -v github.com/mymch/formatter
         - go get -u -v github.com/google/btree
+        - go get -u -v github.com/BurntSushi/graphics-go/graphics
+        - go get -u -v github.com/rwcarlsen/goexif/exif
         #- go get -u -v github.com/mattn/gom
         #- cd proxy && pwd && gom install
     override:

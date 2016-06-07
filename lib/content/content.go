@@ -1,9 +1,9 @@
 package content
 
 import (
-	"strings"
-
 	"github.com/jobtalk/fanlin/lib/conf"
+	"net/url"
+	"strings"
 )
 
 type Content struct {
@@ -81,5 +81,9 @@ func GetContent(urlPath string, conf *configure.Conf) *Content {
 	}
 	providers := getProviders(conf)
 
-	return getContent(urlPath, providers)
+	unescapeURL, err := url.QueryUnescape(urlPath)
+	if err != nil {
+		return getContent(urlPath, providers)
+	}
+	return getContent(unescapeURL, providers)
 }

@@ -3,7 +3,7 @@ package content
 import (
 	"errors"
 
-	"github.com/jobtalk/fanlin/lib/error"
+	"github.com/livesense-inc/fanlin/lib/error"
 )
 
 type source struct {

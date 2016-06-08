@@ -16,7 +16,7 @@ import (
 
 	"github.com/BurntSushi/graphics-go/graphics"
 	"github.com/BurntSushi/graphics-go/graphics/interp"
-	"github.com/jobtalk/fanlin/lib/error"
+	"github.com/livesense-inc/fanlin/lib/error"
 	"github.com/nfnt/resize"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"

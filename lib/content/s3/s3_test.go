@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jobtalk/fanlin/lib/content"
+	"github.com/livesense-inc/fanlin/lib/content"
 )
 
 var (

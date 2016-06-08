@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/jobtalk/fanlin/lib/conf"
-	"github.com/jobtalk/fanlin/lib/handler"
-	"github.com/jobtalk/fanlin/lib/logger"
+	"github.com/livesense-inc/fanlin/lib/conf"
+	"github.com/livesense-inc/fanlin/lib/handler"
+	"github.com/livesense-inc/fanlin/lib/logger"
 	"github.com/sirupsen/logrus"
 )
 

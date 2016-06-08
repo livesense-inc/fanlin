@@ -12,8 +12,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/jobtalk/fanlin/lib/content"
-	"github.com/jobtalk/fanlin/lib/error"
+	"github.com/livesense-inc/fanlin/lib/content"
+	"github.com/livesense-inc/fanlin/lib/error"
 )
 
 var s3GetSourceFunc = getS3ImageBinary

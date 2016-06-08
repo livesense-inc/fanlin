@@ -81,7 +81,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 
 	if err != nil {
 		imageBuffer = nil
-		panic(imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data")))
+		panic(imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data:"+err.Error())))
 	}
 
 	img, err := imageprocessor.DecodeImage(imageBuffer)

@@ -6,6 +6,7 @@ machine:
 
 dependencies:
     pre:
+        - go get -u -v golang.org/x/text/unicode/norm
         - go get -u -v github.com/nfnt/resize
         - go get -u -v github.com/sirupsen/logrus
         - go get -u -v golang.org/x/image/bmp

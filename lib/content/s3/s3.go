@@ -43,7 +43,11 @@ func GetImageBinary(c *content.Content) ([]byte, error) {
 	bucket := u.Host
 
 	if region, ok := c.Meta["region"].(string); ok {
-		return s3GetSourceFunc(region, bucket, u.EscapedPath(), file)
+		path, err := url.QueryUnescape(u.EscapedPath())
+		if err != nil {
+			return nil, err
+		}
+		return s3GetSourceFunc(region, bucket, path, file)
 	}
 	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
 }

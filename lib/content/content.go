@@ -46,7 +46,8 @@ func getContent(urlPath string, p []provider) *Content {
 			if !strings.HasPrefix(path, "/") {
 				path = "/" + path
 			}
-			ret.SourcePlace = src + path
+
+			ret.SourcePlace, _ = url.QueryUnescape(src + path)
 		case "type":
 			ret.SourceType = v.(string)
 		default:
@@ -81,9 +82,5 @@ func GetContent(urlPath string, conf *configure.Conf) *Content {
 	}
 	providers := getProviders(conf)
 
-	unescapeURL, err := url.QueryUnescape(urlPath)
-	if err != nil {
-		return getContent(urlPath, providers)
-	}
-	return getContent(unescapeURL, providers)
+	return getContent(urlPath, providers)
 }

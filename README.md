@@ -1,6 +1,6 @@
 # fanlin
 
-[![Circle CI](https://circleci.com/gh/jobtalk/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/jobtalk/fanlin/tree/master)
+[![Circle CI](https://circleci.com/gh/livesense-inc/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/livesense-inc/fanlin/tree/master)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 English | [日本語](README.ja.md)
@@ -21,7 +21,7 @@ fanlin is image proxy server in native Go language.
 ## Cross compile for amd64 Linux
 ### go 1.5
 ```
-$ GOOS=linux GOARCH=amd64 go build github.com/jobtalk/fanlin/cmd/fanlin
+$ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```
 
 ## configure

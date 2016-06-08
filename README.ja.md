@@ -1,6 +1,6 @@
 # fanlin
 
-[![Circle CI](https://circleci.com/gh/jobtalk/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/jobtalk/fanlin/tree/master)
+[![Circle CI](https://circleci.com/gh/livesense-inc/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/livesense-inc/fanlin/tree/master)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 [English](README.md) | 日本語
@@ -24,7 +24,7 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 go1.5の場合  
 1.4はやり方が変わります  
 ```
-$ GOOS=linux GOARCH=amd64 go build github.com/jobtalk/fanlin/cmd/fanlin
+$ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```
 
 ## サーバーに配布するもの

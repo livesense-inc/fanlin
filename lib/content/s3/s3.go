@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"os"
 
+	"golang.org/x/text/unicode/norm"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -44,6 +46,7 @@ func GetImageBinary(c *content.Content) ([]byte, error) {
 
 	if region, ok := c.Meta["region"].(string); ok {
 		path, err := url.QueryUnescape(u.EscapedPath())
+		path = norm.NFKD.String(path)
 		if err != nil {
 			return nil, err
 		}

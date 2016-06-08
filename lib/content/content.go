@@ -1,7 +1,7 @@
 package content
 
 import (
-	"github.com/jobtalk/fanlin/lib/conf"
+	"github.com/livesense-inc/fanlin/lib/conf"
 	"net/url"
 	"strings"
 )

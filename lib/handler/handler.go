@@ -6,14 +6,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jobtalk/fanlin/lib/conf"
-	"github.com/jobtalk/fanlin/lib/content"
-	_ "github.com/jobtalk/fanlin/lib/content/s3"
-	_ "github.com/jobtalk/fanlin/lib/content/web"
-	"github.com/jobtalk/fanlin/lib/error"
-	"github.com/jobtalk/fanlin/lib/image"
-	"github.com/jobtalk/fanlin/lib/query"
-	_ "github.com/jobtalk/fanlin/plugin"
+	"github.com/livesense-inc/fanlin/lib/conf"
+	"github.com/livesense-inc/fanlin/lib/content"
+	_ "github.com/livesense-inc/fanlin/lib/content/s3"
+	_ "github.com/livesense-inc/fanlin/lib/content/web"
+	"github.com/livesense-inc/fanlin/lib/error"
+	"github.com/livesense-inc/fanlin/lib/image"
+	"github.com/livesense-inc/fanlin/lib/query"
+	_ "github.com/livesense-inc/fanlin/plugin"
 	"github.com/sirupsen/logrus"
 )
 

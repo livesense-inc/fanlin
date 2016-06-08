@@ -2,7 +2,7 @@ machine:
     timezone:
         Asia/Tokyo
     environment:
-        IMPORT_PATH: "github.com/jobtalk/$CIRCLE_PROJECT_REPONAME"
+        IMPORT_PATH: "github.com/livesense-inc/$CIRCLE_PROJECT_REPONAME"
 
 dependencies:
     pre:

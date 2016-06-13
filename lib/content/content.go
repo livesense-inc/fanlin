@@ -1,9 +1,10 @@
 package content
 
 import (
-	"github.com/livesense-inc/fanlin/lib/conf"
 	"net/url"
 	"strings"
+
+	"github.com/livesense-inc/fanlin/lib/conf"
 )
 
 type Content struct {
@@ -17,8 +18,14 @@ type provider struct {
 	meta  interface{}
 }
 
+var providers []provider
+
+func init() {
+	providers = nil
+}
+
 func getProviders(c *configure.Conf) []provider {
-	ret := []provider{}
+	ret := make([]provider, 0, len(c.Providers()))
 	for _, p := range c.Providers() {
 		for alias, meta := range convertInterfaceToMap(p) {
 			ret = append(ret, provider{alias, meta})
@@ -80,7 +87,10 @@ func GetContent(urlPath string, conf *configure.Conf) *Content {
 	if conf == nil {
 		return nil
 	}
-	providers := getProviders(conf)
+
+	if providers == nil {
+		providers = getProviders(conf)
+	}
 
 	return getContent(urlPath, providers)
 }

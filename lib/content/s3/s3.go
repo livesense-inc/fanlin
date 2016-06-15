@@ -46,7 +46,7 @@ func GetImageBinary(c *content.Content) ([]byte, error) {
 
 	if region, ok := c.Meta["region"].(string); ok {
 		path, err := url.QueryUnescape(u.EscapedPath())
-		path = norm.NFKD.String(path)
+		path = norm.NFD.String(path)
 		if err != nil {
 			return nil, err
 		}

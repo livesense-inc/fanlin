@@ -63,6 +63,14 @@ func (c *Conf) AccessLogPath() string {
 	return path.(string)
 }
 
+func (c *Conf) DebugLogPath() string {
+	path := c.c["debug_log_path"]
+	if path == nil {
+		path = "./debug.log"
+	}
+	return path.(string)
+}
+
 func (c *Conf) Port() int {
 	port := c.c["port"]
 	return convInterfaceToInt(port, 8080)

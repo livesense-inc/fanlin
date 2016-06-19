@@ -20,9 +20,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var stackWriter, ioerr = os.Create("debug.log")
-var devNull, _ = os.Open("/dev/null")
-
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
 
@@ -38,7 +35,8 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 	q = nil
 }
 
-func writeDebugLog(err interface{}) {
+func writeDebugLog(err interface{}, debugFile string) {
+	stackWriter, _ := os.OpenFile(debugFile, os.O_APPEND|os.O_WRONLY, 0600)
 	t := time.Now()
 	stackWriter.Write([]byte("\n"))
 	stackWriter.Write([]byte("==========================================\n"))
@@ -49,11 +47,9 @@ func writeDebugLog(err interface{}) {
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]logrus.Logger) {
+	devNull, _ := os.Open("/dev/null")
 	defer func() {
 		err := recover()
-		if ioerr != nil {
-			log.Fatalln(ioerr)
-		}
 		if err != nil {
 			create404Page(w, r, conf)
 			if loggers != nil {
@@ -74,20 +70,20 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 						errLogger.Warn(err)
 						break
 					case imgproxyerr.ERROR:
-						writeDebugLog(err)
+						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)
 						break
 					default:
-						writeDebugLog(err)
+						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)
 					}
 				} else {
-					writeDebugLog(err)
+					writeDebugLog(err, conf.DebugLogPath())
 					errLogger.Error(err)
 				}
 
 			} else {
-				writeDebugLog(err)
+				writeDebugLog(err, conf.DebugLogPath())
 				log.Println(err)
 			}
 			fmt.Fprintf(w, "%s", "")

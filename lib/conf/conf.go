@@ -66,7 +66,7 @@ func (c *Conf) AccessLogPath() string {
 func (c *Conf) DebugLogPath() string {
 	path := c.c["debug_log_path"]
 	if path == nil {
-		path = "./debug.log"
+		path = "/dev/null"
 	}
 	return path.(string)
 }

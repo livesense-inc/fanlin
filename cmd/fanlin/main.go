@@ -34,7 +34,6 @@ var confList = []string{
 
 var (
 	buildVersion string
-	buildHash    string
 	buildDate    string
 	goversion    string
 )
@@ -46,7 +45,6 @@ var (
 func showVersion() {
 	fmt.Println()
 	fmt.Println("build version: ", buildVersion)
-	fmt.Println("build hash: ", buildVersion)
 	fmt.Println("build date: ", buildDate)
 	fmt.Println("GO version: ", goversion)
 	os.Exit(128)

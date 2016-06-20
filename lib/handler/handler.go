@@ -20,6 +20,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var devNull, _ = os.Open("/dev/null")
+
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
 
@@ -47,7 +49,6 @@ func writeDebugLog(err interface{}, debugFile string) {
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]logrus.Logger) {
-	devNull, _ := os.Open("/dev/null")
 	defer func() {
 		err := recover()
 		if err != nil {

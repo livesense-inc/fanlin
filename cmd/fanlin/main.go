@@ -34,6 +34,7 @@ var confList = []string{
 
 var (
 	buildVersion string
+	buildHash    string
 	buildDate    string
 	goversion    string
 )
@@ -44,10 +45,13 @@ var (
 
 func showVersion() {
 	fmt.Println()
-	fmt.Println("build version: ", buildVersion)
+	if buildVersion != "" {
+		fmt.Println("build version: ", buildVersion)
+	} else {
+		fmt.Println("build version: ", buildHash)
+	}
 	fmt.Println("build date: ", buildDate)
 	fmt.Println("GO version: ", goversion)
-	os.Exit(128)
 }
 
 func main() {
@@ -77,6 +81,7 @@ func main() {
 
 	if vOption {
 		showVersion()
+		os.Exit(128)
 	}
 
 	conf.Set("404_img_path", *notFoundImagePath)

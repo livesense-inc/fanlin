@@ -36,7 +36,7 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 }
 
 func writeDebugLog(err interface{}, debugFile string) {
-	stackWriter, _ := os.OpenFile(debugFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	stackWriter, _ := os.OpenFile(debugFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	t := time.Now()
 	stackWriter.Write([]byte("\n"))
 	stackWriter.Write([]byte("==========================================\n"))

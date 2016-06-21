@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"runtime/debug"
+	"time"
 
 	"github.com/livesense-inc/fanlin/lib/conf"
 	"github.com/livesense-inc/fanlin/lib/content"
@@ -16,6 +19,8 @@ import (
 	_ "github.com/livesense-inc/fanlin/plugin"
 	"github.com/sirupsen/logrus"
 )
+
+var devNull, _ = os.Open("/dev/null")
 
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
@@ -30,6 +35,17 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 		fmt.Fprintf(w, "%s", bin)
 	}
 	q = nil
+}
+
+func writeDebugLog(err interface{}, debugFile string) {
+	stackWriter, _ := os.OpenFile(debugFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	t := time.Now()
+	stackWriter.Write([]byte("\n"))
+	stackWriter.Write([]byte("==========================================\n"))
+	stackWriter.Write([]byte(t.String() + "\n"))
+	stackWriter.Write([]byte(fmt.Sprint(err, "\n")))
+	stackWriter.Write([]byte("==========================================\n\n"))
+	os.Stderr = stackWriter
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]logrus.Logger) {
@@ -51,23 +67,29 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 				if e, ok := err.(*imgproxyerr.Err); ok {
 					switch e.Type {
 					case imgproxyerr.WARNING:
+						os.Stderr = devNull
 						errLogger.Warn(err)
 						break
 					case imgproxyerr.ERROR:
+						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)
 						break
 					default:
+						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)
 					}
 				} else {
+					writeDebugLog(err, conf.DebugLogPath())
 					errLogger.Error(err)
 				}
 
 			} else {
+				writeDebugLog(err, conf.DebugLogPath())
 				log.Println(err)
 			}
 			fmt.Fprintf(w, "%s", "")
 		}
+		debug.PrintStack()
 	}()
 	accessLogger := loggers["access"]
 	accessLogger.WithFields(logrus.Fields{

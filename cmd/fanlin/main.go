@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 
 	"github.com/livesense-inc/fanlin/lib/conf"
@@ -31,6 +32,28 @@ var confList = []string{
 	"~/.fanlin.cnf",
 }
 
+var (
+	buildVersion string
+	buildHash    string
+	buildDate    string
+	goversion    string
+)
+
+var (
+	vOption bool
+)
+
+func showVersion() {
+	fmt.Println()
+	if buildVersion != "" {
+		fmt.Println("build version: ", buildVersion)
+	} else {
+		fmt.Println("build version: ", buildHash)
+	}
+	fmt.Println("build date: ", buildDate)
+	fmt.Println("GO version: ", goversion)
+}
+
 func main() {
 	conf := func() *configure.Conf {
 		for _, confName := range confList {
@@ -53,7 +76,14 @@ func main() {
 	localImagePath := flag.String("li", conf.LocalImagePath(), "local image path")
 	maxProcess := flag.Int("cpu", conf.MaxProcess(), "max process.")
 	debug := flag.Bool("debug", false, "debug mode.")
+	flag.BoolVar(&vOption, "v", false, "version")
 	flag.Parse()
+
+	if vOption {
+		showVersion()
+		os.Exit(128)
+	}
+
 	conf.Set("404_img_path", *notFoundImagePath)
 	conf.Set("error_log_path", *errorLogPath)
 	conf.Set("access_log_path", *accessLogPath)

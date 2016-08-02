@@ -153,14 +153,17 @@ func toRadian(n int) float64 {
 	return float64(n) * math.Pi / 180.0
 }
 
-func applyOrientation(s image.Image, o int) (d draw.Image) {
+func applyOrientation(s image.Image, o int) (d draw.Image, e error) {
 	bounds := s.Bounds()
+	if o == 0 {
+		o = 1
+	}
 	if o >= 5 && o <= 8 {
 		bounds = rotateRect(bounds)
 	}
 	d = image.NewRGBA64(bounds)
 	affine := affines[o]
-	affine.TransformCenter(d, s, interp.Bilinear)
+	e = affine.TransformCenter(d, s, interp.Bilinear)
 	return
 }
 
@@ -194,6 +197,6 @@ func Decode(b []byte) (d image.Image, err error) {
 	if err != nil {
 		return s, nil
 	}
-	d = applyOrientation(s, o)
+	d, err = applyOrientation(s, o)
 	return
 }

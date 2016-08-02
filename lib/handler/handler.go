@@ -88,8 +88,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 				log.Println(err)
 			}
 			fmt.Fprintf(w, "%s", "")
+			debug.PrintStack()
 		}
-		debug.PrintStack()
 	}()
 	accessLogger := loggers["access"]
 	accessLogger.WithFields(logrus.Fields{

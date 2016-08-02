@@ -52,6 +52,7 @@ func TestDecodeImage(t *testing.T) {
 
 	img, err = DecodeImage(jpegBin)
 	if err != nil {
+		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
 	if img == nil {
@@ -68,6 +69,7 @@ func TestDecodeImage(t *testing.T) {
 
 	img, err = DecodeImage(pngBin)
 	if err != nil {
+		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
 	if img == nil {
@@ -76,6 +78,7 @@ func TestDecodeImage(t *testing.T) {
 
 	img, err = DecodeImage(gifBin)
 	if err != nil {
+		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
 	if img == nil {
@@ -84,7 +87,12 @@ func TestDecodeImage(t *testing.T) {
 
 	img, err = DecodeImage(confBin)
 	if err == nil {
+		t.Log(err)
 		t.Fatalf("err is nil")
+	}
+
+	if img == nil {
+		t.Fatalf("can not decode.")
 	}
 }
 

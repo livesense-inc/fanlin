@@ -195,7 +195,7 @@ func Decode(b []byte) (d image.Image, err error) {
 	}
 	o, err := readOrientation(bytes.NewReader(b))
 	if err != nil {
-		return s, err
+		return s, nil
 	}
 	d, err = applyOrientation(s, o)
 	return

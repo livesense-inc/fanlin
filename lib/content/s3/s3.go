@@ -54,8 +54,6 @@ func GetImageBinary(c *content.Content) ([]byte, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else {
-			path = norm.NFD.String(path)
 		}
 		return s3GetSourceFunc(region, bucket, path, file)
 	}

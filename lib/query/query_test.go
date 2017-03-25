@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var getRquest, _ = http.NewRequest("GET", "http://exsample.com/?w=100&h=100&psrc=http://google.co.jp/&rgb=255,255,255", nil)
+var getRquest, _ = http.NewRequest("GET", "http://exsample.com/?w=100&h=100&psrc=http://google.co.jp/&rgb=255,255,255&quality=75", nil)
 
 func TestNewGet(t *testing.T) {
 	q := NewQueryFromGet(getRquest)
@@ -37,5 +37,13 @@ func TestGetFillColor(t *testing.T) {
 
 	if q.FillColor() == nil {
 		t.Fatalf("fillcolor is nil.")
+	}
+}
+
+func TestQuality(t *testing.T) {
+	q := NewQueryFromGet(getRquest)
+
+	if q.Quality() != 75 {
+		t.Fatalf("quality is %d.", q.Quality())
 	}
 }

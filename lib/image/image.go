@@ -44,13 +44,17 @@ func max(v uint, max uint) uint {
 	return v
 }
 
-func EncodeJpeg(img *image.Image) ([]byte, error) {
+func EncodeJpeg(img *image.Image, q int) ([]byte, error) {
 	if *img == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
 
+	if !(0 <= q && q <= 100) {
+		q = jpeg.DefaultQuality
+	}
+
 	buf := new(bytes.Buffer)
-	err := jpeg.Encode(buf, *img, nil)
+	err := jpeg.Encode(buf, *img, &jpeg.Options{Quality: q})
 	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
@@ -146,7 +150,7 @@ func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uin
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 	img.ResizeAndFill(w, h, c, maxW, maxH)
-	return EncodeJpeg(img.GetImg())
+	return EncodeJpeg(img.GetImg(), jpeg.DefaultQuality)
 }
 
 func toRadian(n int) float64 {

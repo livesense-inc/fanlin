@@ -136,6 +136,41 @@ func (i *Image) ResizeAndFill(w uint, h uint, c color.Color, maxW uint, maxH uin
 	i.img = resizeAndFillImage(i.img, w, h, c, maxW, maxH)
 }
 
+func crop(img image.Image, w uint, h uint) image.Image {
+	if img == nil {
+		return nil
+	}
+	if h == 0 || w == 0 {
+		return img
+	}
+
+	orgW := img.Bounds().Max.X
+	orgH := img.Bounds().Max.Y
+
+	r := float64(orgW) / float64(w)
+	if (float64(orgW) / float64(orgH)) > (float64(w) / float64(h)) {
+		r = float64(orgH) / float64(h)
+	}
+
+	startW := orgW/2 - int(float64(w)*r/2)
+	startH := orgH/2 - int(float64(h)*r/2)
+
+	result := image.NewRGBA(image.Rect(0, 0, int(float64(w)*r), int(float64(h)*r)))
+
+	for y := 0; y < int(float64(h)*r); y++ {
+		for x := 0; x < int(float64(w)*r); x++ {
+			c := img.At(x+startW, y+startH)
+			result.Set(x, y, c)
+		}
+	}
+
+	return result
+}
+
+func (i *Image) Crop(w uint, h uint) {
+	i.img = crop(i.img, w, h)
+}
+
 func (i *Image) GetImg() *image.Image {
 	return &i.img
 }

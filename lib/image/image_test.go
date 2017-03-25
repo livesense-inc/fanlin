@@ -29,7 +29,7 @@ var ResizeAndFillImage = resizeAndFillImage
 
 func TestEncodeJpeg(t *testing.T) {
 	img, _ := DecodeImage(jpegBin)
-	bin, err := EncodeJpeg(img.GetImg())
+	bin, err := EncodeJpeg(img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
@@ -38,7 +38,7 @@ func TestEncodeJpeg(t *testing.T) {
 	}
 
 	img, _ = DecodeImage(confBin)
-	_, err = EncodeJpeg(img.GetImg())
+	_, err = EncodeJpeg(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}

@@ -240,6 +240,8 @@ func TestResizeAndFillImage(t *testing.T) {
 	}
 	if fillImg.Bounds().Max.Y != 512 {
 		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
+	}
+}
 
 func TestCrop(t *testing.T) {
 	img, _ := DecodeImage(confBin)

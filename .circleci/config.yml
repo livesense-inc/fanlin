@@ -20,5 +20,5 @@ jobs:
             - run:
                 name: "run test"
                 command: |
-                    go test -cover ./...
+                    go test -cover $(glide novendor)
 

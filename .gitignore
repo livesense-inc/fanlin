@@ -73,3 +73,5 @@ _testmain.go
 ### VisualStudioCode ###
 .vscode
 
+vendor/
+

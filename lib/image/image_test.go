@@ -26,10 +26,11 @@ var (
 var testRect = image.Rect(0, 0, 100, 100)
 var ResizeImage = resizeImage
 var ResizeAndFillImage = resizeAndFillImage
+var Crop = crop
 
 func TestEncodeJpeg(t *testing.T) {
 	img, _ := DecodeImage(jpegBin)
-	bin, err := EncodeJpeg(img.GetImg())
+	bin, err := EncodeJpeg(img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
@@ -38,7 +39,7 @@ func TestEncodeJpeg(t *testing.T) {
 	}
 
 	img, _ = DecodeImage(confBin)
-	_, err = EncodeJpeg(img.GetImg())
+	_, err = EncodeJpeg(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}
@@ -239,5 +240,82 @@ func TestResizeAndFillImage(t *testing.T) {
 	}
 	if fillImg.Bounds().Max.Y != 512 {
 		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
+	}
+}
+
+func TestCrop(t *testing.T) {
+	img, _ := DecodeImage(confBin)
+
+	cropImg := Crop(*img.GetImg(), 100, 100)
+	if cropImg != nil {
+		t.Fatalf("value is not nil.")
+	}
+
+	img, _ = DecodeImage(pngBin)
+
+	cropImg = Crop(*img.GetImg(), 100, 100)
+	if cropImg == nil {
+		t.Fatalf("value is nil.")
+	}
+	if cropImg.Bounds().Max.X != 512 {
+		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
+	}
+	if cropImg.Bounds().Max.Y != 512 {
+		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
+	}
+
+	cropImg = Crop(*img.GetImg(), 1000, 100)
+	if cropImg == nil {
+		t.Fatalf("value is not nil.")
+	}
+	if cropImg.Bounds().Max.X != 512 {
+		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
+	}
+	if cropImg.Bounds().Max.Y != 51 {
+		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
+	}
+
+	cropImg = Crop(*img.GetImg(), 100, 1000)
+	if cropImg == nil {
+		t.Fatalf("value is not nil.")
+	}
+	if cropImg.Bounds().Max.X != 51 {
+		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
+	}
+	if cropImg.Bounds().Max.Y != 512 {
+		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
+	}
+
+	cropImg = Crop(*img.GetImg(), 5000, 5000)
+	if cropImg == nil {
+		t.Fatalf("value is not nil.")
+	}
+	if cropImg.Bounds().Max.X != 512 {
+		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
+	}
+	if cropImg.Bounds().Max.Y != 512 {
+		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
+	}
+
+	cropImg = Crop(*img.GetImg(), 0, 0)
+	if cropImg == nil {
+		t.Fatalf("value is not nil.")
+	}
+	if cropImg.Bounds().Max.X != 512 {
+		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
+	}
+	if cropImg.Bounds().Max.Y != 512 {
+		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
+	}
+
+	cropImg = Crop(*img.GetImg(), 1000000, 1000000)
+	if cropImg == nil {
+		t.Fatalf("value is not nil.")
+	}
+	if cropImg.Bounds().Max.X != 512 {
+		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
+	}
+	if cropImg.Bounds().Max.Y != 512 {
+		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
 	}
 }

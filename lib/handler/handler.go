@@ -113,9 +113,12 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		panic(err)
 	}
 	mx, my := conf.MaxSize()
+	if q.Crop() {
+		img.Crop(q.Bounds().W, q.Bounds().H)
+	}
 	img.ResizeAndFill(q.Bounds().W, q.Bounds().H, *q.FillColor(), mx, my)
 
-	imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg())
+	imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
 	if err != nil {
 		img = nil
 		imageBuffer = nil

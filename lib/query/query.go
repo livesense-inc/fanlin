@@ -16,6 +16,8 @@ type Query struct {
 	b                      Bounds
 	preliminaryImageSource string
 	fillColor              color.Color
+	crop                   bool
+	quality                int
 }
 
 func NewQueryFromGet(r *http.Request) *Query {
@@ -36,10 +38,23 @@ func NewQueryFromGet(r *http.Request) *Query {
 	} else {
 		c = nil
 	}
+
+	quality, err := strconv.Atoi(params.Get("quality"))
+	if err != nil {
+		quality = -1
+	}
+
+	crop, err := strconv.ParseBool(params.Get("crop"))
+	if err != nil {
+		crop = false
+	}
+
 	q.b.H = uint(h)
 	q.b.W = uint(w)
 	q.preliminaryImageSource = params.Get("psrc")
 	q.fillColor = c
+	q.crop = crop
+	q.quality = quality
 	return &q
 }
 
@@ -53,4 +68,12 @@ func (q *Query) PreliminaryImageSource() string {
 
 func (q *Query) FillColor() *color.Color {
 	return &q.fillColor
+}
+
+func (q *Query) Crop() bool {
+	return q.crop
+}
+
+func (q *Query) Quality() int {
+	return q.quality
 }

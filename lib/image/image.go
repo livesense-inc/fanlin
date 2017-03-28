@@ -44,13 +44,17 @@ func max(v uint, max uint) uint {
 	return v
 }
 
-func EncodeJpeg(img *image.Image) ([]byte, error) {
+func EncodeJpeg(img *image.Image, q int) ([]byte, error) {
 	if *img == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
 
+	if !(0 <= q && q <= 100) {
+		q = jpeg.DefaultQuality
+	}
+
 	buf := new(bytes.Buffer)
-	err := jpeg.Encode(buf, *img, nil)
+	err := jpeg.Encode(buf, *img, &jpeg.Options{Quality: q})
 	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
@@ -132,6 +136,41 @@ func (i *Image) ResizeAndFill(w uint, h uint, c color.Color, maxW uint, maxH uin
 	i.img = resizeAndFillImage(i.img, w, h, c, maxW, maxH)
 }
 
+func crop(img image.Image, w uint, h uint) image.Image {
+	if img == nil {
+		return nil
+	}
+	if h == 0 || w == 0 {
+		return img
+	}
+
+	orgW := img.Bounds().Max.X
+	orgH := img.Bounds().Max.Y
+
+	r := float64(orgW) / float64(w)
+	if (float64(orgW) / float64(orgH)) > (float64(w) / float64(h)) {
+		r = float64(orgH) / float64(h)
+	}
+
+	startW := orgW/2 - int(float64(w)*r/2)
+	startH := orgH/2 - int(float64(h)*r/2)
+
+	result := image.NewRGBA(image.Rect(0, 0, int(float64(w)*r), int(float64(h)*r)))
+
+	for y := 0; y < int(float64(h)*r); y++ {
+		for x := 0; x < int(float64(w)*r); x++ {
+			c := img.At(x+startW, y+startH)
+			result.Set(x, y, c)
+		}
+	}
+
+	return result
+}
+
+func (i *Image) Crop(w uint, h uint) {
+	i.img = crop(i.img, w, h)
+}
+
 func (i *Image) GetImg() *image.Image {
 	return &i.img
 }
@@ -146,7 +185,7 @@ func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uin
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 	img.ResizeAndFill(w, h, c, maxW, maxH)
-	return EncodeJpeg(img.GetImg())
+	return EncodeJpeg(img.GetImg(), jpeg.DefaultQuality)
 }
 
 func toRadian(n int) float64 {

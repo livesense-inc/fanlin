@@ -1,0 +1,24 @@
+version: 2
+jobs:
+    build:
+        working_directory: /go/src/github.com/livesense-inc/fanlin
+        docker:
+            - image: golang:1.8
+              environment:
+                  GO15VENDOREXPERIMENT: 1
+        steps:
+            - checkout
+            - run:
+                name: "Install glide"
+                command: |
+                    go get github.com/Masterminds/glide
+                    go install github.com/Masterminds/glide
+            - run:
+                name: "Install packages"
+                command:
+                    glide i
+            - run:
+                name: "run test"
+                command: |
+                    go test -cover ./...
+

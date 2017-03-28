@@ -1,0 +1,67 @@
+hash: abce8ab374c1cf167dfa620f9e56288c7ac235168b1638c9ef5fafcb18bb323e
+updated: 2017-03-28T13:34:02.110317901+09:00
+imports:
+- name: github.com/aws/aws-sdk-go
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+  subpackages:
+  - aws
+  - aws/session
+  - service/s3
+  - service/s3/s3manager
+  - aws/awserr
+  - aws/credentials
+  - aws/endpoints
+  - aws/client
+  - aws/corehandlers
+  - aws/credentials/stscreds
+  - aws/defaults
+  - aws/request
+  - aws/awsutil
+  - aws/client/metadata
+  - aws/signer/v4
+  - private/protocol
+  - private/protocol/restxml
+  - service/s3/s3iface
+  - service/sts
+  - aws/credentials/ec2rolecreds
+  - aws/credentials/endpointcreds
+  - aws/ec2metadata
+  - private/protocol/rest
+  - private/protocol/query
+  - private/protocol/xml/xmlutil
+  - private/protocol/query/queryutil
+- name: github.com/BurntSushi/graphics-go
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+  subpackages:
+  - graphics
+  - graphics/interp
+  - graphics/convolve
+- name: github.com/go-ini/ini
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+- name: github.com/jmespath/go-jmespath
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+- name: github.com/mymch/formatter
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+- name: github.com/nfnt/resize
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+- name: github.com/rwcarlsen/goexif
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+  subpackages:
+  - exif
+  - tiff
+- name: github.com/sirupsen/logrus
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+- name: golang.org/x/image
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+  subpackages:
+  - bmp
+- name: golang.org/x/sys
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+  subpackages:
+  - unix
+- name: golang.org/x/text
+  version: 250c01fd5a282b117db8f59620cbffec7027ac81
+  subpackages:
+  - unicode/norm
+  - transform
+devImports: []

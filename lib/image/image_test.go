@@ -30,6 +30,10 @@ var Crop = crop
 
 func TestEncodeJpeg(t *testing.T) {
 	img, _ := DecodeImage(jpegBin)
+	if format := img.GetFormat(); format != "jpeg" {
+		t.Fatalf("format is %v, expected jpeg", format)
+	}
+
 	bin, err := EncodeJpeg(img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
@@ -40,6 +44,48 @@ func TestEncodeJpeg(t *testing.T) {
 
 	img, _ = DecodeImage(confBin)
 	_, err = EncodeJpeg(img.GetImg(), 50)
+	if err == nil {
+		t.Fatalf("err is %v.", err)
+	}
+}
+
+func TestEncodePNG(t *testing.T) {
+	img, _ := DecodeImage(pngBin)
+	if format := img.GetFormat(); format != "png" {
+		t.Fatalf("format is %v, expected png", format)
+	}
+
+	bin, err := EncodePNG(img.GetImg(), -1)
+	if err != nil {
+		t.Fatalf("err is %v.", err)
+	}
+	if bin == nil {
+		t.Fatalf("bin is nil.")
+	}
+
+	img, _ = DecodeImage(confBin)
+	_, err = EncodePNG(img.GetImg(), 50)
+	if err == nil {
+		t.Fatalf("err is %v.", err)
+	}
+}
+
+func TestEncodeGIF(t *testing.T) {
+	img, _ := DecodeImage(gifBin)
+	if format := img.GetFormat(); format != "gif" {
+		t.Fatalf("format is %v, expected png", format)
+	}
+
+	bin, err := EncodeGIF(img.GetImg(), -1)
+	if err != nil {
+		t.Fatalf("err is %v.", err)
+	}
+	if bin == nil {
+		t.Fatalf("bin is nil.")
+	}
+
+	img, _ = DecodeImage(confBin)
+	_, err = EncodeGIF(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}

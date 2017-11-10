@@ -118,7 +118,17 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	}
 	img.ResizeAndFill(q.Bounds().W, q.Bounds().H, *q.FillColor(), mx, my)
 
-	imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+	switch img.GetFormat() {
+	case "jpeg":
+		imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+	case "png":
+		imageBuffer, err = imageprocessor.EncodePNG(img.GetImg(), q.Quality())
+	case "gif":
+		imageBuffer, err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality())
+	default:
+		imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+	}
+
 	if err != nil {
 		img = nil
 		imageBuffer = nil

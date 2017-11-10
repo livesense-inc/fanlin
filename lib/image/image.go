@@ -6,7 +6,7 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
-	_ "image/gif"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -81,6 +81,18 @@ func EncodePNG(img *image.Image, q int) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	err := e.Encode(buf, *img)
+	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
+}
+
+func EncodeGIF(img *image.Image, q int) ([]byte, error) {
+	if *img == nil {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+	}
+
+	// GIF is not support quality
+
+	buf := new(bytes.Buffer)
+	err := gif.Encode(buf, *img, &gif.Options{})
 	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 

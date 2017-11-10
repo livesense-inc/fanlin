@@ -70,6 +70,27 @@ func TestEncodePNG(t *testing.T) {
 	}
 }
 
+func TestEncodeGIF(t *testing.T) {
+	img, _ := DecodeImage(gifBin)
+	if format := img.GetFormat(); format != "gif" {
+		t.Fatalf("format is %v, expected png", format)
+	}
+
+	bin, err := EncodeGIF(img.GetImg(), -1)
+	if err != nil {
+		t.Fatalf("err is %v.", err)
+	}
+	if bin == nil {
+		t.Fatalf("bin is nil.")
+	}
+
+	img, _ = DecodeImage(confBin)
+	_, err = EncodeGIF(img.GetImg(), 50)
+	if err == nil {
+		t.Fatalf("err is %v.", err)
+	}
+}
+
 func TestDecodeImage(t *testing.T) {
 	img, err := DecodeImage(nil)
 	if err == nil {

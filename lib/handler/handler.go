@@ -123,6 +123,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
 	case "png":
 		imageBuffer, err = imageprocessor.EncodePNG(img.GetImg(), q.Quality())
+	case "gif":
+		imageBuffer, err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality())
 	default:
 		imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
 	}

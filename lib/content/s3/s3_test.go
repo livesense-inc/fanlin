@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/livesense-inc/fanlin/lib/content"
+	"io"
+	"strings"
 )
 
 var (
@@ -22,23 +24,23 @@ func initialize() {
 	testKey = "test/test.jpg"
 }
 
-func mockS3GetFunc(region, bucket, key string, file *os.File) ([]byte, error) {
+func mockS3GetFunc(region, bucket, key string, file *os.File) (io.Reader, error) {
 	if region == "" {
-		return []byte("failed."), errors.New("region is empty")
+		return strings.NewReader("failed"), errors.New("region is empty")
 	} else if region != testRegion {
-		return []byte("failed."), errors.New("Mismatch of the region. region: " + region + ", testRegion: " + testRegion)
+		return strings.NewReader("failed"), errors.New("Mismatch of the region. region: " + region + ", testRegion: " + testRegion)
 	} else if bucket == "" {
-		return []byte("failed."), errors.New("bucket is empty")
+		return strings.NewReader("failed"), errors.New("bucket is empty")
 	} else if bucket != testBucket {
-		return []byte("failed."), errors.New("Mismatch of the bucket. bucket: " + bucket + ", testBucket: " + testBucket)
+		return strings.NewReader("failed"), errors.New("Mismatch of the bucket. bucket: " + bucket + ", testBucket: " + testBucket)
 	} else if key == "" {
-		return []byte("failed."), errors.New("key is empty")
+		return strings.NewReader("failed"), errors.New("key is empty")
 	} else if key == testKey {
-		return []byte("failed."), errors.New("Mismatch of the key. key:" + key + ", testKey:" + testKey)
+		return strings.NewReader("failed"), errors.New("Mismatch of the key. key:" + key + ", testKey:" + testKey)
 	} else if file == nil {
-		return []byte("failed."), errors.New("file is nil")
+		return strings.NewReader("failed"), errors.New("file is nil")
 	}
-	return []byte("success."), nil
+	return strings.NewReader("success."), nil
 }
 
 func newTestContent() *content.Content {

@@ -14,16 +14,17 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/livesense-inc/fanlin/lib/content"
 	"github.com/livesense-inc/fanlin/lib/error"
+	"io"
 )
 
 var s3GetSourceFunc = getS3ImageBinary
 
 // Test dedicated function
-func setS3GetFunc(f func(region, bucket, key string, file *os.File) ([]byte, error)) {
+func setS3GetFunc(f func(region, bucket, key string, file *os.File) (io.Reader, error)) {
 	s3GetSourceFunc = f
 }
 
-func GetImageBinary(c *content.Content) ([]byte, error) {
+func GetImageBinary(c *content.Content) (io.Reader, error) {
 	if c == nil {
 		return nil, errors.New("content is nil")
 	}
@@ -74,7 +75,7 @@ func NormalizePath(path string, form string) (string, error) {
 	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form(" + form + ")"))
 }
 
-func getS3ImageBinary(region, bucket, key string, file *os.File) ([]byte, error) {
+func getS3ImageBinary(region, bucket, key string, file *os.File) (io.Reader, error) {
 	downloader := s3manager.NewDownloader(session.New(&aws.Config{Region: aws.String(region)}))
 	_, err := downloader.Download(file,
 		&s3.GetObjectInput{
@@ -85,8 +86,7 @@ func getS3ImageBinary(region, bucket, key string, file *os.File) ([]byte, error)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
-	bin, err := ioutil.ReadFile(file.Name())
-	return bin, imgproxyerr.New(imgproxyerr.ERROR, err)
+	return file, imgproxyerr.New(imgproxyerr.ERROR, err)
 }
 
 func init() {

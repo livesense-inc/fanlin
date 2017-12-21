@@ -2,13 +2,14 @@ package web
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"runtime"
 	"time"
 
 	"github.com/livesense-inc/fanlin/lib/content"
 	"github.com/livesense-inc/fanlin/lib/error"
+	"io"
+	"bytes"
 )
 
 var ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())
@@ -26,15 +27,14 @@ type RealWebClient struct {
 }
 
 type WebClient interface {
-	Get(string) ([]byte, error)
+	Get(string) (io.Reader, error)
 }
 
 type Client struct {
 	Http WebClient
 }
 
-func (r *RealWebClient) Get(url string) ([]byte, error) {
-	var body []byte
+func (r *RealWebClient) Get(url string) (io.Reader, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
@@ -46,11 +46,12 @@ func (r *RealWebClient) Get(url string) ([]byte, error) {
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
-	body, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
+	buffer := new(bytes.Buffer)
+	if _, err := io.Copy(buffer, resp.Body); err != nil {
+		return nil, err
 	}
-	return body, nil
+
+	return buffer, nil
 }
 
 func isErrorCode(status int) bool {
@@ -62,7 +63,7 @@ func isErrorCode(status int) bool {
 	}
 }
 
-func GetImageBinary(c *content.Content) ([]byte, error) {
+func GetImageBinary(c *content.Content) (io.Reader, error) {
 	return httpClient.Http.Get(c.SourcePlace)
 }
 

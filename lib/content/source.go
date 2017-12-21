@@ -4,18 +4,19 @@ import (
 	"errors"
 
 	"github.com/livesense-inc/fanlin/lib/error"
+	"io"
 )
 
 type source struct {
 	name           string
-	getImageBinary func(*Content) ([]byte, error)
+	getImageBinary func(*Content) (io.Reader, error)
 }
 
 var sources []source
 
 // RegisterContentType registers an content type for use by GetContent.
 // Name is the name of the content type, like "web" or "s3".
-func RegisterContentType(name string, getImageBinary func(*Content) ([]byte, error)) {
+func RegisterContentType(name string, getImageBinary func(*Content) (io.Reader, error)) {
 	sources = append(sources, source{
 		name,
 		getImageBinary,
@@ -32,7 +33,7 @@ func sniff(c *Content) source {
 	return source{}
 }
 
-func GetImageBinary(c *Content) ([]byte, error) {
+func GetImageBinary(c *Content) (io.Reader, error) {
 	f := sniff(c)
 	if f.getImageBinary == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("unknown content type"))

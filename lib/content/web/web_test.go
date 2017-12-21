@@ -5,13 +5,16 @@ import (
 	"testing"
 
 	"github.com/livesense-inc/fanlin/lib/content"
+	"io"
+	"strings"
+	"io/ioutil"
 )
 
 var SetHttpClient = setHttpClient
 var (
 	IsErrorCode = isErrorCode
 	targetURL   = "https://google.co.jp"
-	bin         = []byte("It works.")
+	testReader         = strings.NewReader("It works!")
 )
 
 type MockWebClient struct {
@@ -23,11 +26,11 @@ func getTestClient() *Client {
 	return c
 }
 
-func (mwc *MockWebClient) Get(url string) ([]byte, error) {
+func (mwc *MockWebClient) Get(url string) (io.Reader, error) {
 	if url != targetURL {
 		return nil, errors.New("not match url. url: " + url + ", targetURL: " + targetURL)
 	}
-	return bin, nil
+	return testReader, nil
 }
 
 func TestIsErrorCode(t *testing.T) {
@@ -54,7 +57,11 @@ func TestGetImageBinary(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(result) != "It works." {
-		t.Fatal(string(result))
+	bin, err := ioutil.ReadAll(result)
+	if err != nil {
+		panic(err)
+	}
+	if string(bin) != "It works." {
+		t.Fatal(string(bin))
 	}
 }

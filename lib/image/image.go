@@ -10,7 +10,6 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
-	"io/ioutil"
 	"math"
 
 	"github.com/BurntSushi/graphics-go/graphics"
@@ -19,6 +18,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
+	"os"
 )
 
 var affines map[int]graphics.Affine = map[int]graphics.Affine{
@@ -44,7 +44,7 @@ func max(v uint, max uint) uint {
 	return v
 }
 
-func EncodeJpeg(img *image.Image, q int) ([]byte, error) {
+func EncodeJpeg(img *image.Image, q int) (io.Reader, error) {
 	if *img == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -55,10 +55,10 @@ func EncodeJpeg(img *image.Image, q int) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	err := jpeg.Encode(buf, *img, &jpeg.Options{Quality: q})
-	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
+	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodePNG(img *image.Image, q int) ([]byte, error) {
+func EncodePNG(img *image.Image, q int) (io.Reader, error) {
 	if *img == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -81,10 +81,10 @@ func EncodePNG(img *image.Image, q int) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	err := e.Encode(buf, *img)
-	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
+	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodeGIF(img *image.Image, q int) ([]byte, error) {
+func EncodeGIF(img *image.Image, q int) (io.Reader, error) {
 	if *img == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -93,12 +93,12 @@ func EncodeGIF(img *image.Image, q int) ([]byte, error) {
 
 	buf := new(bytes.Buffer)
 	err := gif.Encode(buf, *img, &gif.Options{})
-	return buf.Bytes(), imgproxyerr.New(imgproxyerr.WARNING, err)
+	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
 //DecodeImage is return image.Image
-func DecodeImage(bin []byte) (*Image, error) {
-	img, format, err := Decode(bin)
+func DecodeImage(r io.Reader) (*Image, error) {
+	img, format, err := decode(r)
 	return &Image{img: img, format: format}, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
@@ -217,12 +217,12 @@ func (i *Image) GetFormat() string {
 	return i.format
 }
 
-func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uint) ([]byte, error) {
-	bin, err := ioutil.ReadFile(path)
+func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uint) (io.Reader, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
-	img, err := DecodeImage(bin)
+	img, err := DecodeImage(f)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
@@ -269,12 +269,12 @@ func readOrientation(r io.Reader) (o int, err error) {
 	return
 }
 
-func Decode(b []byte) (d image.Image, format string, err error) {
-	s, format, err := image.Decode(bytes.NewReader(b))
+func decode(r io.Reader) (d image.Image, format string, err error) {
+	s, format, err := image.Decode(r)
 	if err != nil {
 		return
 	}
-	o, err := readOrientation(bytes.NewReader(b))
+	o, err := readOrientation(r)
 	if err != nil {
 		return s, format, nil
 	}

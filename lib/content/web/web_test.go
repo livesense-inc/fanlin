@@ -61,7 +61,7 @@ func TestGetImageBinary(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if string(bin) != "It works." {
+	if string(bin) != "It works!" {
 		t.Fatal(string(bin))
 	}
 }

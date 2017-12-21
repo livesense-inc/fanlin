@@ -3,7 +3,7 @@ package imageprocessor
 import (
 	"image"
 	"image/color"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -16,11 +16,11 @@ var (
 )
 
 var (
-	jpegBin, _ = ioutil.ReadFile(jpgPath)
-	bmpBin, _  = ioutil.ReadFile(bmpPath)
-	pngBin, _  = ioutil.ReadFile(pngPath)
-	gifBin, _  = ioutil.ReadFile(gifPath)
-	confBin, _ = ioutil.ReadFile(confPath)
+	jpegBin, _ = os.Open(jpgPath)
+	bmpBin, _  = os.Open(bmpPath)
+	pngBin, _  = os.Open(pngPath)
+	gifBin, _  = os.Open(gifPath)
+	confBin, _ = os.Open(confPath)
 )
 
 var testRect = image.Rect(0, 0, 100, 100)
@@ -92,12 +92,7 @@ func TestEncodeGIF(t *testing.T) {
 }
 
 func TestDecodeImage(t *testing.T) {
-	img, err := DecodeImage(nil)
-	if err == nil {
-		t.Fatalf("err is nil")
-	}
-
-	img, err = DecodeImage(jpegBin)
+	img, err := DecodeImage(jpegBin)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")

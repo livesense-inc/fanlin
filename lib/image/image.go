@@ -12,6 +12,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"sync"
 
 	"github.com/BurntSushi/graphics-go/graphics"
 	"github.com/BurntSushi/graphics-go/graphics/interp"
@@ -20,7 +21,6 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
-	"sync"
 )
 
 var affines map[int]graphics.Affine = map[int]graphics.Affine{

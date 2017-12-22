@@ -22,3 +22,4 @@ import:
 - package: golang.org/x/text
   subpackages:
   - unicode/norm
+- package: github.com/ieee0824/libcmyk

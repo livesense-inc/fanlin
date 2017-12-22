@@ -1,5 +1,5 @@
 hash: c01b8a531b5ef44126f83a103f899fa3757ceab96774bf7f34a87542e4e21348
-updated: 2017-12-22T15:27:10.394709726+09:00
+updated: 2017-12-22T17:20:01.170140307+09:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: de61b9d1e0c7e455b050e4307eba09410c412ef0
@@ -39,7 +39,7 @@ imports:
 - name: github.com/go-ini/ini
   version: 1730955e3146956d6a087861380f9b4667ed5071
 - name: github.com/ieee0824/libcmyk
-  version: eab75b61d155691e58046b417e797dcc1bfd404b
+  version: 8cf9151a408c9d08a780a04942bc2baf72777242
   subpackages:
   - nn
 - name: github.com/jmespath/go-jmespath

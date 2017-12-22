@@ -6,10 +6,10 @@ import (
 	"runtime"
 	"time"
 
+	"bytes"
 	"github.com/livesense-inc/fanlin/lib/content"
 	"github.com/livesense-inc/fanlin/lib/error"
 	"io"
-	"bytes"
 )
 
 var ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())

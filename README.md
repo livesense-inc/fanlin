@@ -14,9 +14,7 @@ fanlin is image proxy server in native Go language.
 * OS X
 
 ### Go Versions
-* go 1.4
-* go 1.5
-* go 1.6
+* go 1.9
 
 ### Image Format
 * JPEG
@@ -24,7 +22,7 @@ fanlin is image proxy server in native Go language.
 * GIF
 
 ## Cross compile for amd64 Linux
-### go 1.5
+### go 1.9
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

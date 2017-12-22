@@ -25,6 +25,18 @@ func (c *Conf) UseMLCMYKConverter() bool {
 	return r
 }
 
+func (c *Conf) MLCMYKConverterNetworkFilePath() string {
+	i, ok := c.c["ml_cmyk_converter_network_file_path"]
+	if !ok {
+		return ""
+	}
+	s, ok := i.(string)
+	if !ok {
+		panic("'ml_cmyk_converter_network_file_path' parameter is incorrect")
+	}
+	return s
+}
+
 func (c *Conf) Set(k string, v interface{}) {
 	if v == nil {
 		return

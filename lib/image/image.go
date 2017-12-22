@@ -11,14 +11,16 @@ import (
 	"image/png"
 	"io"
 	"math"
+	"os"
 
 	"github.com/BurntSushi/graphics-go/graphics"
 	"github.com/BurntSushi/graphics-go/graphics/interp"
+	"github.com/ieee0824/libcmyk"
 	"github.com/livesense-inc/fanlin/lib/error"
 	"github.com/nfnt/resize"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
-	"os"
+	"sync"
 )
 
 var affines map[int]graphics.Affine = map[int]graphics.Affine{
@@ -32,9 +34,51 @@ var affines map[int]graphics.Affine = map[int]graphics.Affine{
 	8: graphics.I.Rotate(toRadian(-90)),
 }
 
+var mlConverterCache = &sync.Map{}
+
 type Image struct {
 	img    image.Image
 	format string
+}
+
+func (i *Image) ConvertColor(networkPath string) error {
+	sc := i.img.At(0, 0)
+	_, ok := sc.(color.CMYK)
+	if !ok {
+		return nil
+	}
+
+	rect := i.img.Bounds()
+	ret := image.NewRGBA(rect)
+
+	var converter *libcmyk.Converter
+	iface, ok := mlConverterCache.Load(networkPath)
+	if !ok {
+		cr, err := libcmyk.New(networkPath)
+		if err != nil {
+			return err
+		}
+		mlConverterCache.Store(networkPath, cr)
+		converter = cr
+	} else {
+		converter = iface.(*libcmyk.Converter)
+	}
+
+	w := rect.Max.X
+	h := rect.Max.Y
+
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			cmyk := i.img.At(x, y).(color.CMYK)
+			rgba, err := converter.CMYK2RGBA(&cmyk)
+			if err != nil {
+				return err
+			}
+			ret.Set(x, y, rgba)
+		}
+	}
+	i.img = ret
+	return nil
 }
 
 func max(v uint, max uint) uint {

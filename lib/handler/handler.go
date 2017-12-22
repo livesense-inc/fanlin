@@ -112,6 +112,11 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		img = nil
 		panic(err)
 	}
+	if conf.UseMLCMYKConverter() {
+		if err := img.ConvertColor(conf.MLCMYKConverterNetworkFilePath()); err != nil {
+			panic(imgproxyerr.New(imgproxyerr.ERROR, err))
+		}
+	}
 	mx, my := conf.MaxSize()
 	if q.Crop() {
 		img.Crop(q.Bounds().W, q.Bounds().H)

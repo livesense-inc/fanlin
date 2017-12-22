@@ -13,6 +13,18 @@ type Conf struct {
 	c map[string]interface{}
 }
 
+func (c *Conf) UseMLCMYKConverter() bool {
+	b, ok := c.c["use_ml_cmyk_converter"]
+	if !ok {
+		return false
+	}
+	r, ok := b.(bool)
+	if !ok {
+		panic("'use_ml_cmyk_converter' parameter is incorrect")
+	}
+	return r
+}
+
 func (c *Conf) Set(k string, v interface{}) {
 	if v == nil {
 		return

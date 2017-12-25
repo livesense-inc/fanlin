@@ -3,7 +3,7 @@ jobs:
     build:
         working_directory: /go/src/github.com/livesense-inc/fanlin
         docker:
-            - image: golang:1.8
+            - image: golang:1.9.2
               environment:
                   GO15VENDOREXPERIMENT: 1
         steps:

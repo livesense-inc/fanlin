@@ -72,7 +72,7 @@ func NormalizePath(path string, form string) (string, error) {
 	case "nfkd":
 		return norm.NFKD.String(path), nil
 	}
-	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form(" + form + ")"))
+	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form("+form+")"))
 }
 
 func getS3ImageBinary(region, bucket, key string, file *os.File) (io.Reader, error) {

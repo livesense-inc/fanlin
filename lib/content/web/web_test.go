@@ -6,15 +6,15 @@ import (
 
 	"github.com/livesense-inc/fanlin/lib/content"
 	"io"
-	"strings"
 	"io/ioutil"
+	"strings"
 )
 
 var SetHttpClient = setHttpClient
 var (
 	IsErrorCode = isErrorCode
 	targetURL   = "https://google.co.jp"
-	testReader         = strings.NewReader("It works!")
+	testReader  = strings.NewReader("It works!")
 )
 
 type MockWebClient struct {

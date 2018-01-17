@@ -13,6 +13,30 @@ type Conf struct {
 	c map[string]interface{}
 }
 
+func (c *Conf) UseMLCMYKConverter() bool {
+	b, ok := c.c["use_ml_cmyk_converter"]
+	if !ok {
+		return false
+	}
+	r, ok := b.(bool)
+	if !ok {
+		panic("'use_ml_cmyk_converter' parameter is incorrect")
+	}
+	return r
+}
+
+func (c *Conf) MLCMYKConverterNetworkFilePath() string {
+	i, ok := c.c["ml_cmyk_converter_network_file_path"]
+	if !ok {
+		return ""
+	}
+	s, ok := i.(string)
+	if !ok {
+		panic("'ml_cmyk_converter_network_file_path' parameter is incorrect")
+	}
+	return s
+}
+
 func (c *Conf) Set(k string, v interface{}) {
 	if v == nil {
 		return

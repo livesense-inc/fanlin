@@ -9,25 +9,32 @@
 fanlinはGo言語で作られた軽量画像プロキシです.
 Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工することができます.
 
+## 環境
+### OS
+* Linux (x86 and amd64)
+* OS X
+
+### Go Versions
+* go 1.9
+
 ## 対応画像フォーマット
 * JPEG
 * PNG
 * GIF
 
-## 環境
-* 確認済み
-    * go1.4
-    * go1.5
-    * go1.6
-
 ## OS X の環境構築
 ## master pushの悲劇を防ぐために
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
+
 ## 事前に入れるもの
+### glide
+```
+$ brew install glide
+$ glide install
+```
 
 ## Linux用にクロスコンパイルする
-go1.5の場合  
-1.4はやり方が変わります  
+### go1.9 
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

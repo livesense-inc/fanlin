@@ -9,16 +9,15 @@ jobs:
         steps:
             - checkout
             - run:
-                name: "Install glide"
+                name: "Install dep"
                 command: |
-                    go get github.com/Masterminds/glide
-                    go install github.com/Masterminds/glide
+                    go get -u github.com/golang/dep/cmd/dep
             - run:
                 name: "Install packages"
                 command:
-                    glide i
+                    dep ensure
             - run:
                 name: "run test"
                 command: |
-                    go test -cover $(glide novendor)
+                    go test -race $(go list ./... | grep -v vendor)
 

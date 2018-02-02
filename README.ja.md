@@ -27,14 +27,14 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
 
 ## 事前に入れるもの
-### glide
+### dep
 ```
-$ brew install glide
-$ glide install
+$ brew install dep
+$ dep ensure
 ```
 
 ## Linux用にクロスコンパイルする
-### go1.9 
+### go1.9
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

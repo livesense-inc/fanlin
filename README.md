@@ -22,10 +22,10 @@ fanlin is image proxy server in native Go language.
 * GIF
 
 ## go vendoring tool
-### glide
+### dep
 ```
-$ brew install glide
-$ glide install
+$ brew install dep 
+$ dep ensure
 ```
 
 ## Cross compile for amd64 Linux

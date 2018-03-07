@@ -7,9 +7,10 @@ import (
 	"time"
 
 	"bytes"
+	"io"
+
 	"github.com/livesense-inc/fanlin/lib/content"
 	"github.com/livesense-inc/fanlin/lib/error"
-	"io"
 )
 
 var ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())
@@ -42,10 +43,11 @@ func (r *RealWebClient) Get(url string) (io.Reader, error) {
 	req.Header.Set("User-Agent", ua)
 
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
+	defer resp.Body.Close()
+
 	buffer := new(bytes.Buffer)
 	if _, err := io.Copy(buffer, resp.Body); err != nil {
 		return nil, err

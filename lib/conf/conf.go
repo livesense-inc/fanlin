@@ -97,7 +97,7 @@ func (c *Conf) DebugLogPath() string {
 }
 
 func (c *Conf) BackendRequestTimeout() time.Duration {
-	tstr, ok := c.c["backeend_request_timeout"]
+	tstr, ok := c.c["backend_request_timeout"]
 	if !ok {
 		return 10 * time.Second
 	}

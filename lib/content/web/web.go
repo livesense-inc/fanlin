@@ -42,6 +42,10 @@ func (r *RealWebClient) Get(url string) (io.Reader, error) {
 	}
 	defer resp.Body.Close()
 
+	if isErrorCode(resp.StatusCode) {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, fmt.Errorf("received error status code(%d)", resp.StatusCode))
+	}
+
 	buffer := new(bytes.Buffer)
 	if _, err := io.Copy(buffer, resp.Body); err != nil {
 		return nil, err

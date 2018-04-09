@@ -3,6 +3,7 @@ package imageprocessor
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -12,7 +13,9 @@ import (
 	"io"
 	"math"
 	"os"
+	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/BurntSushi/graphics-go/graphics"
 	"github.com/BurntSushi/graphics-go/graphics/interp"
@@ -314,14 +317,38 @@ func readOrientation(r io.Reader) (o int, err error) {
 }
 
 func decode(r io.Reader) (d image.Image, format string, err error) {
-	s, format, err := image.Decode(r)
+	tmpDir := os.TempDir()
+	tmpFileName := filepath.Clean(fmt.Sprintf("%s/%d", tmpDir, time.Now().UnixNano()))
+	tmpFileWriter, err := os.Create(tmpFileName)
 	if err != nil {
 		return
 	}
-	o, err := readOrientation(r)
+	defer os.Remove(tmpFileWriter.Name())
+	_, err = io.Copy(tmpFileWriter, r)
+	if err != nil {
+		return
+	}
+	tmpFileWriter.Close()
+
+	tmpFileReader, err := os.Open(tmpFileName)
+	if err != nil {
+		return
+	}
+
+	s, format, err := image.Decode(tmpFileReader)
+	if err != nil {
+		return
+	}
+
+	_, err = tmpFileReader.Seek(0, 0)
+	if err != nil {
+		return
+	}
+	o, err := readOrientation(tmpFileReader)
 	if err != nil {
 		return s, format, nil
 	}
+	tmpFileReader.Close()
 	d, err = applyOrientation(s, o)
 	return
 }

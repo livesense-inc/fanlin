@@ -22,14 +22,14 @@ func TestReadConfigure(t *testing.T) {
 	func() {
 		fmt.Println("port setting test.")
 		if conf.Port() != 8080 {
-			t.Fatalf("port is not equal 8080, value is \"%v\"", conf.Port)
+			t.Fatalf("port is not equal 8080, value is \"%v\"", conf.Port())
 		}
 	}()
 
 	func() {
 		fmt.Println("local image path test.")
 		if conf.LocalImagePath() != "../img/" {
-			t.Fatalf("value is %v", conf.LocalImagePath)
+			t.Fatalf("value is %v", conf.LocalImagePath())
 		}
 	}()
 

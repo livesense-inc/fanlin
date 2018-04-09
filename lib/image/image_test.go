@@ -3,6 +3,7 @@ package imageprocessor
 import (
 	"image"
 	"image/color"
+	"log"
 	"os"
 	"testing"
 )
@@ -48,6 +49,31 @@ func TestEncodeJpeg(t *testing.T) {
 	_, err = EncodeJpeg(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
+	}
+}
+
+func BenchmarkEncodeJpeg(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		img, _ := DecodeImage(jpegBin)
+		jpegBin.Seek(0, 0)
+		if format := img.GetFormat(); format != "jpeg" {
+			log.Fatalf("format is %v, expected jpeg", format)
+		}
+
+		bin, err := EncodeJpeg(img.GetImg(), -1)
+		if err != nil {
+			log.Fatalf("err is %v.", err)
+		}
+		if bin == nil {
+			log.Fatalf("bin is nil.")
+		}
+
+		img, _ = DecodeImage(confBin)
+		confBin.Seek(0, 0)
+		_, err = EncodeJpeg(img.GetImg(), 50)
+		if err == nil {
+			log.Fatalf("err is %v.", err)
+		}
 	}
 }
 

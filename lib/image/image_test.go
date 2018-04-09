@@ -1,10 +1,9 @@
 package imageprocessor
 
 import (
-	"bytes"
 	"image"
 	"image/color"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -17,11 +16,11 @@ var (
 )
 
 var (
-	jpegBin, _ = ioutil.ReadFile(jpgPath)
-	bmpBin, _  = ioutil.ReadFile(bmpPath)
-	pngBin, _  = ioutil.ReadFile(pngPath)
-	gifBin, _  = ioutil.ReadFile(gifPath)
-	confBin, _ = ioutil.ReadFile(confPath)
+	jpegBin, _ = os.Open(jpgPath)
+	bmpBin, _  = os.Open(bmpPath)
+	pngBin, _  = os.Open(pngPath)
+	gifBin, _  = os.Open(gifPath)
+	confBin, _ = os.Open(confPath)
 )
 
 var testRect = image.Rect(0, 0, 100, 100)
@@ -30,7 +29,8 @@ var ResizeAndFillImage = resizeAndFillImage
 var Crop = crop
 
 func TestEncodeJpeg(t *testing.T) {
-	img, _ := DecodeImage(bytes.NewReader(jpegBin))
+	img, _ := DecodeImage(jpegBin)
+	jpegBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "jpeg" {
 		t.Fatalf("format is %v, expected jpeg", format)
 	}
@@ -43,7 +43,8 @@ func TestEncodeJpeg(t *testing.T) {
 		t.Fatalf("bin is nil.")
 	}
 
-	img, _ = DecodeImage(bytes.NewReader(confBin))
+	img, _ = DecodeImage(confBin)
+	confBin.Seek(0, 0)
 	_, err = EncodeJpeg(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
@@ -51,7 +52,8 @@ func TestEncodeJpeg(t *testing.T) {
 }
 
 func TestEncodePNG(t *testing.T) {
-	img, _ := DecodeImage(bytes.NewReader(pngBin))
+	img, _ := DecodeImage(pngBin)
+	pngBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "png" {
 		t.Fatalf("format is %v, expected png", format)
 	}
@@ -64,7 +66,8 @@ func TestEncodePNG(t *testing.T) {
 		t.Fatalf("bin is nil.")
 	}
 
-	img, _ = DecodeImage(bytes.NewReader(confBin))
+	img, _ = DecodeImage(confBin)
+	confBin.Seek(0, 0)
 	_, err = EncodePNG(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
@@ -72,7 +75,8 @@ func TestEncodePNG(t *testing.T) {
 }
 
 func TestEncodeGIF(t *testing.T) {
-	img, _ := DecodeImage(bytes.NewReader(gifBin))
+	img, _ := DecodeImage(gifBin)
+	gifBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "gif" {
 		t.Fatalf("format is %v, expected png", format)
 	}
@@ -85,7 +89,8 @@ func TestEncodeGIF(t *testing.T) {
 		t.Fatalf("bin is nil.")
 	}
 
-	img, _ = DecodeImage(bytes.NewReader(confBin))
+	img, _ = DecodeImage(confBin)
+	confBin.Seek(0, 0)
 	_, err = EncodeGIF(img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
@@ -93,7 +98,8 @@ func TestEncodeGIF(t *testing.T) {
 }
 
 func TestDecodeImage(t *testing.T) {
-	img, err := DecodeImage(bytes.NewReader(jpegBin))
+	img, err := DecodeImage(jpegBin)
+	jpegBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
@@ -102,7 +108,8 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(bytes.NewReader(bmpBin))
+	img, err = DecodeImage(bmpBin)
+	bmpBin.Seek(0, 0)
 	if err != nil {
 		t.Fatalf("err is not nil. : %v", err)
 	}
@@ -110,7 +117,8 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("img.%v", img)
 	}
 
-	img, err = DecodeImage(bytes.NewReader(pngBin))
+	img, err = DecodeImage(pngBin)
+	pngBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
@@ -119,7 +127,8 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(bytes.NewReader(gifBin))
+	img, err = DecodeImage(gifBin)
+	gifBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
@@ -128,7 +137,8 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(bytes.NewReader(confBin))
+	img, err = DecodeImage(confBin)
+	confBin.Seek(0, 0)
 	if err == nil {
 		t.Log(err)
 		t.Fatalf("err is nil")
@@ -140,14 +150,16 @@ func TestDecodeImage(t *testing.T) {
 }
 
 func TestResizeImage(t *testing.T) {
-	img, _ := DecodeImage(bytes.NewReader(confBin))
+	img, _ := DecodeImage(confBin)
+	confBin.Seek(0, 0)
 
 	resizeImg := ResizeImage(*img.GetImg(), 100, 100, 10000, 10000)
 	if resizeImg != nil {
 		t.Fatalf("value is not nil.")
 	}
 
-	img, _ = DecodeImage(bytes.NewReader(jpegBin))
+	img, _ = DecodeImage(jpegBin)
+	jpegBin.Seek(0, 0)
 	ii := *img.GetImg()
 	jpegRect := ii.Bounds()
 
@@ -209,14 +221,16 @@ func TestResizeAndFillImage(t *testing.T) {
 		B: 0xff,
 		A: 0xff,
 	}
-	img, _ := DecodeImage(bytes.NewReader(confBin))
+	img, _ := DecodeImage(confBin)
+	confBin.Seek(0, 0)
 
 	fillImg := ResizeAndFillImage(*img.GetImg(), 100, 100, c, 10000, 10000)
 	if fillImg != nil {
 		t.Fatalf("value is not nil.")
 	}
 
-	img, _ = DecodeImage(bytes.NewReader(pngBin))
+	img, _ = DecodeImage(pngBin)
+	pngBin.Seek(0, 0)
 
 	fillImg = ResizeAndFillImage(*img.GetImg(), 100, 100, c, 10000, 10000)
 	if fillImg == nil {
@@ -286,14 +300,16 @@ func TestResizeAndFillImage(t *testing.T) {
 }
 
 func TestCrop(t *testing.T) {
-	img, _ := DecodeImage(bytes.NewReader(confBin))
+	img, _ := DecodeImage(confBin)
+	confBin.Seek(0, 0)
 
 	cropImg := Crop(*img.GetImg(), 100, 100)
 	if cropImg != nil {
 		t.Fatalf("value is not nil.")
 	}
 
-	img, _ = DecodeImage(bytes.NewReader(pngBin))
+	img, _ = DecodeImage(pngBin)
+	pngBin.Seek(0, 0)
 
 	cropImg = Crop(*img.GetImg(), 100, 100)
 	if cropImg == nil {

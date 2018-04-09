@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 )
 
 type Conf struct {
@@ -93,6 +94,24 @@ func (c *Conf) DebugLogPath() string {
 		path = "/dev/null"
 	}
 	return path.(string)
+}
+
+func (c *Conf) BackendRequestTimeout() time.Duration {
+	tstr, ok := c.c["backeend_request_timeout"]
+	if !ok {
+		return 10 * time.Second
+	}
+
+	t, ok := tstr.(string)
+	if !ok {
+		return 10 * time.Second
+	}
+
+	d, err := time.ParseDuration(t)
+	if err != nil {
+		panic(err)
+	}
+	return d
 }
 
 func (c *Conf) Port() int {

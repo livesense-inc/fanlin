@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
-	"time"
 
 	"bytes"
 	"io"
@@ -15,10 +14,12 @@ import (
 
 var ua = fmt.Sprintf("Mozilla/5.0 (fanlin; arch: %s; OS: %s; Go version: %s) Go language Client/1.1 (KHTML, like Gecko) Version/1.0 fanlin", runtime.GOARCH, runtime.GOOS, runtime.Version())
 
+/*
 var client = http.Client{
 	Transport: &http.Transport{MaxIdleConnsPerHost: 64},
 	Timeout:   time.Duration(10) * time.Second,
 }
+*/
 
 var httpClient = Client{
 	Http: new(RealWebClient),
@@ -42,7 +43,7 @@ func (r *RealWebClient) Get(url string) (io.Reader, error) {
 	}
 	req.Header.Set("User-Agent", ua)
 
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}

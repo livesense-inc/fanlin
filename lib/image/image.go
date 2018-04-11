@@ -289,7 +289,7 @@ func applyOrientation(s image.Image, o int) (d draw.Image, e error) {
 	if o >= 5 && o <= 8 {
 		bounds = rotateRect(bounds)
 	}
-	d = image.NewRGBA64(bounds)
+	d = image.NewRGBA(bounds)
 	affine := affines[o]
 	e = affine.TransformCenter(d, s, interp.Bilinear)
 	return

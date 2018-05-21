@@ -72,20 +72,23 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
         {
             "alias/0" : {
                 "type" : "web",
-                "src" : "http://aaa.com/bbb"
+                "src" : "http://aaa.com/bbb",
+                "priority" : 10
             }
         },
         {
             "alias/1" : {
                 "type" : "web",
-                "src" : "https://ccc.com"
+                "src" : "https://ccc.com",
+                "priority" : 20
             }
         },
         {
             "alias/3" : {
                 "type" : "s3",
                 "src" : "s3://bucket/path",
-                "region" : "ap-northeast-1"
+                "region" : "ap-northeast-1",
+                "priority" : 30
             }
         }
     ]

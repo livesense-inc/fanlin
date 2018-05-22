@@ -21,7 +21,7 @@ type provider struct {
 
 var providers []provider
 
-var DEFAULT_PRIORITY float64 = 10.0
+const DEFAULT_PRIORITY float64 = 10.0
 
 func init() {
 	providers = nil

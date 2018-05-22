@@ -2,6 +2,7 @@ package content
 
 import (
 	"net/url"
+	"sort"
 	"strings"
 
 	"github.com/livesense-inc/fanlin/lib/conf"
@@ -15,10 +16,12 @@ type Content struct {
 
 type provider struct {
 	alias string
-	meta  interface{}
+	meta  map[string]interface{}
 }
 
 var providers []provider
+
+const DEFAULT_PRIORITY float64 = 10.0
 
 func init() {
 	providers = nil
@@ -28,9 +31,19 @@ func getProviders(c *configure.Conf) []provider {
 	ret := make([]provider, 0, len(c.Providers()))
 	for _, p := range c.Providers() {
 		for alias, meta := range convertInterfaceToMap(p) {
-			ret = append(ret, provider{alias, meta})
+			m := convertInterfaceToMap(meta)
+			if _, ok := m["priority"]; !ok {
+				m["priority"] = DEFAULT_PRIORITY
+			}
+
+			ret = append(ret, provider{alias, m})
 		}
 	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].meta["priority"].(float64) < ret[j].meta["priority"].(float64)
+	})
+
 	return ret
 }
 
@@ -45,7 +58,7 @@ func getContent(urlPath string, p []provider) *Content {
 		return nil
 	}
 	targetProvider := p[index]
-	for k, v := range convertInterfaceToMap(targetProvider.meta) {
+	for k, v := range targetProvider.meta {
 		switch k {
 		case "src":
 			src := v.(string)

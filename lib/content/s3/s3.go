@@ -55,6 +55,7 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 		if form, ok := c.Meta["norm_form"].(string); ok {
 			path, err = NormalizePath(path, form)
 			if err != nil {
+				return nil, err
 			}
 		}
 		return s3GetSourceFunc(region, bucket, path, file)

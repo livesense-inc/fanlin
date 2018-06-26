@@ -2,9 +2,11 @@ package content
 
 import (
 	"errors"
+	"log"
+
+	"io"
 
 	"github.com/livesense-inc/fanlin/lib/error"
-	"io"
 )
 
 type source struct {
@@ -34,6 +36,7 @@ func sniff(c *Content) source {
 }
 
 func GetImageBinary(c *Content) (io.Reader, error) {
+	log.Println(c)
 	f := sniff(c)
 	if f.getImageBinary == nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("unknown content type"))

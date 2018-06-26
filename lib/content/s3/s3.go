@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"net/url"
@@ -8,13 +9,14 @@ import (
 
 	"golang.org/x/text/unicode/norm"
 
+	"io"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/livesense-inc/fanlin/lib/content"
 	"github.com/livesense-inc/fanlin/lib/error"
-	"io"
 )
 
 var s3GetSourceFunc = getS3ImageBinary
@@ -53,7 +55,6 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 		if form, ok := c.Meta["norm_form"].(string); ok {
 			path, err = NormalizePath(path, form)
 			if err != nil {
-				return nil, err
 			}
 		}
 		return s3GetSourceFunc(region, bucket, path, file)
@@ -86,7 +87,12 @@ func getS3ImageBinary(region, bucket, key string, file *os.File) (io.Reader, err
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
-	return file, imgproxyerr.New(imgproxyerr.ERROR, err)
+
+	ret := new(bytes.Buffer)
+	if _, err := io.Copy(ret, file); err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
+	}
+	return ret, imgproxyerr.New(imgproxyerr.ERROR, err)
 }
 
 func init() {

@@ -3,8 +3,9 @@ package content
 import (
 	"errors"
 
-	"github.com/livesense-inc/fanlin/lib/error"
 	"io"
+
+	"github.com/livesense-inc/fanlin/lib/error"
 )
 
 type source struct {

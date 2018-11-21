@@ -3,21 +3,11 @@ jobs:
     build:
         working_directory: /go/src/github.com/livesense-inc/fanlin
         docker:
-            - image: golang:1.9.2
-              environment:
-                  GO15VENDOREXPERIMENT: 1
+            - image: golang:latest
         steps:
             - checkout
             - run:
-                name: "Install dep"
-                command: |
-                    go get -u github.com/golang/dep/cmd/dep
-            - run:
-                name: "Install packages"
-                command:
-                    dep ensure
-            - run:
                 name: "run test"
                 command: |
-                    go test -race $(go list ./... | grep -v vendor)
+                    go test ./...
 

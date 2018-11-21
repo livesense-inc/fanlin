@@ -1,0 +1,12 @@
+github.com/BurntSushi/graphics-go v0.0.0-20160129215708-b43f31a4a966/go.mod h1:Mid70uvE93zn9wgF92A/r5ixgnvX8Lh68fxp9KQBaI0=
+github.com/aws/aws-sdk-go v0.0.0-20170327234658-de61b9d1e0c7/go.mod h1:ZRmQr0FajVIyZ4ZzBYKG5P3ZqPz9IHG41ZoMu1ADI3k=
+github.com/go-ini/ini v1.26.0/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
+github.com/ieee0824/libcmyk v0.0.0-20171222081915-8cf9151a408c/go.mod h1:vJVtPiJ4YFtcMk8WkYjRnhqve5VTNuURZ2qmD0yRdyE=
+github.com/jmespath/go-jmespath v0.0.0-20160803190731-bd40a432e4c7/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
+github.com/mymch/formatter v0.0.0-20160311074944-f3cbb7fa1c8e/go.mod h1:gJk67H+dbJK46BOAectEwhboBqkV/nuOkUtWW+tOu1U=
+github.com/nfnt/resize v0.0.0-20160724205520-891127d8d1b5/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
+github.com/rwcarlsen/goexif v0.0.0-20150520140647-709fab3d192d/go.mod h1:hPqNNc0+uJM6H+SuU8sEs5K5IQeKccPqeSjfgcKGgPk=
+github.com/sirupsen/logrus v0.0.0-20170317143214-10f801ebc38b/go.mod h1:pMByvHTf9Beacp5x1UXfOR9xyW/9antXMhjMPG0dEzc=
+golang.org/x/image v0.0.0-20170322222000-c0851fbc5b92/go.mod h1:ux5Hcp/YLpHSI86hEcLt0YII63i6oz57MZXIpbrjZUs=
+golang.org/x/sys v0.0.0-20170325170518-afadfcc7779c/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/text v0.0.0-20170323194135-fc7fa097411d/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

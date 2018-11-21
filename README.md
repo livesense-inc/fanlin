@@ -21,15 +21,8 @@ fanlin is image proxy server in native Go language.
 * PNG
 * GIF
 
-## go vendoring tool
-### dep
-```
-$ brew install dep 
-$ dep ensure
-```
-
 ## Cross compile for amd64 Linux
-### go 1.9
+### go 1.11
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

@@ -4,6 +4,7 @@ jobs:
         working_directory: /go/src/github.com/livesense-inc/fanlin
         docker:
             - image: golang:latest
+                  GO111MODULE: on
         steps:
             - checkout
             - run:

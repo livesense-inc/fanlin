@@ -5,6 +5,7 @@ jobs:
         docker:
             - image: golang:latest
                   GO111MODULE: on
+                  
         steps:
             - checkout
             - run:

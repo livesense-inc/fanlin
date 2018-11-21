@@ -15,7 +15,7 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 * OS X
 
 ### Go Versions
-* go 1.9
+* go 1.11.x
 
 ## 対応画像フォーマット
 * JPEG

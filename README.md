@@ -14,7 +14,7 @@ fanlin is image proxy server in native Go language.
 * OS X
 
 ### Go Versions
-* go 1.9
+* go 1.11.x
 
 ### Image Format
 * JPEG

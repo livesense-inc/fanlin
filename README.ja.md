@@ -15,7 +15,7 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 * OS X
 
 ### Go Versions
-* go 1.9
+* go 1.11.x
 
 ## 対応画像フォーマット
 * JPEG
@@ -26,15 +26,8 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 ## master pushの悲劇を防ぐために
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
 
-## 事前に入れるもの
-### dep
-```
-$ brew install dep
-$ dep ensure
-```
-
 ## Linux用にクロスコンパイルする
-### go1.9
+### go1.11
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

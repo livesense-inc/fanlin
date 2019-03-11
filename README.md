@@ -81,7 +81,8 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
                 "type" : "s3",
                 "src" : "s3://bucket/path",
                 "region" : "ap-northeast-1",
-                "priority" : 30
+                "priority" : 30,
+                "use_env_credential": true
             }
         }
     ]

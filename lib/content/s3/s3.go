@@ -12,6 +12,7 @@ import (
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -22,7 +23,7 @@ import (
 var s3GetSourceFunc = getS3ImageBinary
 
 // Test dedicated function
-func setS3GetFunc(f func(region, bucket, key string, file *os.File) (io.Reader, error)) {
+func setS3GetFunc(f func(config *aws.Config, bucket, key string, file *os.File) (io.Reader, error)) {
 	s3GetSourceFunc = f
 }
 
@@ -58,9 +59,24 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 				return nil, err
 			}
 		}
-		return s3GetSourceFunc(region, bucket, path, file)
+		config := createAwsConfig(region, c.Meta)
+		return s3GetSourceFunc(config, bucket, path, file)
 	}
 	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
+}
+
+// createAwsConfig generate the service configuration
+func createAwsConfig(region string, meta map[string]interface{}) *aws.Config {
+	if env_credential, ok := meta["use_env_credential"].(bool); ok && env_credential {
+		cred := credentials.NewEnvCredentials()
+		return &aws.Config{
+			Region:      aws.String(region),
+			Credentials: cred,
+		}
+	}
+	return &aws.Config{
+		Region: aws.String(region),
+	}
 }
 
 func NormalizePath(path string, form string) (string, error) {
@@ -77,8 +93,8 @@ func NormalizePath(path string, form string) (string, error) {
 	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form("+form+")"))
 }
 
-func getS3ImageBinary(region, bucket, key string, file *os.File) (io.Reader, error) {
-	downloader := s3manager.NewDownloader(session.New(&aws.Config{Region: aws.String(region)}))
+func getS3ImageBinary(config *aws.Config, bucket, key string, file *os.File) (io.Reader, error) {
+	downloader := s3manager.NewDownloader(session.New(config))
 	_, err := downloader.Download(file,
 		&s3.GetObjectInput{
 			Bucket: aws.String(bucket),

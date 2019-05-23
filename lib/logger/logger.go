@@ -3,8 +3,8 @@ package logger
 import (
 	"os"
 
-	"github.com/mymch/formatter"
 	"github.com/sirupsen/logrus"
+	"github.com/ieee0824/logrus-formatter"
 )
 
 func NewLogger(path string) *logrus.Logger {

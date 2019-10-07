@@ -103,7 +103,6 @@ func main() {
 
 	http.DefaultClient.Timeout = conf.BackendRequestTimeout()
 	runtime.GOMAXPROCS(conf.MaxProcess())
-	mux := http.DefaultServeMux
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		handler.MainHandler(w, r, conf, loggers)
@@ -112,8 +111,8 @@ func main() {
 	if conf.UseServerTiming() {
 		h = servertiming.Middleware(h, nil)
 	}
-	mux.Handle("/", h)
-	mux.HandleFunc("/healthCheck", handler.HealthCheckHandler)
+	http.Handle("/", h)
+	http.HandleFunc("/healthCheck", handler.HealthCheckHandler)
 
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), mux)
+	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), nil)
 }

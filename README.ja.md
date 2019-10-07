@@ -15,19 +15,20 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 * OS X
 
 ### Go Versions
-* go 1.11.x
+* go 1.13.x
 
 ## 対応画像フォーマット
 * JPEG
 * PNG
 * GIF
+* WebP
 
 ## OS X の環境構築
 ## master pushの悲劇を防ぐために
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
 
 ## Linux用にクロスコンパイルする
-### go1.11
+### go1.13
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```
@@ -70,6 +71,7 @@ $ go test -cover ./...
     "404_img_path": "/path/to/404/image",
     "access_log_path": "/path/to/access/log",
     "error_log_path": "/path/to/error/log",
+    "use_server_timing": true,
     "providers": [
         {
             "alias/0" : {
@@ -97,3 +99,33 @@ $ go test -cover ./...
     ]
 }
 ```
+
+## WebPフォーマットの利用方法と制限事項
+fanlinへのリクエストに `webp=true` getパラメータを付与することで、WebPフォーマットの画像を返すことが出来ます.
+
+例:
+
+- JPG画像のURL:
+  - http://localhost:8080/abc.jpg?h=400&w=400&quality=80
+- WebPに変換した画像のURL:
+  - http://localhost:8080/abc.jpg?h=400&w=400&quality=80&webp=true
+
+また、以下の条件の場合は、Lossless WebPフォーマットで変換します.
+
+- getパラメータにて `quality=100` を指定かつ元画像のフォーマットが PNG / GIF / WebP のいずれか
+
+### 制限事項
+
+- アニメーションには対応していません
+
+
+## Server-Timingのサポートに関して
+
+設定ファイルのグローバル設定値に `"use_server_timing": true` を入れることで[Server-Timing](https://www.w3.org/TR/server-timing/)が出力されます.
+Server-Timingの出力によって、システムの内部構成やパフォーマンスがエンドユーザーに見えてしまう可能性があります.利用に際してはご注意ください.
+
+現在の出力項目は以下:
+
+- f_load: ソース画像のロード時間
+- f_decode: ソース画像のデコードと加工時間
+- f_encode: 最終出力フォーマットへのエンコード時間

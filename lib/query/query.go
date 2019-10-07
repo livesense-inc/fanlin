@@ -18,6 +18,7 @@ type Query struct {
 	fillColor              color.Color
 	crop                   bool
 	quality                int
+	useWebp                bool
 }
 
 func NewQueryFromGet(r *http.Request) *Query {
@@ -49,12 +50,18 @@ func NewQueryFromGet(r *http.Request) *Query {
 		crop = false
 	}
 
+	webp, err := strconv.ParseBool(params.Get("webp"))
+	if err != nil {
+		webp = false
+	}
+
 	q.b.H = uint(h)
 	q.b.W = uint(w)
 	q.preliminaryImageSource = params.Get("psrc")
 	q.fillColor = c
 	q.crop = crop
 	q.quality = quality
+	q.useWebp = webp
 	return &q
 }
 
@@ -76,4 +83,8 @@ func (q *Query) Crop() bool {
 
 func (q *Query) Quality() int {
 	return q.quality
+}
+
+func (q *Query) UseWebP() bool {
+	return q.useWebp
 }

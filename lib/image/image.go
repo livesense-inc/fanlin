@@ -16,8 +16,9 @@ import (
 
 	"github.com/BurntSushi/graphics-go/graphics"
 	"github.com/BurntSushi/graphics-go/graphics/interp"
+	"github.com/chai2010/webp"
 	"github.com/ieee0824/libcmyk"
-	"github.com/livesense-inc/fanlin/lib/error"
+	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
 	"github.com/nfnt/resize"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
@@ -137,6 +138,28 @@ func EncodeGIF(img *image.Image, q int) (io.Reader, error) {
 
 	buf := new(bytes.Buffer)
 	err := gif.Encode(buf, *img, &gif.Options{})
+	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
+}
+
+func EncodeWebP(img *image.Image, q int, lossless bool) (io.Reader, error) {
+	if *img == nil {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+	}
+	if !(0 <= q && q < 100) {
+		// webp.DefaulQuality = 90 is large, adjust to JPEG
+		q = jpeg.DefaultQuality
+	}
+
+	var option webp.Options
+	if lossless {
+		option.Lossless = true
+	} else {
+		option.Lossless = false
+		option.Quality = float32(q)
+	}
+
+	buf := new(bytes.Buffer)
+	err := webp.Encode(buf, *img, &option)
 	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 

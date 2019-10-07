@@ -38,6 +38,18 @@ func (c *Conf) MLCMYKConverterNetworkFilePath() string {
 	return s
 }
 
+func (c *Conf) UseServerTiming() bool {
+	b, ok := c.c["use_server_timing"]
+	if !ok {
+		return false
+	}
+	r, ok := b.(bool)
+	if !ok {
+		panic("'use_server_timing' parameter is incorrect")
+	}
+	return r
+}
+
 func (c *Conf) Set(k string, v interface{}) {
 	if v == nil {
 		return

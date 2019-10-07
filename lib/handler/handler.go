@@ -9,14 +9,15 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/livesense-inc/fanlin/lib/conf"
+	configure "github.com/livesense-inc/fanlin/lib/conf"
 	"github.com/livesense-inc/fanlin/lib/content"
 	_ "github.com/livesense-inc/fanlin/lib/content/s3"
 	_ "github.com/livesense-inc/fanlin/lib/content/web"
-	"github.com/livesense-inc/fanlin/lib/error"
-	"github.com/livesense-inc/fanlin/lib/image"
+	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
+	imageprocessor "github.com/livesense-inc/fanlin/lib/image"
 	"github.com/livesense-inc/fanlin/lib/query"
 	_ "github.com/livesense-inc/fanlin/plugin"
+	servertiming "github.com/mitchellh/go-server-timing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -49,6 +50,7 @@ func writeDebugLog(err interface{}, debugFile string) {
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]logrus.Logger) {
+	timing := servertiming.FromContext(r.Context())
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -98,14 +100,16 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		"url":       r.URL.String(),
 	}).Info()
 
+	m := timing.NewMetric("f_load").Start()
 	q := query.NewQueryFromGet(r)
 	imageBuffer, err := content.GetImageBinary(content.GetContent(r.URL.Path, conf))
-
 	if err != nil {
 		imageBuffer = nil
 		panic(imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data:"+err.Error())))
 	}
+	m.Stop()
 
+	m = timing.NewMetric("f_decode").Start()
 	img, err := imageprocessor.DecodeImage(imageBuffer)
 	if err != nil {
 		imageBuffer = nil
@@ -122,16 +126,39 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		img.Crop(q.Bounds().W, q.Bounds().H)
 	}
 	img.ResizeAndFill(q.Bounds().W, q.Bounds().H, *q.FillColor(), mx, my)
+	m.Stop()
 
+	m = timing.NewMetric("f_encode").Start()
 	switch img.GetFormat() {
 	case "jpeg":
-		imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+		if q.UseWebP() {
+			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false)
+		} else {
+			imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+		}
 	case "png":
-		imageBuffer, err = imageprocessor.EncodePNG(img.GetImg(), q.Quality())
+		if q.UseWebP() {
+			useLossless := (q.Quality() == 100)
+			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless)
+		} else {
+			imageBuffer, err = imageprocessor.EncodePNG(img.GetImg(), q.Quality())
+		}
 	case "gif":
-		imageBuffer, err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality())
+		if q.UseWebP() {
+			useLossless := (q.Quality() == 100)
+			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless)
+		} else {
+			imageBuffer, err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality())
+		}
+	case "webp":
+		useLossless := (q.Quality() == 100)
+		imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless)
 	default:
-		imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+		if q.UseWebP() {
+			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false)
+		} else {
+			imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+		}
 	}
 
 	if err != nil {
@@ -139,7 +166,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		imageBuffer = nil
 		panic(err)
 	}
+	m.Stop()
 
+	w.WriteHeader(200)
 	fmt.Fprintf(w, "%s", imageBuffer)
 }
 

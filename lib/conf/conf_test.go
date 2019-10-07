@@ -57,4 +57,11 @@ func TestReadConfigure(t *testing.T) {
 		}
 	}()
 
+	func() {
+		fmt.Println("use_server_timing test")
+		ok := conf.UseServerTiming()
+		if !ok {
+			t.Fatalf("value is %v", ok)
+		}
+	}()
 }

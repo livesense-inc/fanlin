@@ -9,19 +9,23 @@ import (
 )
 
 var (
-	jpgPath  = "../test/img/Lenna.jpg"
-	bmpPath  = "../test/img/Lenna.bmp"
-	pngPath  = "../test/img/Lenna.png"
-	gifPath  = "../test/img/Lenna.gif"
-	confPath = "../test/test_conf.json"
+	jpgPath          = "../test/img/Lenna.jpg"
+	bmpPath          = "../test/img/Lenna.bmp"
+	pngPath          = "../test/img/Lenna.png"
+	gifPath          = "../test/img/Lenna.gif"
+	webpLosslessPath = "../test/img/Lenna_lossless.webp"
+	webpLossyPath    = "../test/img/Lenna_lossy.webp"
+	confPath         = "../test/test_conf.json"
 )
 
 var (
-	jpegBin, _ = os.Open(jpgPath)
-	bmpBin, _  = os.Open(bmpPath)
-	pngBin, _  = os.Open(pngPath)
-	gifBin, _  = os.Open(gifPath)
-	confBin, _ = os.Open(confPath)
+	jpegBin, _         = os.Open(jpgPath)
+	bmpBin, _          = os.Open(bmpPath)
+	pngBin, _          = os.Open(pngPath)
+	gifBin, _          = os.Open(gifPath)
+	webpLosslessBin, _ = os.Open(webpLosslessPath)
+	webpLossyBin, _    = os.Open(webpLossyPath)
+	confBin, _         = os.Open(confPath)
 )
 
 var testRect = image.Rect(0, 0, 100, 100)
@@ -123,6 +127,46 @@ func TestEncodeGIF(t *testing.T) {
 	}
 }
 
+func TestEncodeWebP(t *testing.T) {
+	// Lossless
+	img, _ := DecodeImage(webpLosslessBin)
+	pngBin.Seek(0, 0)
+	if format := img.GetFormat(); format != "webp" {
+		t.Fatalf("format is %v, expected webp", format)
+	}
+
+	bin, err := EncodeWebP(img.GetImg(), -1, true)
+	if err != nil {
+		t.Fatalf("err is %v.", err)
+	}
+	if bin == nil {
+		t.Fatalf("bin is nil.")
+	}
+
+	// Lossy
+	img, _ = DecodeImage(webpLossyBin)
+	pngBin.Seek(0, 0)
+	if format := img.GetFormat(); format != "webp" {
+		t.Fatalf("format is %v, expected webp", format)
+	}
+
+	bin, err = EncodeWebP(img.GetImg(), -1, false)
+	if err != nil {
+		t.Fatalf("err is %v.", err)
+	}
+	if bin == nil {
+		t.Fatalf("bin is nil.")
+	}
+
+	// error
+	img, _ = DecodeImage(confBin)
+	confBin.Seek(0, 0)
+	_, err = EncodeWebP(img.GetImg(), 50, true)
+	if err == nil {
+		t.Fatalf("err is %v.", err)
+	}
+}
+
 func TestDecodeImage(t *testing.T) {
 	img, err := DecodeImage(jpegBin)
 	jpegBin.Seek(0, 0)
@@ -155,6 +199,16 @@ func TestDecodeImage(t *testing.T) {
 
 	img, err = DecodeImage(gifBin)
 	gifBin.Seek(0, 0)
+	if err != nil {
+		t.Log(err)
+		t.Fatalf("err is not nil.")
+	}
+	if img == nil {
+		t.Fatalf("can not decode.")
+	}
+
+	img, err = DecodeImage(webpLosslessBin)
+	webpLosslessBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")

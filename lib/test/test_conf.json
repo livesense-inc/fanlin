@@ -1,14 +1,14 @@
 {
-  "port": 8080,
-  "local_image_path": "../img/",
-  "max_width": 5000,
-  "max_height": 5000,
-  "externals": [
-      {
-          "example" : "http://example.com/"
-      },
-      {
-          "test/test" : "http://example.com/"
-      }
-  ]
+    "port": 8080,
+    "local_image_path": "../img/",
+    "max_width": 5000,
+    "max_height": 5000,
+    "use_server_timing": true,
+    "externals": [{
+            "example": "http://example.com/"
+        },
+        {
+            "test/test": "http://example.com/"
+        }
+    ]
 }

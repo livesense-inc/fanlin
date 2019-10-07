@@ -8,9 +8,10 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/livesense-inc/fanlin/lib/conf"
+	configure "github.com/livesense-inc/fanlin/lib/conf"
 	"github.com/livesense-inc/fanlin/lib/handler"
 	"github.com/livesense-inc/fanlin/lib/logger"
+	servertiming "github.com/mitchellh/go-server-timing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -101,12 +102,18 @@ func main() {
 	}
 
 	http.DefaultClient.Timeout = conf.BackendRequestTimeout()
-
 	runtime.GOMAXPROCS(conf.MaxProcess())
+	mux := http.DefaultServeMux
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
 		handler.MainHandler(w, r, conf, loggers)
-	})
-	http.HandleFunc("/healthCheck", handler.HealthCheckHandler)
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), nil)
+	}
+	var h http.Handler = http.HandlerFunc(fn)
+	if conf.UseServerTiming() {
+		h = servertiming.Middleware(h, nil)
+	}
+	mux.Handle("/", h)
+	mux.HandleFunc("/healthCheck", handler.HealthCheckHandler)
+
+	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), mux)
 }

@@ -14,15 +14,16 @@ fanlin is image proxy server in native Go language.
 * OS X
 
 ### Go Versions
-* go 1.11.x
+* go 1.13.x
 
 ### Image Format
 * JPEG
 * PNG
 * GIF
+* WebP
 
 ## Cross compile for amd64 Linux
-### go 1.11
+### go 1.13
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```
@@ -61,6 +62,7 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
     "404_img_path": "/path/to/404/image",
     "access_log_path": "/path/to/access/log",
     "error_log_path": "/path/to/error/log",
+    "use_server_timing": true,
     "providers": [
         {
             "alias/0" : {
@@ -88,6 +90,38 @@ On Unix, Linux and OS X, fanlin programs read startup options from the following
     ]
 }
 ```
+
+## Using WebP and Limitations
+You can get WebP image format with GET parameter `webp=true` requeest.
+
+Examples:
+
+- JPG image URL:
+  - http://localhost:8080/abc.jpg?h=400&w=400&quality=80
+- WebP encoded image URL:
+  - http://localhost:8080/abc.jpg?h=400&w=400&quality=80&webp=true
+
+fanlin returns lossless WebP image in following conditions.
+
+- GET parameter `quality=100` AND source image format is PNG / GIF / WebP
+
+### Limitations
+
+- Do not support animations
+
+
+## Server-Timing Support
+
+Add `"use_server_timing": true` at Global parameters in config file.
+You will get [Server-Timing](https://www.w3.org/TR/server-timing/) output.
+Be careful, your system architecture or perfomance will be exposed to enduser with Server-Timing output.
+
+fanlin outputs following timings:
+
+- f_load: The time for load source image.
+- f_decode: The time for decode and format source image.
+- f_encode: The time for encode to final image format.
+
 
 ## LICENSE
 Written in Go and licensed under [the MIT License](https://opensource.org/licenses/MIT), it can also be used as a library.

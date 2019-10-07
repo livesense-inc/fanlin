@@ -130,7 +130,7 @@ func TestEncodeGIF(t *testing.T) {
 func TestEncodeWebP(t *testing.T) {
 	// Lossless
 	img, _ := DecodeImage(webpLosslessBin)
-	pngBin.Seek(0, 0)
+	webpLosslessBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "webp" {
 		t.Fatalf("format is %v, expected webp", format)
 	}
@@ -145,7 +145,7 @@ func TestEncodeWebP(t *testing.T) {
 
 	// Lossy
 	img, _ = DecodeImage(webpLossyBin)
-	pngBin.Seek(0, 0)
+	webpLossyBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "webp" {
 		t.Fatalf("format is %v, expected webp", format)
 	}
@@ -209,6 +209,16 @@ func TestDecodeImage(t *testing.T) {
 
 	img, err = DecodeImage(webpLosslessBin)
 	webpLosslessBin.Seek(0, 0)
+	if err != nil {
+		t.Log(err)
+		t.Fatalf("err is not nil.")
+	}
+	if img == nil {
+		t.Fatalf("can not decode.")
+	}
+
+	img, err = DecodeImage(webpLossyBin)
+	webpLossyBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")

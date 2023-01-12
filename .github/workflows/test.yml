@@ -28,7 +28,6 @@ jobs:
       - name: Get dependencies
         run: go mod download
 
-      - name: Run
+      - name: Run test
         run: |
-          go get -v -t -d ./...
           go test -race ./...

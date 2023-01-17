@@ -1,0 +1,33 @@
+name: Test
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Run test
+        run: |
+          go test -race ./...

@@ -1,6 +1,5 @@
 # fanlin
 
-[![Circle CI](https://circleci.com/gh/livesense-inc/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/livesense-inc/fanlin/tree/master)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 [English](README.md) | 日本語
@@ -12,10 +11,10 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 ## 環境
 ### OS
 * Linux (x86 and amd64)
-* OS X
+* macOS
 
 ### Go Versions
-* go 1.13.x
+* go 1.19.x
 
 ## 対応画像フォーマット
 * JPEG
@@ -23,12 +22,12 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 * GIF
 * WebP
 
-## OS X の環境構築
+## macOS の環境構築
 ## master pushの悲劇を防ぐために
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
 
 ## Linux用にクロスコンパイルする
-### go1.13
+### go1.19
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

@@ -1,6 +1,5 @@
 # fanlin
 
-[![Circle CI](https://circleci.com/gh/livesense-inc/fanlin/tree/master.svg?style=shield)](https://circleci.com/gh/livesense-inc/fanlin/tree/master)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 English | [日本語](README.ja.md)
@@ -11,10 +10,10 @@ fanlin is image proxy server in native Go language.
 ## Support
 ### OS
 * Linux (x86 and amd64)
-* OS X
+* macOS
 
 ### Go Versions
-* go 1.13.x
+* go 1.19.x
 
 ### Image Format
 * JPEG
@@ -23,7 +22,7 @@ fanlin is image proxy server in native Go language.
 * WebP
 
 ## Cross compile for amd64 Linux
-### go 1.13
+### go 1.19
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```
@@ -34,7 +33,7 @@ $ go test -cover ./...
 ```
 
 ## configure
-On Unix, Linux and OS X, fanlin programs read startup options from the following files, in the specified order(top files are read first, and precedence).
+On Unix, Linux and macOS, fanlin programs read startup options from the following files, in the specified order(top files are read first, and precedence).
 
 ```
 /etc/fanlin.json

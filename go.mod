@@ -2,7 +2,7 @@ module github.com/livesense-inc/fanlin
 
 require (
 	github.com/BurntSushi/graphics-go v0.0.0-20160129215708-b43f31a4a966
-	github.com/aws/aws-sdk-go v1.31.7
+	github.com/aws/aws-sdk-go v1.33.0
 	github.com/chai2010/webp v1.1.0
 	github.com/ieee0824/libcmyk v0.0.0-20171222081915-8cf9151a408c
 	github.com/ieee0824/logrus-formatter v1.0.0

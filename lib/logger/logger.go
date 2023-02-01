@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -14,6 +15,7 @@ func NewLogger(path string) *logrus.Logger {
 	if err != nil {
 		logger.Fatalln("Can not create log file: ", path)
 	}
-	logger.Out = logFile
+	mw := io.MultiWriter(os.Stdout, logFile)
+	logger.Out = mw
 	return logger
 }

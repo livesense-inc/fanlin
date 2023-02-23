@@ -11,7 +11,7 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20150520140647-709fab3d192d
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/image v0.0.0-20170322222000-c0851fbc5b92
-	golang.org/x/text v0.3.0
+	golang.org/x/text v0.3.8
 )
 
 require (
@@ -20,7 +20,7 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/jmespath/go-jmespath v0.3.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
-	golang.org/x/sys v0.0.0-20190422165155-953cdadca894 // indirect
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 )
 
 go 1.19

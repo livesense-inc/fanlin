@@ -8,6 +8,9 @@ test:
 	@go clean -testcache
 	@go test -race ./...
 
+bench:
+	@go test -bench=. -benchmem -run=NONE ./...
+
 prof: PKG ?= handler
 prof: TYPE ?= mem
 prof:

@@ -40,13 +40,20 @@ func (w *NullResponseWriter) WriteHeader(statusCode int) {
 func BenchmarkMainHandler(b *testing.B) {
 	w := NewNullResponseWriter()
 
+	q := url.Values{}
+	q.Set("w", "512")
+	q.Set("h", "512")
+	//q.Set("rgb", "100,100,100")
+	q.Set("quality", "80")
+
 	r := &http.Request{
 		RemoteAddr: "127.0.0.1",
 		Proto:      "HTTP/1.1",
 		Method:     http.MethodGet,
 		Host:       "127.0.0.1:8080",
 		URL: &url.URL{
-			Path: "/test/master/granada-jp0802/858.jpg",
+			Path:     "/test/master/granada-jp0802/858.jpg",
+			RawQuery: q.Encode(),
 		},
 		Header: http.Header{
 			"Content-Type": []string{"application/x-www-form-urlencoded"},

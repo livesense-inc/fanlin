@@ -90,6 +90,10 @@ On Unix, Linux and macOS, fanlin programs read startup options from the followin
 }
 ```
 
+## Controling where logs are output to
+You can output each log to a file by specifying the path in `access_log_path`/`error_log_path`/`debug_log_path`.
+If you want to output logs to standard output, specify `/dev/stdout`.
+
 ## Using WebP and Limitations
 You can get WebP image format with GET parameter `webp=true` requeest.
 

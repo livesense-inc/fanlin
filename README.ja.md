@@ -99,6 +99,10 @@ $ go test -cover ./...
 }
 ```
 
+## ログの出力先を制御する
+設定項目の`access_log_path`/`error_log_path`/`debug_log_path`にパスを指定することで、それぞれのログをファイルに出力できます。
+標準出力にログを出力したい場合は、`/dev/stdout`を指定してください。
+
 ## WebPフォーマットの利用方法と制限事項
 fanlinへのリクエストに `webp=true` getパラメータを付与することで、WebPフォーマットの画像を返すことが出来ます.
 

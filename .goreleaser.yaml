@@ -4,7 +4,7 @@ project_name: fanlin
 # https://go.dev/doc/install/source#environment
 builds:
   - env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
     flags:
       - -trimpath
     ldflags:

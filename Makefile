@@ -9,3 +9,5 @@ server: cmd/fanlin/main.go
 test:
 	@go clean -testcache
 	@go test -race ./...
+
+.PHONY: server test

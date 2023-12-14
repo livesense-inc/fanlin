@@ -1,4 +1,4 @@
-project_name: scram-sha-256
+project_name: fanlin
 
 # https://goreleaser.com/customization/build/
 # https://go.dev/doc/install/source#environment

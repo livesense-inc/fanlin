@@ -12,6 +12,8 @@ import (
 	"github.com/livesense-inc/fanlin/lib/handler"
 	"github.com/livesense-inc/fanlin/lib/logger"
 	servertiming "github.com/mitchellh/go-server-timing"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -113,6 +115,21 @@ func main() {
 	}
 	http.Handle("/", h)
 	http.HandleFunc("/healthCheck", handler.HealthCheckHandler)
+
+	metricsHandler := promhttp.InstrumentMetricHandler(
+		prometheus.DefaultRegisterer,
+		promhttp.HandlerFor(
+			prometheus.DefaultGatherer,
+			promhttp.HandlerOpts{
+				DisableCompression: true,
+				ErrorLog:           log.New(os.Stderr, "", log.LstdFlags),
+				Timeout:            conf.BackendRequestTimeout(),
+			},
+		),
+	)
+	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		metricsHandler.ServeHTTP(w, r)
+	})
 
 	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), nil)
 }

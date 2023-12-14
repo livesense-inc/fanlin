@@ -127,9 +127,7 @@ func main() {
 			},
 		),
 	)
-	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		metricsHandler.ServeHTTP(w, r)
-	})
+	http.HandleFunc("/metrics", metricsHandler.ServeHTTP)
 
 	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), nil)
 }

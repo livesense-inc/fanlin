@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	configure "github.com/livesense-inc/fanlin/lib/conf"
-	helper "github.com/livesense-inc/fanlin/test"
+	helper "github.com/livesense-inc/fanlin/lib/test"
 )
 
 func TestMakeMetricsHandler(t *testing.T) {

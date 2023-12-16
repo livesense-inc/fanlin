@@ -8,8 +8,8 @@ on:
       - "v*"
 concurrency: ${{ github.workflow }}
 jobs:
-  release:
-    name: Release
+  executable-files:
+    name: Executable Files
     if: github.repository == 'livesense-inc/fanlin'
     timeout-minutes: 10
     runs-on: ubuntu-latest

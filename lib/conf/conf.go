@@ -50,6 +50,18 @@ func (c *Conf) UseServerTiming() bool {
 	return r
 }
 
+func (c *Conf) EnableMetricsEndpoint() bool {
+	b, ok := c.c["enable_metrics_endpoint"]
+	if !ok {
+		return false
+	}
+	r, ok := b.(bool)
+	if !ok {
+		panic("'enable_metrics_endpoint' parameter is incorrect")
+	}
+	return r
+}
+
 func (c *Conf) Set(k string, v interface{}) {
 	if v == nil {
 		return

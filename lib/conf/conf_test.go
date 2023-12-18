@@ -64,4 +64,12 @@ func TestReadConfigure(t *testing.T) {
 			t.Fatalf("value is %v", ok)
 		}
 	}()
+
+	func() {
+		fmt.Println("enable_metrics_endpoint test")
+		ok := conf.EnableMetricsEndpoint()
+		if !ok {
+			t.Fatalf("value is %v", ok)
+		}
+	}()
 }

@@ -74,4 +74,5 @@ _testmain.go
 .vscode
 
 vendor/
-
+/server
+/fanlin.json

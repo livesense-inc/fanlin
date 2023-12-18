@@ -18,6 +18,8 @@ import (
 	"github.com/livesense-inc/fanlin/lib/query"
 	_ "github.com/livesense-inc/fanlin/plugin"
 	servertiming "github.com/mitchellh/go-server-timing"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -175,4 +177,18 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	fmt.Fprintf(w, "%s", "")
+}
+
+func MakeMetricsHandler(conf *configure.Conf, logger *log.Logger) http.Handler {
+	return promhttp.InstrumentMetricHandler(
+		prometheus.DefaultRegisterer,
+		promhttp.HandlerFor(
+			prometheus.DefaultGatherer,
+			promhttp.HandlerOpts{
+				DisableCompression: true,
+				ErrorLog:           logger,
+				Timeout:            conf.BackendRequestTimeout(),
+			},
+		),
+	)
 }

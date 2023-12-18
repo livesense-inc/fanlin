@@ -114,5 +114,10 @@ func main() {
 	http.Handle("/", h)
 	http.HandleFunc("/healthCheck", handler.HealthCheckHandler)
 
+	if conf.EnableMetricsEndpoint() {
+		metricsHandler := handler.MakeMetricsHandler(conf, log.New(os.Stderr, "", log.LstdFlags))
+		http.HandleFunc("/metrics", metricsHandler.ServeHTTP)
+	}
+
 	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), nil)
 }

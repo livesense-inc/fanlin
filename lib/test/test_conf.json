@@ -4,6 +4,7 @@
     "max_width": 5000,
     "max_height": 5000,
     "use_server_timing": true,
+    "enable_metrics_endpoint": true,
     "externals": [{
             "example": "http://example.com/"
         },

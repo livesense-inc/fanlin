@@ -1,0 +1,23 @@
+project_name: fanlin
+
+# https://goreleaser.com/customization/build/
+# https://go.dev/doc/install/source#environment
+builds:
+  - env:
+      - CGO_ENABLED=1
+    flags:
+      - -trimpath
+      - -tags=timetzdata
+    ldflags:
+      - -s -w
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+# https://goreleaser.com/customization/archive/
+archives:
+  - name_template: '{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}-v{{ . }}{{ end }}'
+    format: binary
+    replacements:
+      amd64: x86_64

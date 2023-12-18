@@ -1,0 +1,39 @@
+---
+# @see https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# @see https://github.com/actions/virtual-environments
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+concurrency: ${{ github.workflow }}
+jobs:
+  executable-files:
+    name: Executable Files
+    if: github.repository == 'livesense-inc/fanlin'
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

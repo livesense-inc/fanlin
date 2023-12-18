@@ -14,6 +14,7 @@ builds:
       - linux
     goarch:
       - amd64
+    main: ./cmd/fanlin
 
 # https://goreleaser.com/customization/archive/
 archives:

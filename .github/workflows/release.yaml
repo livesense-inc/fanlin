@@ -29,6 +29,9 @@ jobs:
           check-latest: true
           cache: true
 
+      - name: Print libc version
+        run: ldd --version
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:

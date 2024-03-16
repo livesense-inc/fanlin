@@ -94,8 +94,12 @@ func NormalizePath(path string, form string) (string, error) {
 }
 
 func getS3ImageBinary(config *aws.Config, bucket, key string, file *os.File) (io.Reader, error) {
-	downloader := s3manager.NewDownloader(session.New(config))
-	_, err := downloader.Download(file,
+	se, err := session.NewSession(config)
+	if err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
+	}
+	downloader := s3manager.NewDownloader(se)
+	_, err = downloader.Download(file,
 		&s3.GetObjectInput{
 			Bucket: aws.String(bucket),
 			Key:    aws.String(key),

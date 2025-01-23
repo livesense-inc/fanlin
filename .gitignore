@@ -76,3 +76,4 @@ _testmain.go
 vendor/
 /server
 /fanlin.json
+/*.log

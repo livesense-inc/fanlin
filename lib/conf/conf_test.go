@@ -72,4 +72,12 @@ func TestReadConfigure(t *testing.T) {
 			t.Fatalf("value is %v", ok)
 		}
 	}()
+
+	func() {
+		fmt.Println("max_clients test")
+		n := conf.MaxClients()
+		if n != 50 {
+			t.Fatalf("value is %d", n)
+		}
+	}()
 }

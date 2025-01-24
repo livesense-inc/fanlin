@@ -1,0 +1,19 @@
+{
+    "port": 3000,
+    "max_width": 1000,
+    "max_height": 1000,
+    "404_img_path": "img/404.png",
+    "access_log_path": "/dev/stdout",
+    "error_log_path": "/dev/stderr",
+    "use_server_timing": true,
+    "enable_metrics_endpoint": true,
+    "max_clients": 50,
+    "providers": [
+        {
+            "/" : {
+                "type" : "local",
+                "src" : "img"
+            }
+        }
+    ]
+}

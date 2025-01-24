@@ -11,6 +11,7 @@ import (
 
 	configure "github.com/livesense-inc/fanlin/lib/conf"
 	"github.com/livesense-inc/fanlin/lib/content"
+	_ "github.com/livesense-inc/fanlin/lib/content/local"
 	_ "github.com/livesense-inc/fanlin/lib/content/s3"
 	_ "github.com/livesense-inc/fanlin/lib/content/web"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"

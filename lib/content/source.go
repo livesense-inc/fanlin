@@ -5,7 +5,7 @@ import (
 
 	"io"
 
-	"github.com/livesense-inc/fanlin/lib/error"
+	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
 )
 
 type source struct {

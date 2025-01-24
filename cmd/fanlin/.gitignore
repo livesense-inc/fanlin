@@ -2,3 +2,4 @@ aws.json
 *.log
 lvimg.json
 fanlin.json
+/server

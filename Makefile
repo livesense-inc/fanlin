@@ -12,7 +12,7 @@ cmd/fanlin/fanlin.json: cmd/fanlin/sample-conf.json
 	@cp $^ $@
 
 fanlin.json: cmd/fanlin/fanlin.json
-	@ln -s $^
+	@ln -sf $^
 
 run: cmd/fanlin/server fanlin.json
 	@$^

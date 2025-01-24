@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os"
+	"path"
 
 	"github.com/livesense-inc/fanlin/lib/content"
 )
 
 func GetImageBinary(c *content.Content) (io.Reader, error) {
-	log.Print(c.SourcePlace)
-	f, err := os.Open(c.SourcePlace)
+	f, err := os.Open(path.Clean(c.SourcePlace))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open a file: %s: %w", c.SourcePlace, err)
 	}

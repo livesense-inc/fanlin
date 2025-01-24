@@ -2,21 +2,20 @@ package s3
 
 import (
 	"errors"
+	"io"
 	"os"
+	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/livesense-inc/fanlin/lib/content"
-	"io"
-	"strings"
 )
 
 var (
-	SetS3GetFunc    = setS3GetFunc
-	CreateAwsConfig = createAwsConfig
-	testBucket      = "testBucket"
-	testRegion      = "ap-northeast-1"
-	testKey         = "test/test.jpg"
+	SetS3GetFunc = setS3GetFunc
+	testBucket   = "testBucket"
+	testRegion   = "ap-northeast-1"
+	testKey      = "test/test.jpg"
 )
 
 func initialize() {
@@ -29,8 +28,8 @@ func initialize() {
 func mockS3GetFunc(config *aws.Config, bucket, key string, file *os.File) (io.Reader, error) {
 	if config == nil {
 		return strings.NewReader("failed"), errors.New("config is empty")
-	} else if aws.StringValue(config.Region) != testRegion {
-		return strings.NewReader("failed"), errors.New("Mismatch of the config region. region: " + aws.StringValue(config.Region) + ", testRegion: " + testRegion)
+	} else if config.Region != testRegion {
+		return strings.NewReader("failed"), errors.New("Mismatch of the config region. region: " + config.Region + ", testRegion: " + testRegion)
 	} else if bucket == "" {
 		return strings.NewReader("failed"), errors.New("bucket is empty")
 	} else if bucket != testBucket {
@@ -47,31 +46,11 @@ func mockS3GetFunc(config *aws.Config, bucket, key string, file *os.File) (io.Re
 
 func newTestContent() *content.Content {
 	return &content.Content{
-		"s3://" + testBucket + "/" + testKey,
-		"s3",
-		map[string]interface{}{
+		SourcePlace: "s3://" + testBucket + "/" + testKey,
+		SourceType:  "s3",
+		Meta: map[string]interface{}{
 			"region": testRegion,
 		},
-	}
-}
-
-func TestCreateAwsConfig(t *testing.T) {
-	region := "ap-northeast-1"
-	meta := map[string]interface{}{}
-	awsConfig := CreateAwsConfig(region, meta)
-
-	if aws.StringValue(awsConfig.Region) != region {
-		t.Fatalf("Mismatch of the region. '%s' expected, '%s' got.", region, aws.StringValue(awsConfig.Region))
-	}
-
-	if awsConfig.Credentials != nil {
-		t.Fatalf("Unexpected Credentials got. nil edpected, '%v' got.", awsConfig.Credentials)
-	}
-
-	meta["use_env_credential"] = true
-	awsConfig = CreateAwsConfig(region, meta)
-	if awsConfig.Credentials == nil {
-		t.Fatal("NIL Credentials got.")
 	}
 }
 

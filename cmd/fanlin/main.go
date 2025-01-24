@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"runtime"
@@ -13,6 +14,7 @@ import (
 	"github.com/livesense-inc/fanlin/lib/logger"
 	servertiming "github.com/mitchellh/go-server-timing"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/net/netutil"
 )
 
 var confList = []string{
@@ -119,5 +121,15 @@ func main() {
 		http.HandleFunc("/metrics", metricsHandler.ServeHTTP)
 	}
 
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port()), nil)
+	addr := fmt.Sprintf(":%d", conf.Port())
+	if n := conf.MaxClients(); n > 0 {
+		ln, err := net.Listen("tcp", addr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		lln := netutil.LimitListener(ln, n)
+		http.Serve(lln, nil)
+	} else {
+		http.ListenAndServe(addr, nil)
+	}
 }

@@ -3,7 +3,7 @@ package configure
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -60,6 +60,18 @@ func (c *Conf) EnableMetricsEndpoint() bool {
 		panic("'enable_metrics_endpoint' parameter is incorrect")
 	}
 	return r
+}
+
+func (c *Conf) MaxClients() int {
+	b, ok := c.c["max_clients"]
+	if !ok {
+		return 0
+	}
+	n, ok := b.(float64)
+	if !ok {
+		panic("'max_clients' parameter is incorrect")
+	}
+	return int(n)
 }
 
 func (c *Conf) Set(k string, v interface{}) {
@@ -272,7 +284,7 @@ func (c *Conf) includeConfigure(mainConfPath string, pathList []string) {
 
 func NewConfigure(confPath string) *Conf {
 	var conf map[string]interface{}
-	bin, err := ioutil.ReadFile(confPath)
+	bin, err := os.ReadFile(confPath)
 	if err != nil {
 		fmt.Println(err)
 		return nil

@@ -15,6 +15,7 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20150520140647-709fab3d192d
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/image v0.0.0-20170322222000-c0851fbc5b92
+	golang.org/x/net v0.10.0
 	golang.org/x/text v0.9.0
 )
 

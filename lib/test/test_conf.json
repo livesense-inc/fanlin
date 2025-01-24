@@ -5,6 +5,7 @@
     "max_height": 5000,
     "use_server_timing": true,
     "enable_metrics_endpoint": true,
+    "max_clients": 50,
     "externals": [{
             "example": "http://example.com/"
         },

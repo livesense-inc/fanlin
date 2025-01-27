@@ -29,14 +29,13 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 	q := query.NewQueryFromGet(r)
 
 	maxW, maxH := conf.MaxSize()
-	bin, err := imageprocessor.Set404Image(conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH)
-
 	w.WriteHeader(404)
-	if err != nil {
+	if err := imageprocessor.Set404Image(conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH, w); err != nil {
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
 		fmt.Fprintf(w, "%s", "404 Not found.")
-	} else {
-		fmt.Fprintf(w, "%s", bin)
 	}
+
 	q = nil
 }
 
@@ -134,44 +133,42 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	switch img.GetFormat() {
 	case "jpeg":
 		if q.UseWebP() {
-			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false)
+			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false, w)
 		} else {
-			imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+			err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality(), w)
 		}
 	case "png":
 		if q.UseWebP() {
 			useLossless := (q.Quality() == 100)
-			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless)
+			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless, w)
 		} else {
-			imageBuffer, err = imageprocessor.EncodePNG(img.GetImg(), q.Quality())
+			err = imageprocessor.EncodePNG(img.GetImg(), q.Quality(), w)
 		}
 	case "gif":
 		if q.UseWebP() {
 			useLossless := (q.Quality() == 100)
-			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless)
+			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless, w)
 		} else {
-			imageBuffer, err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality())
+			err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality(), w)
 		}
 	case "webp":
 		useLossless := (q.Quality() == 100)
-		imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless)
+		err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless, w)
 	default:
 		if q.UseWebP() {
-			imageBuffer, err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false)
+			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false, w)
 		} else {
-			imageBuffer, err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality())
+			err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality(), w)
 		}
 	}
+	m.Stop()
 
 	if err != nil {
 		img = nil
 		imageBuffer = nil
-		panic(err)
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
 	}
-	m.Stop()
-
-	w.WriteHeader(200)
-	fmt.Fprintf(w, "%s", imageBuffer)
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

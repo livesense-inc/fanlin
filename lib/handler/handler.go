@@ -30,7 +30,7 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 
 	maxW, maxH := conf.MaxSize()
 	w.WriteHeader(404)
-	if err := imageprocessor.Set404Image(conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH, w); err != nil {
+	if err := imageprocessor.Set404Image(w, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
 		fmt.Fprintf(w, "%s", "404 Not found.")
@@ -133,44 +133,45 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	switch img.GetFormat() {
 	case "jpeg":
 		if q.UseWebP() {
-			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false, w)
+			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), false)
 		} else {
-			err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality(), w)
+			err = imageprocessor.EncodeJpeg(w, img.GetImg(), q.Quality())
 		}
 	case "png":
 		if q.UseWebP() {
 			useLossless := (q.Quality() == 100)
-			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless, w)
+			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 		} else {
-			err = imageprocessor.EncodePNG(img.GetImg(), q.Quality(), w)
+			err = imageprocessor.EncodePNG(w, img.GetImg(), q.Quality())
 		}
 	case "gif":
 		if q.UseWebP() {
 			useLossless := (q.Quality() == 100)
-			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless, w)
+			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 		} else {
-			err = imageprocessor.EncodeGIF(img.GetImg(), q.Quality(), w)
+			err = imageprocessor.EncodeGIF(w, img.GetImg(), q.Quality())
 		}
 	case "webp":
 		useLossless := (q.Quality() == 100)
-		err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), useLossless, w)
+		err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 	default:
 		if q.UseWebP() {
-			err = imageprocessor.EncodeWebP(img.GetImg(), q.Quality(), false, w)
+			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), false)
 		} else {
-			err = imageprocessor.EncodeJpeg(img.GetImg(), q.Quality(), w)
+			err = imageprocessor.EncodeJpeg(w, img.GetImg(), q.Quality())
 		}
 	}
 	m.Stop()
 
 	if err != nil {
-		// The following writing to the headers will be ignored if the body was wrote with some bytes.
-		w.WriteHeader(http.StatusInternalServerError)
-
 		img = nil
 		imageBuffer = nil
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
+
+		// The following writing to the headers will be ignored if the body was wrote with some bytes.
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%s", "server error")
 	}
 }
 

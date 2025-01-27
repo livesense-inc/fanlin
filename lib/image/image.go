@@ -89,7 +89,7 @@ func max(v uint, max uint) uint {
 	return v
 }
 
-func EncodeJpeg(img *image.Image, q int, buf io.Writer) error {
+func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
 		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -102,7 +102,7 @@ func EncodeJpeg(img *image.Image, q int, buf io.Writer) error {
 	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodePNG(img *image.Image, q int, buf io.Writer) error {
+func EncodePNG(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
 		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -127,7 +127,7 @@ func EncodePNG(img *image.Image, q int, buf io.Writer) error {
 	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodeGIF(img *image.Image, q int, buf io.Writer) error {
+func EncodeGIF(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
 		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -138,7 +138,7 @@ func EncodeGIF(img *image.Image, q int, buf io.Writer) error {
 	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodeWebP(img *image.Image, q int, lossless bool, buf io.Writer) error {
+func EncodeWebP(buf io.Writer, img *image.Image, q int, lossless bool) error {
 	if *img == nil {
 		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
 	}
@@ -280,7 +280,7 @@ func (i *Image) GetFormat() string {
 	return i.format
 }
 
-func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uint, buf io.Writer) error {
+func Set404Image(buf io.Writer, path string, w uint, h uint, c color.Color, maxW uint, maxH uint) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return imgproxyerr.New(imgproxyerr.ERROR, err)
@@ -290,7 +290,7 @@ func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uin
 		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 	img.ResizeAndFill(w, h, c, maxW, maxH)
-	return EncodeJpeg(img.GetImg(), jpeg.DefaultQuality, buf)
+	return EncodeJpeg(buf, img.GetImg(), jpeg.DefaultQuality)
 }
 
 func toRadian(n int) float64 {

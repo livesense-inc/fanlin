@@ -164,6 +164,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 	m.Stop()
 
 	if err != nil {
+		// The following writing to the headers will be ignored if the body was wrote with some bytes.
+		w.WriteHeader(http.StatusInternalServerError)
+
 		img = nil
 		imageBuffer = nil
 		writeDebugLog(err, conf.DebugLogPath())

@@ -51,7 +51,7 @@ func writeDebugLog(err interface{}, debugFile string) {
 	os.Stderr = stackWriter
 }
 
-func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]logrus.Logger) {
+func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]*logrus.Logger) {
 	timing := servertiming.FromContext(r.Context())
 	defer func() {
 		err := recover()
@@ -73,11 +73,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 					case imgproxyerr.WARNING:
 						os.Stderr = devNull
 						errLogger.Warn(err)
-						break
 					case imgproxyerr.ERROR:
 						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)
-						break
 					default:
 						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)

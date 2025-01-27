@@ -29,5 +29,29 @@ jobs:
         run: go mod download
 
       - name: Run test
-        run: |
-          go test -race ./...
+        run: make test
+
+  lint:
+    name: Lint
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Run lint
+        run: make lint
+
+      - uses: dominikh/staticcheck-action@v1
+        with:
+          version: "latest"
+          install-go: false

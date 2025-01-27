@@ -19,7 +19,7 @@ func TestNew(t *testing.T) {
 	}
 	errNNil := New("error", errors.New("test error"))
 	if errNNil == nil {
-		t.Error(errNNil, errNNil.Error())
+		t.Error("error is nil")
 	}
 
 	func() {
@@ -53,13 +53,13 @@ func TestGetLevel(t *testing.T) {
 	t.Log("test func getLevel()")
 	t.Log("level変数に存在している時")
 
-	if 0 != GetLevel(ERROR) {
+	if GetLevel(ERROR) != 0 {
 		t.Fatal("level:", GetLevel(ERROR), ", status:", ERROR)
 	}
-	if 1 != GetLevel(WARNING) {
+	if GetLevel(WARNING) != 1 {
 		t.Fatal("level:", GetLevel(WARNING), ", status:", WARNING)
 	}
-	if -1 != GetLevel("unknown") {
+	if GetLevel("unknown") != -1 {
 		t.Fatal("level:", GetLevel("unknown"), ", status:", "unknown")
 	}
 	if func(status string) bool {
@@ -77,10 +77,10 @@ func TestGetLevel(t *testing.T) {
 func TestError(t *testing.T) {
 	t.Log("test Error()")
 
-	if "test warning" != testWarn.Error() {
+	if testWarn.Error() != "test warning" {
 		t.Fatal(testWarn.Type, testWarn.Error())
 	}
-	if "test error" != testError.Error() {
+	if testError.Error() != "test error" {
 		t.Fatal(testError.Type, testError.Error())
 	}
 }

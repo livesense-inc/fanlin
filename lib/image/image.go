@@ -91,7 +91,7 @@ func max(v uint, max uint) uint {
 
 func EncodeJpeg(img *image.Image, q int) (io.Reader, error) {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	if !(0 <= q && q <= 100) {
@@ -105,7 +105,7 @@ func EncodeJpeg(img *image.Image, q int) (io.Reader, error) {
 
 func EncodePNG(img *image.Image, q int) (io.Reader, error) {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	// Split quality from 0 to 100 in 4 CompressionLevel
@@ -131,7 +131,7 @@ func EncodePNG(img *image.Image, q int) (io.Reader, error) {
 
 func EncodeGIF(img *image.Image, q int) (io.Reader, error) {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	// GIF is not support quality
@@ -143,7 +143,7 @@ func EncodeGIF(img *image.Image, q int) (io.Reader, error) {
 
 func EncodeWebP(img *image.Image, q int, lossless bool) (io.Reader, error) {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 	if !(0 <= q && q < 100) {
 		// webp.DefaulQuality = 90 is large, adjust to JPEG
@@ -163,13 +163,13 @@ func EncodeWebP(img *image.Image, q int, lossless bool) (io.Reader, error) {
 	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-//DecodeImage is return image.Image
+// DecodeImage is return image.Image
 func DecodeImage(r io.Reader) (*Image, error) {
 	img, format, err := decode(r)
 	return &Image{img: img, format: format}, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-//アス比を維持した時の長さを取得する
+// アス比を維持した時の長さを取得する
 func keepAspect(img image.Image, w uint, h uint) (uint, uint) {
 	r := img.Bounds()
 	if int(w)*r.Max.Y < int(h)*r.Max.X {
@@ -211,7 +211,8 @@ func resizeAndFillImage(img image.Image, w uint, h uint, c color.Color, maxWidth
 	resizedImage := <-ch0
 	m := <-ch1
 
-	draw.Draw(m, m.Bounds(), &image.Uniform{c}, image.ZP, draw.Src)
+	zeroPoint := image.Point{}
+	draw.Draw(m, m.Bounds(), &image.Uniform{c}, zeroPoint, draw.Src)
 
 	//画像の中心座標を計算
 	centerH := int(h)/2 - (resizedImage.Bounds().Max.Y / 2)

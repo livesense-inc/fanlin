@@ -94,9 +94,9 @@ func main() {
 	conf.Set("local_image_path", *localImagePath)
 	conf.Set("max_process", *maxProcess)
 
-	loggers := map[string]logrus.Logger{
-		"err":    *logger.NewLogger(conf.ErrorLogPath()),
-		"access": *logger.NewLogger(conf.AccessLogPath()),
+	loggers := map[string]*logrus.Logger{
+		"err":    logger.NewLogger(conf.ErrorLogPath()),
+		"access": logger.NewLogger(conf.AccessLogPath()),
 	}
 
 	if *debug {

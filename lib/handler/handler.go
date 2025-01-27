@@ -73,11 +73,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 					case imgproxyerr.WARNING:
 						os.Stderr = devNull
 						errLogger.Warn(err)
-						break
 					case imgproxyerr.ERROR:
 						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)
-						break
 					default:
 						writeDebugLog(err, conf.DebugLogPath())
 						errLogger.Error(err)

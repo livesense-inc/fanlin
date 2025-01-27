@@ -75,7 +75,7 @@ func main() {
 	errorLogPath := flag.String("err", conf.ErrorLogPath(), "error log path")
 	accessLogPath := flag.String("log", conf.AccessLogPath(), "access log path")
 	port := flag.Int("p", conf.Port(), "port")
-	port = flag.Int("port", conf.Port(), "port")
+	port = flag.Int("port", *port, "port")
 	localImagePath := flag.String("li", conf.LocalImagePath(), "local image path")
 	maxProcess := flag.Int("cpu", conf.MaxProcess(), "max process.")
 	debug := flag.Bool("debug", false, "debug mode.")

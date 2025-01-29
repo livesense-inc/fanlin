@@ -17,8 +17,8 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20150520140647-709fab3d192d
 	github.com/sirupsen/logrus v1.6.0
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
-	golang.org/x/net v0.10.0
-	golang.org/x/text v0.9.0
+	golang.org/x/net v0.33.0
+	golang.org/x/text v0.21.0
 )
 
 require (
@@ -48,6 +48,6 @@ require (
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.11.1 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )

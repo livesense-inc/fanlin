@@ -21,8 +21,11 @@ test:
 	@go clean -testcache
 	@go test -race ./...
 
+lint:
+	@go vet ./...
+
 clean:
 	@unlink fanlin.json || true
 	@rm -f cmd/fanlin/server cmd/fanlin/fanlin.json
 
-.PHONY: build cmd/fanlin/server run test clean
+.PHONY: build cmd/fanlin/server run test lint clean

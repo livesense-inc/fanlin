@@ -91,8 +91,7 @@ $ go test -cover ./...
                 "type" : "s3",
                 "src" : "s3://bucket/path",
                 "region" : "ap-northeast-1",
-                "priority" : 30,
-                "use_env_credential": true
+                "priority" : 30
             }
         }
     ]

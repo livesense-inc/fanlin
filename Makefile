@@ -10,4 +10,7 @@ test:
 	@go clean -testcache
 	@go test -race ./...
 
-.PHONY: server test
+lint:
+	@go vet ./...
+
+.PHONY: server test lint

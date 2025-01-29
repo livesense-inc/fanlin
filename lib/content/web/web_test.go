@@ -2,12 +2,11 @@ package web
 
 import (
 	"errors"
+	"io"
+	"strings"
 	"testing"
 
 	"github.com/livesense-inc/fanlin/lib/content"
-	"io"
-	"io/ioutil"
-	"strings"
 )
 
 var SetHttpClient = setHttpClient
@@ -57,7 +56,7 @@ func TestGetImageBinary(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	bin, err := ioutil.ReadAll(result)
+	bin, err := io.ReadAll(result)
 	if err != nil {
 		panic(err)
 	}

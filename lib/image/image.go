@@ -91,7 +91,7 @@ func max(v uint, max uint) uint {
 
 func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
-		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	if !(0 <= q && q <= 100) {
@@ -104,7 +104,7 @@ func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
 
 func EncodePNG(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
-		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	// Split quality from 0 to 100 in 4 CompressionLevel
@@ -129,7 +129,7 @@ func EncodePNG(buf io.Writer, img *image.Image, q int) error {
 
 func EncodeGIF(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
-		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	// GIF is not support quality
@@ -140,7 +140,7 @@ func EncodeGIF(buf io.Writer, img *image.Image, q int) error {
 
 func EncodeWebP(buf io.Writer, img *image.Image, q int, lossless bool) error {
 	if *img == nil {
-		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil."))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 	if !(0 <= q && q < 100) {
 		// webp.DefaulQuality = 90 is large, adjust to JPEG
@@ -207,7 +207,8 @@ func resizeAndFillImage(img image.Image, w uint, h uint, c color.Color, maxWidth
 	resizedImage := <-ch0
 	m := <-ch1
 
-	draw.Draw(m, m.Bounds(), &image.Uniform{c}, image.ZP, draw.Src)
+	zeroPoint := image.Point{}
+	draw.Draw(m, m.Bounds(), &image.Uniform{c}, zeroPoint, draw.Src)
 
 	//画像の中心座標を計算
 	centerH := int(h)/2 - (resizedImage.Bounds().Max.Y / 2)

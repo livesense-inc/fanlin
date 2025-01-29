@@ -2,7 +2,6 @@ package imageprocessor
 
 import (
 	"bytes"
-	"image"
 	"image/color"
 	"log"
 	"os"
@@ -29,7 +28,6 @@ var (
 	confBin, _         = os.Open(confPath)
 )
 
-var testRect = image.Rect(0, 0, 100, 100)
 var ResizeImage = resizeImage
 var ResizeAndFillImage = resizeAndFillImage
 var Crop = crop

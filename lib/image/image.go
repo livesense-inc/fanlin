@@ -89,23 +89,22 @@ func max(v uint, max uint) uint {
 	return v
 }
 
-func EncodeJpeg(img *image.Image, q int) (io.Reader, error) {
+func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	if !(0 <= q && q <= 100) {
 		q = jpeg.DefaultQuality
 	}
 
-	buf := new(bytes.Buffer)
 	err := jpeg.Encode(buf, *img, &jpeg.Options{Quality: q})
-	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
+	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodePNG(img *image.Image, q int) (io.Reader, error) {
+func EncodePNG(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	// Split quality from 0 to 100 in 4 CompressionLevel
@@ -124,26 +123,24 @@ func EncodePNG(img *image.Image, q int) (io.Reader, error) {
 		e.CompressionLevel = png.DefaultCompression
 	}
 
-	buf := new(bytes.Buffer)
 	err := e.Encode(buf, *img)
-	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
+	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodeGIF(img *image.Image, q int) (io.Reader, error) {
+func EncodeGIF(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 
 	// GIF is not support quality
 
-	buf := new(bytes.Buffer)
 	err := gif.Encode(buf, *img, &gif.Options{})
-	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
+	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
-func EncodeWebP(img *image.Image, q int, lossless bool) (io.Reader, error) {
+func EncodeWebP(buf io.Writer, img *image.Image, q int, lossless bool) error {
 	if *img == nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
 	}
 	if !(0 <= q && q < 100) {
 		// webp.DefaulQuality = 90 is large, adjust to JPEG
@@ -158,9 +155,8 @@ func EncodeWebP(img *image.Image, q int, lossless bool) (io.Reader, error) {
 		option.Quality = float32(q)
 	}
 
-	buf := new(bytes.Buffer)
 	err := webp.Encode(buf, *img, &option)
-	return buf, imgproxyerr.New(imgproxyerr.WARNING, err)
+	return imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
 // DecodeImage is return image.Image
@@ -285,17 +281,17 @@ func (i *Image) GetFormat() string {
 	return i.format
 }
 
-func Set404Image(path string, w uint, h uint, c color.Color, maxW uint, maxH uint) (io.Reader, error) {
+func Set404Image(buf io.Writer, path string, w uint, h uint, c color.Color, maxW uint, maxH uint) error {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
+		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 	img, err := DecodeImage(f)
 	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
+		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 	img.ResizeAndFill(w, h, c, maxW, maxH)
-	return EncodeJpeg(img.GetImg(), jpeg.DefaultQuality)
+	return EncodeJpeg(buf, img.GetImg(), jpeg.DefaultQuality)
 }
 
 func toRadian(n int) float64 {

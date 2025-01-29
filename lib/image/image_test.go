@@ -1,6 +1,7 @@
 package imageprocessor
 
 import (
+	"bytes"
 	"image/color"
 	"log"
 	"os"
@@ -38,20 +39,20 @@ func TestEncodeJpeg(t *testing.T) {
 		t.Fatalf("format is %v, expected jpeg", format)
 	}
 
-	bin, err := EncodeJpeg(img.GetImg(), -1)
+	var b bytes.Buffer
+	err := EncodeJpeg(&b, img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
-	if bin == nil {
-		t.Fatalf("bin is nil.")
-	}
+	b.Reset()
 
 	img, _ = DecodeImage(confBin)
 	confBin.Seek(0, 0)
-	_, err = EncodeJpeg(img.GetImg(), 50)
+	err = EncodeJpeg(&b, img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}
+	b.Reset()
 }
 
 func BenchmarkEncodeJpeg(b *testing.B) {
@@ -62,20 +63,20 @@ func BenchmarkEncodeJpeg(b *testing.B) {
 			log.Fatalf("format is %v, expected jpeg", format)
 		}
 
-		bin, err := EncodeJpeg(img.GetImg(), -1)
+		var b bytes.Buffer
+		err := EncodeJpeg(&b, img.GetImg(), -1)
 		if err != nil {
 			log.Fatalf("err is %v.", err)
 		}
-		if bin == nil {
-			log.Fatalf("bin is nil.")
-		}
+		b.Reset()
 
 		img, _ = DecodeImage(confBin)
 		confBin.Seek(0, 0)
-		_, err = EncodeJpeg(img.GetImg(), 50)
+		err = EncodeJpeg(&b, img.GetImg(), 50)
 		if err == nil {
 			log.Fatalf("err is %v.", err)
 		}
+		b.Reset()
 	}
 }
 
@@ -86,20 +87,20 @@ func TestEncodePNG(t *testing.T) {
 		t.Fatalf("format is %v, expected png", format)
 	}
 
-	bin, err := EncodePNG(img.GetImg(), -1)
+	var b bytes.Buffer
+	err := EncodePNG(&b, img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
-	if bin == nil {
-		t.Fatalf("bin is nil.")
-	}
+	b.Reset()
 
 	img, _ = DecodeImage(confBin)
 	confBin.Seek(0, 0)
-	_, err = EncodePNG(img.GetImg(), 50)
+	err = EncodePNG(&b, img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}
+	b.Reset()
 }
 
 func TestEncodeGIF(t *testing.T) {
@@ -109,20 +110,20 @@ func TestEncodeGIF(t *testing.T) {
 		t.Fatalf("format is %v, expected png", format)
 	}
 
-	bin, err := EncodeGIF(img.GetImg(), -1)
+	var b bytes.Buffer
+	err := EncodeGIF(&b, img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
-	if bin == nil {
-		t.Fatalf("bin is nil.")
-	}
+	b.Reset()
 
 	img, _ = DecodeImage(confBin)
 	confBin.Seek(0, 0)
-	_, err = EncodeGIF(img.GetImg(), 50)
+	err = EncodeGIF(&b, img.GetImg(), 50)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}
+	b.Reset()
 }
 
 func TestEncodeWebP(t *testing.T) {
@@ -133,13 +134,12 @@ func TestEncodeWebP(t *testing.T) {
 		t.Fatalf("format is %v, expected webp", format)
 	}
 
-	bin, err := EncodeWebP(img.GetImg(), -1, true)
+	var b bytes.Buffer
+	err := EncodeWebP(&b, img.GetImg(), -1, true)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
-	if bin == nil {
-		t.Fatalf("bin is nil.")
-	}
+	b.Reset()
 
 	// Lossy
 	img, _ = DecodeImage(webpLossyBin)
@@ -148,21 +148,20 @@ func TestEncodeWebP(t *testing.T) {
 		t.Fatalf("format is %v, expected webp", format)
 	}
 
-	bin, err = EncodeWebP(img.GetImg(), -1, false)
+	err = EncodeWebP(&b, img.GetImg(), -1, false)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
-	if bin == nil {
-		t.Fatalf("bin is nil.")
-	}
+	b.Reset()
 
 	// error
 	img, _ = DecodeImage(confBin)
 	confBin.Seek(0, 0)
-	_, err = EncodeWebP(img.GetImg(), 50, true)
+	err = EncodeWebP(&b, img.GetImg(), 50, true)
 	if err == nil {
 		t.Fatalf("err is %v.", err)
 	}
+	b.Reset()
 }
 
 func TestDecodeImage(t *testing.T) {

@@ -76,7 +76,6 @@ func main() {
 	accessLogPath := flag.String("log", conf.AccessLogPath(), "access log path")
 	port := flag.Int("p", conf.Port(), "port")
 	port = flag.Int("port", *port, "port")
-	localImagePath := flag.String("li", conf.LocalImagePath(), "local image path")
 	maxProcess := flag.Int("cpu", conf.MaxProcess(), "max process.")
 	debug := flag.Bool("debug", false, "debug mode.")
 	flag.BoolVar(&vOption, "v", false, "version")
@@ -91,7 +90,6 @@ func main() {
 	conf.Set("error_log_path", *errorLogPath)
 	conf.Set("access_log_path", *accessLogPath)
 	conf.Set("port", *port)
-	conf.Set("local_image_path", *localImagePath)
 	conf.Set("max_process", *maxProcess)
 
 	loggers := map[string]*logrus.Logger{

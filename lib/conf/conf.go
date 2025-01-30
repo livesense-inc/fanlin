@@ -155,14 +155,6 @@ func (c *Conf) Port() int {
 	return convInterfaceToInt(port, 8080)
 }
 
-func (c *Conf) LocalImagePath() string {
-	path := c.c["local_image_path"]
-	if path == nil {
-		path = "./"
-	}
-	return path.(string)
-}
-
 func (c *Conf) MaxSize() (uint, uint) {
 	width := c.c["max_width"]
 	height := c.c["max_height"]
@@ -172,52 +164,9 @@ func (c *Conf) MaxSize() (uint, uint) {
 	return uint(w), uint(h)
 }
 
-func (c *Conf) Externals() map[string]string {
-	externals := c.c["externals"].([]interface{})
-	if externals == nil {
-		return map[string]string{}
-	}
-	externalsBuffer := map[string]string{}
-	for _, external := range externals {
-		for k, v := range external.(map[string]interface{}) {
-			externalsBuffer[k] = v.(string)
-		}
-	}
-	return externalsBuffer
-}
-
 func (c *Conf) MaxProcess() int {
 	maxProcess := c.c["max_process"]
 	return convInterfaceToInt(maxProcess, runtime.NumCPU())
-}
-
-func (c *Conf) S3BucketName() string {
-	name := c.c["s3_bucket_name"]
-
-	if n, ok := name.(string); ok {
-		if len(n) > 0 {
-			return n
-		}
-		return ""
-	}
-	return ""
-}
-
-// S3Region returns the set of "s3_region".
-// And default values "ap-northeast-1"
-func (c *Conf) S3Region() string {
-	if region, ok := c.c["s3_region"].(string); ok {
-		if region == "Tokyo" ||
-			region == "tokyo" ||
-			region == "asia-pacific" ||
-			region == "Asia pacific" ||
-			region == "asia pacific" {
-			return "ap-northeast-1"
-		}
-
-		return region
-	}
-	return "ap-northeast-1"
 }
 
 func convInterfaceToInt(v interface{}, exception int) int {

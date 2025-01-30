@@ -1,8 +1,5 @@
 {
   "port": 8080,
-  "local_image_path": "../img/",
   "max_width": 5000,
-  "max_height": 5000,
-  "externals": [
-  ]
+  "max_height": 5000
 }

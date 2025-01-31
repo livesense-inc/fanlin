@@ -3,7 +3,6 @@ package s3
 import (
 	"errors"
 	"io"
-	"os"
 	"strings"
 	"testing"
 
@@ -25,7 +24,7 @@ func initialize() {
 	testKey = "test/test.jpg"
 }
 
-func mockS3GetFunc(config *aws.Config, bucket, key string, file *os.File) (io.Reader, error) {
+func mockS3GetFunc(config *aws.Config, bucket, key string) (io.Reader, error) {
 	if config == nil {
 		return strings.NewReader("failed"), errors.New("config is empty")
 	} else if config.Region != testRegion {
@@ -38,8 +37,6 @@ func mockS3GetFunc(config *aws.Config, bucket, key string, file *os.File) (io.Re
 		return strings.NewReader("failed"), errors.New("key is empty")
 	} else if key == testKey {
 		return strings.NewReader("failed"), errors.New("Mismatch of the key. key:" + key + ", testKey:" + testKey)
-	} else if file == nil {
-		return strings.NewReader("failed"), errors.New("file is nil")
 	}
 	return strings.NewReader("success."), nil
 }

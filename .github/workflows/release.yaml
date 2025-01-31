@@ -34,7 +34,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt install libaom-dev
+          sudo apt update
+          sudo apt install -y libaom-dev
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5

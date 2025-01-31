@@ -168,7 +168,7 @@ func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
 	// https://pkg.go.dev/github.com/Kagami/go-avif
 	if q < 0 {
 		// not specified
-		q = avif.MaxQuality
+		q = avif.MaxQuality - 20
 	} else if q < avif.MinQuality {
 		q = avif.MinQuality
 	} else if q > avif.MaxQuality {

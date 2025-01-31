@@ -16,6 +16,7 @@ import (
 
 	"github.com/BurntSushi/graphics-go/graphics"
 	"github.com/BurntSushi/graphics-go/graphics/interp"
+	"github.com/Kagami/go-avif"
 	"github.com/chai2010/webp"
 	"github.com/ieee0824/libcmyk"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
@@ -157,6 +158,35 @@ func EncodeWebP(buf io.Writer, img *image.Image, q int, lossless bool) error {
 
 	err := webp.Encode(buf, *img, &option)
 	return imgproxyerr.New(imgproxyerr.WARNING, err)
+}
+
+func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
+	if *img == nil {
+		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))
+	}
+
+	// https://pkg.go.dev/github.com/Kagami/go-avif
+	if q < 0 {
+		// not specified
+		q = avif.MaxQuality
+	} else if q < avif.MinQuality {
+		q = avif.MinQuality
+	} else if q > avif.MaxQuality {
+		q = avif.MaxQuality
+	}
+	q = avif.MaxQuality - q // lower is better, invert
+
+	opts := avif.Options{
+		Threads:        0,             // all available cores
+		Speed:          avif.MaxSpeed, // bigger is faster, but lower compress ratio
+		Quality:        q,             // lower is better, zero is lossless
+		SubsampleRatio: nil,           // 4:2:0
+	}
+	if err := avif.Encode(buf, *img, &opts); err != nil {
+		return imgproxyerr.New(imgproxyerr.WARNING, err)
+	}
+
+	return nil
 }
 
 // DecodeImage is return image.Image

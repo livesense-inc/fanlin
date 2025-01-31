@@ -25,6 +25,10 @@ jobs:
           go-version-file: go.mod
           check-latest: true
 
+      - name: Install dependencies
+        run: |
+          apt install libaom-dev
+
       - name: Get dependencies
         run: go mod download
 

@@ -26,6 +26,13 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 ## master pushの悲劇を防ぐために
 [ここを参考に設定すること](http://ganmacs.hatenablog.com/entry/2014/06/18/224132)
 
+## 依存ライブラリl
+AVIFフォーマットのエンコードのためにlibaomが必要です。事前にインストールしておいてください。
+
+```
+$ sudo apt install libaom-dev
+```
+
 ## Linux用にクロスコンパイルする
 ### go1.19
 ```

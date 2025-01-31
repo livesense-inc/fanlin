@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"net/url"
-	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -20,7 +19,7 @@ import (
 var s3GetSourceFunc = getS3ImageBinary
 
 // Test dedicated function
-func setS3GetFunc(f func(cfg *aws.Config, bucket, key string, file *os.File) (io.Reader, error)) {
+func setS3GetFunc(f func(cfg *aws.Config, bucket, key string) (io.Reader, error)) {
 	s3GetSourceFunc = f
 }
 
@@ -32,15 +31,6 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 	u, err := url.Parse(s3url)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not parse s3 url"))
-	}
-
-	file, err := os.CreateTemp(os.TempDir(), "s3_img")
-	defer func() {
-		os.Remove(file.Name())
-		file.Close()
-	}()
-	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 
 	bucket := u.Host
@@ -60,7 +50,7 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 		if err != nil {
 			return nil, err
 		}
-		return s3GetSourceFunc(&cfg, bucket, path, file)
+		return s3GetSourceFunc(&cfg, bucket, path)
 	}
 	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
 }
@@ -79,22 +69,18 @@ func NormalizePath(path string, form string) (string, error) {
 	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form("+form+")"))
 }
 
-func getS3ImageBinary(cfg *aws.Config, bucket, key string, file *os.File) (io.Reader, error) {
+func getS3ImageBinary(cfg *aws.Config, bucket, key string) (io.Reader, error) {
 	downloader := s3manager.NewDownloader(s3.NewFromConfig(*cfg))
+	buf := s3manager.NewWriteAtBuffer([]byte{})
 	input := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
 	}
-	_, err := downloader.Download(context.TODO(), file, input)
+	_, err := downloader.Download(context.TODO(), buf, input)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
-
-	ret := new(bytes.Buffer)
-	if _, err := io.Copy(ret, file); err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
-	}
-	return ret, imgproxyerr.New(imgproxyerr.ERROR, err)
+	return bytes.NewReader(buf.Bytes()), imgproxyerr.New(imgproxyerr.ERROR, err)
 }
 
 func init() {

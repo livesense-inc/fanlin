@@ -21,7 +21,7 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 * PNG
 * GIF
 * WebP
-* AVIF
+* AVIF (エンコードのみ)
 
 ## macOS の環境構築
 ## master pushの悲劇を防ぐために

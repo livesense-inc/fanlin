@@ -20,7 +20,7 @@ fanlin is image proxy server in native Go language.
 * PNG
 * GIF
 * WebP
-* AVIF
+* AVIF (encode only)
 
 ## Requirements
 Make sure libaom is installed for AVIF format encoding.

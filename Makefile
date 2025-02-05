@@ -24,8 +24,20 @@ test:
 lint:
 	@go vet ./...
 
+bench:
+	@go test -bench=. -benchmem -run=NONE ./...
+
+prof: PKG ?= handler
+prof: TYPE ?= mem
+prof:
+	@if [ -z "${PKG}" ]; then echo 'empty variable: PKG'; exit 1; fi
+	@if [ -z "${TYPE}" ]; then echo 'empty variable: TYPE'; exit 1; fi
+	@if [ ! -d "./lib/${PKG}" ]; then echo 'package not found: ${PKG}'; exit 1; fi
+	@go test -bench=. -run=NONE -${TYPE}profile=${TYPE}.out ./lib/${PKG}
+	@go tool pprof -text -nodecount=10 ./${PKG}.test ${TYPE}.out
+
 clean:
 	@unlink fanlin.json || true
 	@rm -f cmd/fanlin/server cmd/fanlin/fanlin.json
 
-.PHONY: build cmd/fanlin/server run test lint clean
+.PHONY: build cmd/fanlin/server run test lint bench prof clean

@@ -77,3 +77,6 @@ vendor/
 /server
 /fanlin.json
 /*.log
+/*.out
+/*.test
+__debug_bin

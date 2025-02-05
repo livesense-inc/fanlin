@@ -55,3 +55,51 @@ jobs:
         with:
           version: "latest"
           install-go: false
+
+  benchmark:
+    name: Benchmark
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Run benchmark
+        run: make bench
+
+  profiling:
+    name: Profiling
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ["handler"]
+        type: ["cpu", "block", "mem"]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Run
+        run: make prof
+        env:
+          PKG: ${{ matrix.package }}
+          TYPE: ${{ matrix.type }}

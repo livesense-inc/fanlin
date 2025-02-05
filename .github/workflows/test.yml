@@ -98,7 +98,7 @@ jobs:
       - name: Download modules
         run: go mod download
 
-      - name: Run
+      - name: Run profiling
         run: make prof
         env:
           PKG: ${{ matrix.package }}

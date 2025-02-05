@@ -40,4 +40,4 @@ clean:
 	@unlink fanlin.json || true
 	@rm -f cmd/fanlin/server cmd/fanlin/fanlin.json
 
-.PHONY: build cmd/fanlin/server run test lint clean
+.PHONY: build cmd/fanlin/server run test lint bench prof clean

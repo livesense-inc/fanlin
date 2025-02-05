@@ -22,14 +22,14 @@ type RealWebClient struct {
 }
 
 type WebClient interface {
-	Get(string, []byte) (io.Reader, error)
+	Get(string, *bytes.Buffer) (io.Reader, error)
 }
 
 type Client struct {
 	Http WebClient
 }
 
-func (r *RealWebClient) Get(url string, b []byte) (io.Reader, error) {
+func (r *RealWebClient) Get(url string, buffer *bytes.Buffer) (io.Reader, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.ERROR, err)
@@ -46,7 +46,6 @@ func (r *RealWebClient) Get(url string, b []byte) (io.Reader, error) {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, fmt.Errorf("received error status code(%d)", resp.StatusCode))
 	}
 
-	buffer := bytes.NewBuffer(b)
 	if _, err := io.Copy(buffer, resp.Body); err != nil {
 		return nil, err
 	}
@@ -63,7 +62,7 @@ func isErrorCode(status int) bool {
 	}
 }
 
-func GetImageBinary(c *content.Content, b []byte) (io.Reader, error) {
+func GetImageBinary(c *content.Content, b *bytes.Buffer) (io.Reader, error) {
 	return httpClient.Http.Get(c.SourcePlace, b)
 }
 

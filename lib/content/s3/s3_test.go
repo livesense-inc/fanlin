@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"strings"
@@ -24,7 +25,7 @@ func initialize() {
 	testKey = "test/test.jpg"
 }
 
-func mockS3GetFunc(config *aws.Config, bucket, key string, b []byte) (io.Reader, error) {
+func mockS3GetFunc(config *aws.Config, bucket, key string, b *bytes.Buffer) (io.Reader, error) {
 	if config == nil {
 		return strings.NewReader("failed"), errors.New("config is empty")
 	} else if config.Region != testRegion {
@@ -54,11 +55,11 @@ func newTestContent() *content.Content {
 func TestGetImageBinary(t *testing.T) {
 	initialize()
 	c := newTestContent()
-	if _, err := GetImageBinary(c, []byte{}); err != nil {
+	if _, err := GetImageBinary(c, new(bytes.Buffer)); err != nil {
 		t.Log("normal pattern.")
 		t.Fatal(err)
 	}
-	if _, err := GetImageBinary(nil, []byte{}); err == nil {
+	if _, err := GetImageBinary(nil, new(bytes.Buffer)); err == nil {
 		t.Log("abnormal pattern.")
 		t.Fatal("err is nil.")
 	}

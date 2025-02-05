@@ -33,7 +33,7 @@ var ResizeAndFillImage = resizeAndFillImage
 var Crop = crop
 
 func TestEncodeJpeg(t *testing.T) {
-	img, _ := DecodeImage(jpegBin, []byte{})
+	img, _ := DecodeImage(jpegBin, new(bytes.Buffer))
 	jpegBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "jpeg" {
 		t.Fatalf("format is %v, expected jpeg", format)
@@ -46,7 +46,7 @@ func TestEncodeJpeg(t *testing.T) {
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin, []byte{})
+	img, _ = DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 	err = EncodeJpeg(&b, img.GetImg(), 50)
 	if err == nil {
@@ -57,7 +57,7 @@ func TestEncodeJpeg(t *testing.T) {
 
 func BenchmarkEncodeJpeg(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		img, _ := DecodeImage(jpegBin, []byte{})
+		img, _ := DecodeImage(jpegBin, new(bytes.Buffer))
 		jpegBin.Seek(0, 0)
 		if format := img.GetFormat(); format != "jpeg" {
 			log.Fatalf("format is %v, expected jpeg", format)
@@ -70,7 +70,7 @@ func BenchmarkEncodeJpeg(b *testing.B) {
 		}
 		b.Reset()
 
-		img, _ = DecodeImage(confBin, []byte{})
+		img, _ = DecodeImage(confBin, new(bytes.Buffer))
 		confBin.Seek(0, 0)
 		err = EncodeJpeg(&b, img.GetImg(), 50)
 		if err == nil {
@@ -81,7 +81,7 @@ func BenchmarkEncodeJpeg(b *testing.B) {
 }
 
 func TestEncodePNG(t *testing.T) {
-	img, _ := DecodeImage(pngBin, []byte{})
+	img, _ := DecodeImage(pngBin, new(bytes.Buffer))
 	pngBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "png" {
 		t.Fatalf("format is %v, expected png", format)
@@ -94,7 +94,7 @@ func TestEncodePNG(t *testing.T) {
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin, []byte{})
+	img, _ = DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 	err = EncodePNG(&b, img.GetImg(), 50)
 	if err == nil {
@@ -104,7 +104,7 @@ func TestEncodePNG(t *testing.T) {
 }
 
 func TestEncodeGIF(t *testing.T) {
-	img, _ := DecodeImage(gifBin, []byte{})
+	img, _ := DecodeImage(gifBin, new(bytes.Buffer))
 	gifBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "gif" {
 		t.Fatalf("format is %v, expected png", format)
@@ -117,7 +117,7 @@ func TestEncodeGIF(t *testing.T) {
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin, []byte{})
+	img, _ = DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 	err = EncodeGIF(&b, img.GetImg(), 50)
 	if err == nil {
@@ -128,7 +128,7 @@ func TestEncodeGIF(t *testing.T) {
 
 func TestEncodeWebP(t *testing.T) {
 	// Lossless
-	img, _ := DecodeImage(webpLosslessBin, []byte{})
+	img, _ := DecodeImage(webpLosslessBin, new(bytes.Buffer))
 	webpLosslessBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "webp" {
 		t.Fatalf("format is %v, expected webp", format)
@@ -142,7 +142,7 @@ func TestEncodeWebP(t *testing.T) {
 	b.Reset()
 
 	// Lossy
-	img, _ = DecodeImage(webpLossyBin, []byte{})
+	img, _ = DecodeImage(webpLossyBin, new(bytes.Buffer))
 	webpLossyBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "webp" {
 		t.Fatalf("format is %v, expected webp", format)
@@ -155,7 +155,7 @@ func TestEncodeWebP(t *testing.T) {
 	b.Reset()
 
 	// error
-	img, _ = DecodeImage(confBin, []byte{})
+	img, _ = DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 	err = EncodeWebP(&b, img.GetImg(), 50, true)
 	if err == nil {
@@ -167,14 +167,14 @@ func TestEncodeWebP(t *testing.T) {
 func TestEncodeAVIF(t *testing.T) {
 	var b bytes.Buffer
 
-	img, _ := DecodeImage(pngBin, []byte{})
+	img, _ := DecodeImage(pngBin, new(bytes.Buffer))
 	pngBin.Seek(0, 0)
 	if err := EncodeAVIF(&b, img.GetImg(), 50); err != nil {
 		t.Fatal(err)
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin, []byte{})
+	img, _ = DecodeImage(confBin, new(bytes.Buffer))
 	pngBin.Seek(0, 0)
 	if err := EncodeAVIF(&b, img.GetImg(), 50); err == nil {
 		t.Fatal("err is nil")
@@ -183,7 +183,7 @@ func TestEncodeAVIF(t *testing.T) {
 }
 
 func TestDecodeImage(t *testing.T) {
-	img, err := DecodeImage(jpegBin, []byte{})
+	img, err := DecodeImage(jpegBin, new(bytes.Buffer))
 	jpegBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
@@ -193,7 +193,7 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(bmpBin, []byte{})
+	img, err = DecodeImage(bmpBin, new(bytes.Buffer))
 	bmpBin.Seek(0, 0)
 	if err != nil {
 		t.Fatalf("err is not nil. : %v", err)
@@ -202,7 +202,7 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("img.%v", img)
 	}
 
-	img, err = DecodeImage(pngBin, []byte{})
+	img, err = DecodeImage(pngBin, new(bytes.Buffer))
 	pngBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
@@ -212,7 +212,7 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(gifBin, []byte{})
+	img, err = DecodeImage(gifBin, new(bytes.Buffer))
 	gifBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
@@ -222,7 +222,7 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(webpLosslessBin, []byte{})
+	img, err = DecodeImage(webpLosslessBin, new(bytes.Buffer))
 	webpLosslessBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
@@ -232,7 +232,7 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(webpLossyBin, []byte{})
+	img, err = DecodeImage(webpLossyBin, new(bytes.Buffer))
 	webpLossyBin.Seek(0, 0)
 	if err != nil {
 		t.Log(err)
@@ -242,7 +242,7 @@ func TestDecodeImage(t *testing.T) {
 		t.Fatalf("can not decode.")
 	}
 
-	img, err = DecodeImage(confBin, []byte{})
+	img, err = DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 	if err == nil {
 		t.Log(err)
@@ -255,7 +255,7 @@ func TestDecodeImage(t *testing.T) {
 }
 
 func TestResizeImage(t *testing.T) {
-	img, _ := DecodeImage(confBin, []byte{})
+	img, _ := DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 
 	resizeImg := ResizeImage(*img.GetImg(), 100, 100, 10000, 10000)
@@ -263,7 +263,7 @@ func TestResizeImage(t *testing.T) {
 		t.Fatalf("value is not nil.")
 	}
 
-	img, _ = DecodeImage(jpegBin, []byte{})
+	img, _ = DecodeImage(jpegBin, new(bytes.Buffer))
 	jpegBin.Seek(0, 0)
 	ii := *img.GetImg()
 	jpegRect := ii.Bounds()
@@ -326,7 +326,7 @@ func TestResizeAndFillImage(t *testing.T) {
 		B: 0xff,
 		A: 0xff,
 	}
-	img, _ := DecodeImage(confBin, []byte{})
+	img, _ := DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 
 	fillImg := ResizeAndFillImage(*img.GetImg(), 100, 100, c, 10000, 10000)
@@ -334,7 +334,7 @@ func TestResizeAndFillImage(t *testing.T) {
 		t.Fatalf("value is not nil.")
 	}
 
-	img, _ = DecodeImage(pngBin, []byte{})
+	img, _ = DecodeImage(pngBin, new(bytes.Buffer))
 	pngBin.Seek(0, 0)
 
 	fillImg = ResizeAndFillImage(*img.GetImg(), 100, 100, c, 10000, 10000)
@@ -405,7 +405,7 @@ func TestResizeAndFillImage(t *testing.T) {
 }
 
 func TestCrop(t *testing.T) {
-	img, _ := DecodeImage(confBin, []byte{})
+	img, _ := DecodeImage(confBin, new(bytes.Buffer))
 	confBin.Seek(0, 0)
 
 	cropImg := Crop(*img.GetImg(), 100, 100)
@@ -413,7 +413,7 @@ func TestCrop(t *testing.T) {
 		t.Fatalf("value is not nil.")
 	}
 
-	img, _ = DecodeImage(pngBin, []byte{})
+	img, _ = DecodeImage(pngBin, new(bytes.Buffer))
 	pngBin.Seek(0, 0)
 
 	cropImg = Crop(*img.GetImg(), 100, 100)

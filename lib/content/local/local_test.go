@@ -1,6 +1,7 @@
 package local
 
 import (
+	"bytes"
 	"io"
 	"testing"
 
@@ -11,7 +12,7 @@ func TestGetImageBinary(t *testing.T) {
 	c := content.Content{
 		SourcePlace: "../../test/img/Lenna.jpg",
 	}
-	if r, err := GetImageBinary(&c, []byte{}); err != nil {
+	if r, err := GetImageBinary(&c, new(bytes.Buffer)); err != nil {
 		t.Fatal(err)
 	} else {
 		if b, err := io.ReadAll(r); err != nil {

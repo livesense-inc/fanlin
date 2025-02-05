@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"strings"
@@ -25,7 +26,7 @@ func getTestClient() *Client {
 	return c
 }
 
-func (mwc *MockWebClient) Get(url string, b []byte) (io.Reader, error) {
+func (mwc *MockWebClient) Get(url string, b *bytes.Buffer) (io.Reader, error) {
 	if url != targetURL {
 		return nil, errors.New("not match url. url: " + url + ", targetURL: " + targetURL)
 	}
@@ -52,7 +53,7 @@ func TestGetImageBinary(t *testing.T) {
 	c := &content.Content{
 		SourcePlace: targetURL,
 	}
-	result, err := GetImageBinary(c, []byte{})
+	result, err := GetImageBinary(c, new(bytes.Buffer))
 	if err != nil {
 		t.Fatal(err)
 	}

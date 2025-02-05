@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -29,7 +30,7 @@ var devNull, _ = os.Open("/dev/null")
 
 var bufPool = sync.Pool{
 	New: func() any {
-		return make([]byte, 0, 1<<23)
+		return new(bytes.Buffer)
 	},
 }
 
@@ -38,8 +39,8 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 
 	maxW, maxH := conf.MaxSize()
 	w.WriteHeader(404)
-	b := bufPool.Get().([]byte)
-	b = b[:0]
+	b := bufPool.Get().(*bytes.Buffer)
+	b.Reset()
 	defer bufPool.Put(b)
 	if err := imageprocessor.Set404Image(w, b, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
@@ -84,8 +85,8 @@ func MainHandler(
 
 	m := timing.NewMetric("f_load").Start()
 	q := query.NewQueryFromGet(r)
-	b1 := bufPool.Get().([]byte)
-	b1 = b1[:0]
+	b1 := bufPool.Get().(*bytes.Buffer)
+	b1.Reset()
 	defer bufPool.Put(b1)
 	imageBuffer, err := content.GetImageBinary(ctt, b1)
 	if err != nil {
@@ -97,8 +98,8 @@ func MainHandler(
 	m.Stop()
 
 	m = timing.NewMetric("f_decode").Start()
-	b2 := bufPool.Get().([]byte)
-	b2 = b2[:0]
+	b2 := bufPool.Get().(*bytes.Buffer)
+	b2.Reset()
 	defer bufPool.Put(b2)
 	img, err := imageprocessor.DecodeImage(imageBuffer, b2)
 	if err != nil {

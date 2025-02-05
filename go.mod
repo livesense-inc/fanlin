@@ -4,6 +4,7 @@ go 1.23.5
 
 require (
 	github.com/BurntSushi/graphics-go v0.0.0-20160129215708-b43f31a4a966
+	github.com/Kagami/go-avif v0.1.0
 	github.com/aws/aws-sdk-go-v2 v1.34.0
 	github.com/aws/aws-sdk-go-v2/config v1.29.2
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.54

@@ -32,6 +32,11 @@ jobs:
       - name: Print libc version
         run: ldd --version
 
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libaom-dev
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:

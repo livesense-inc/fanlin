@@ -19,6 +19,7 @@ type Query struct {
 	crop                   bool
 	quality                int
 	useWebp                bool
+	useAvif                bool
 }
 
 func NewQueryFromGet(r *http.Request) *Query {
@@ -55,6 +56,11 @@ func NewQueryFromGet(r *http.Request) *Query {
 		webp = false
 	}
 
+	avif, err := strconv.ParseBool(params.Get("avif"))
+	if err != nil {
+		avif = false
+	}
+
 	q.b.H = uint(h)
 	q.b.W = uint(w)
 	q.preliminaryImageSource = params.Get("psrc")
@@ -62,6 +68,7 @@ func NewQueryFromGet(r *http.Request) *Query {
 	q.crop = crop
 	q.quality = quality
 	q.useWebp = webp
+	q.useAvif = avif
 	return &q
 }
 
@@ -87,4 +94,8 @@ func (q *Query) Quality() int {
 
 func (q *Query) UseWebP() bool {
 	return q.useWebp
+}
+
+func (q *Query) UseAVIF() bool {
+	return q.useAvif
 }

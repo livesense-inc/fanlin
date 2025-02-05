@@ -55,3 +55,11 @@ func TestQuality(t *testing.T) {
 		t.Fatalf("quality is %d.", q.Quality())
 	}
 }
+
+func TestAVIF(t *testing.T) {
+	q := NewQueryFromGet(getRquest)
+
+	if q.UseAVIF() {
+		t.Fatalf("avif is true.")
+	}
+}

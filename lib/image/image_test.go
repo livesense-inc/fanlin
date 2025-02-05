@@ -164,6 +164,24 @@ func TestEncodeWebP(t *testing.T) {
 	b.Reset()
 }
 
+func TestEncodeAVIF(t *testing.T) {
+	var b bytes.Buffer
+
+	img, _ := DecodeImage(pngBin)
+	pngBin.Seek(0, 0)
+	if err := EncodeAVIF(&b, img.GetImg(), 50); err != nil {
+		t.Fatal(err)
+	}
+	b.Reset()
+
+	img, _ = DecodeImage(confBin)
+	pngBin.Seek(0, 0)
+	if err := EncodeAVIF(&b, img.GetImg(), 50); err == nil {
+		t.Fatal("err is nil")
+	}
+	b.Reset()
+}
+
 func TestDecodeImage(t *testing.T) {
 	img, err := DecodeImage(jpegBin)
 	jpegBin.Seek(0, 0)

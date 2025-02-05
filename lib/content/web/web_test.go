@@ -25,7 +25,7 @@ func getTestClient() *Client {
 	return c
 }
 
-func (mwc *MockWebClient) Get(url string) (io.Reader, error) {
+func (mwc *MockWebClient) Get(url string, b []byte) (io.Reader, error) {
 	if url != targetURL {
 		return nil, errors.New("not match url. url: " + url + ", targetURL: " + targetURL)
 	}
@@ -52,13 +52,13 @@ func TestGetImageBinary(t *testing.T) {
 	c := &content.Content{
 		SourcePlace: targetURL,
 	}
-	result, err := GetImageBinary(c)
+	result, err := GetImageBinary(c, []byte{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	bin, err := io.ReadAll(result)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	if string(bin) != "It works!" {
 		t.Fatal(string(bin))

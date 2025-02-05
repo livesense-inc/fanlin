@@ -11,7 +11,7 @@ func TestGetImageBinary(t *testing.T) {
 	c := content.Content{
 		SourcePlace: "../../test/img/Lenna.jpg",
 	}
-	if r, err := GetImageBinary(&c); err != nil {
+	if r, err := GetImageBinary(&c, []byte{}); err != nil {
 		t.Fatal(err)
 	} else {
 		if b, err := io.ReadAll(r); err != nil {

@@ -19,11 +19,11 @@ import (
 var s3GetSourceFunc = getS3ImageBinary
 
 // Test dedicated function
-func setS3GetFunc(f func(cfg *aws.Config, bucket, key string) (io.Reader, error)) {
+func setS3GetFunc(f func(cfg *aws.Config, bucket, key string, b []byte) (io.Reader, error)) {
 	s3GetSourceFunc = f
 }
 
-func GetImageBinary(c *content.Content) (io.Reader, error) {
+func GetImageBinary(c *content.Content, b []byte) (io.Reader, error) {
 	if c == nil {
 		return nil, errors.New("content is nil")
 	}
@@ -50,7 +50,7 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 		if err != nil {
 			return nil, err
 		}
-		return s3GetSourceFunc(&cfg, bucket, path)
+		return s3GetSourceFunc(&cfg, bucket, path, b)
 	}
 	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
 }
@@ -69,9 +69,9 @@ func NormalizePath(path string, form string) (string, error) {
 	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form("+form+")"))
 }
 
-func getS3ImageBinary(cfg *aws.Config, bucket, key string) (io.Reader, error) {
+func getS3ImageBinary(cfg *aws.Config, bucket, key string, b []byte) (io.Reader, error) {
 	downloader := s3manager.NewDownloader(s3.NewFromConfig(*cfg))
-	buf := s3manager.NewWriteAtBuffer([]byte{})
+	buf := s3manager.NewWriteAtBuffer(b)
 	input := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),

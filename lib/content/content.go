@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/livesense-inc/fanlin/lib/conf"
+	configure "github.com/livesense-inc/fanlin/lib/conf"
 )
 
 type Content struct {

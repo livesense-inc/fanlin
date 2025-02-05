@@ -190,8 +190,8 @@ func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
 }
 
 // DecodeImage is return image.Image
-func DecodeImage(r io.Reader) (*Image, error) {
-	img, format, err := decode(r)
+func DecodeImage(r io.Reader, b []byte) (*Image, error) {
+	img, format, err := decode(r, b)
 	return &Image{img: img, format: format}, imgproxyerr.New(imgproxyerr.WARNING, err)
 }
 
@@ -311,12 +311,12 @@ func (i *Image) GetFormat() string {
 	return i.format
 }
 
-func Set404Image(buf io.Writer, path string, w uint, h uint, c color.Color, maxW uint, maxH uint) error {
+func Set404Image(buf io.Writer, tmpBuf []byte, path string, w uint, h uint, c color.Color, maxW uint, maxH uint) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
-	img, err := DecodeImage(f)
+	img, err := DecodeImage(f, tmpBuf)
 	if err != nil {
 		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
@@ -363,16 +363,16 @@ func readOrientation(r io.Reader) (o int, err error) {
 	return
 }
 
-func decode(r io.Reader) (d image.Image, format string, err error) {
-	var buf bytes.Buffer
-	tee := io.TeeReader(r, &buf)
+func decode(r io.Reader, b []byte) (d image.Image, format string, err error) {
+	buf := bytes.NewBuffer(b)
+	tee := io.TeeReader(r, buf)
 
 	s, format, err := image.Decode(tee)
 	if err != nil {
 		return
 	}
 
-	o, err := readOrientation(&buf)
+	o, err := readOrientation(buf)
 	if err != nil {
 		return s, format, nil
 	}

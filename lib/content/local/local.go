@@ -10,17 +10,17 @@ import (
 	"github.com/livesense-inc/fanlin/lib/content"
 )
 
-func GetImageBinary(c *content.Content) (io.Reader, error) {
+func GetImageBinary(c *content.Content, b []byte) (io.Reader, error) {
 	f, err := os.Open(path.Clean(c.SourcePlace))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open a file: %s: %w", c.SourcePlace, err)
 	}
 	defer f.Close()
-	var b bytes.Buffer
-	if _, err := io.Copy(&b, f); err != nil {
+	buf := bytes.NewBuffer(b)
+	if _, err := io.Copy(buf, f); err != nil {
 		return nil, err
 	}
-	return &b, nil
+	return buf, nil
 }
 
 func init() {

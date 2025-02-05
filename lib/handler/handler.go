@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"runtime/debug"
+	"sync"
 	"time"
 
 	configure "github.com/livesense-inc/fanlin/lib/conf"
@@ -26,12 +27,21 @@ import (
 
 var devNull, _ = os.Open("/dev/null")
 
+var bufPool = sync.Pool{
+	New: func() any {
+		return make([]byte, 0, 1<<23)
+	},
+}
+
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
 
 	maxW, maxH := conf.MaxSize()
 	w.WriteHeader(404)
-	if err := imageprocessor.Set404Image(w, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
+	b := bufPool.Get().([]byte)
+	b = b[:0]
+	defer bufPool.Put(b)
+	if err := imageprocessor.Set404Image(w, b, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
 		fmt.Fprintf(w, "%s", "404 Not found.")
@@ -51,48 +61,14 @@ func writeDebugLog(err interface{}, debugFile string) {
 	os.Stderr = stackWriter
 }
 
-func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]*logrus.Logger) {
-	timing := servertiming.FromContext(r.Context())
-	defer func() {
-		err := recover()
-		if err != nil {
-			create404Page(w, r, conf)
-			if loggers != nil {
-				errLogger := func() *logrus.Entry {
-					logger := loggers["err"]
-					return logger.WithFields(logrus.Fields{
-						"UA":        r.UserAgent(),
-						"access_ip": r.RemoteAddr,
-						"url":       r.URL.String(),
-						"type":      r.Method,
-						"version":   r.Proto,
-					})
-				}()
-				if e, ok := err.(*imgproxyerr.Err); ok {
-					switch e.Type {
-					case imgproxyerr.WARNING:
-						os.Stderr = devNull
-						errLogger.Warn(err)
-					case imgproxyerr.ERROR:
-						writeDebugLog(err, conf.DebugLogPath())
-						errLogger.Error(err)
-					default:
-						writeDebugLog(err, conf.DebugLogPath())
-						errLogger.Error(err)
-					}
-				} else {
-					writeDebugLog(err, conf.DebugLogPath())
-					errLogger.Error(err)
-				}
+func MainHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+	conf *configure.Conf,
+	loggers map[string]*logrus.Logger,
+) {
 
-			} else {
-				writeDebugLog(err, conf.DebugLogPath())
-				log.Println(err)
-			}
-			fmt.Fprintf(w, "%s", "")
-			debug.PrintStack()
-		}
-	}()
+	timing := servertiming.FromContext(r.Context())
 	accessLogger := loggers["access"]
 	accessLogger.WithFields(logrus.Fields{
 		"UA":        r.UserAgent(),
@@ -100,25 +76,39 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		"url":       r.URL.String(),
 	}).Info()
 
+	ctt := content.GetContent(r.URL.Path, conf)
+	if ctt == nil {
+		fallback(w, r, conf, loggers, nil)
+		return
+	}
+
 	m := timing.NewMetric("f_load").Start()
 	q := query.NewQueryFromGet(r)
-	imageBuffer, err := content.GetImageBinary(content.GetContent(r.URL.Path, conf))
+	b1 := bufPool.Get().([]byte)
+	b1 = b1[:0]
+	defer bufPool.Put(b1)
+	imageBuffer, err := content.GetImageBinary(ctt, b1)
 	if err != nil {
-		imageBuffer = nil
-		panic(imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data:"+err.Error())))
+		fallback(w, r, conf, loggers,
+			imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data:"+err.Error())),
+		)
+		return
 	}
 	m.Stop()
 
 	m = timing.NewMetric("f_decode").Start()
-	img, err := imageprocessor.DecodeImage(imageBuffer)
+	b2 := bufPool.Get().([]byte)
+	b2 = b2[:0]
+	defer bufPool.Put(b2)
+	img, err := imageprocessor.DecodeImage(imageBuffer, b2)
 	if err != nil {
-		imageBuffer = nil
-		img = nil
-		panic(err)
+		fallback(w, r, conf, loggers, err)
+		return
 	}
 	if conf.UseMLCMYKConverter() {
 		if err := img.ConvertColor(conf.MLCMYKConverterNetworkFilePath()); err != nil {
-			panic(imgproxyerr.New(imgproxyerr.ERROR, err))
+			fallback(w, r, conf, loggers, imgproxyerr.New(imgproxyerr.ERROR, err))
+			return
 		}
 	}
 	mx, my := conf.MaxSize()
@@ -187,6 +177,47 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s", "server error")
 	}
+}
+
+func fallback(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]*logrus.Logger, err error) {
+	if err == nil {
+		return
+	}
+	create404Page(w, r, conf)
+	if loggers != nil {
+		errLogger := func() *logrus.Entry {
+			logger := loggers["err"]
+			return logger.WithFields(logrus.Fields{
+				"UA":        r.UserAgent(),
+				"access_ip": r.RemoteAddr,
+				"url":       r.URL.String(),
+				"type":      r.Method,
+				"version":   r.Proto,
+			})
+		}()
+		if e, ok := err.(*imgproxyerr.Err); ok {
+			switch e.Type {
+			case imgproxyerr.WARNING:
+				os.Stderr = devNull
+				errLogger.Warn(err)
+			case imgproxyerr.ERROR:
+				writeDebugLog(err, conf.DebugLogPath())
+				errLogger.Error(err)
+			default:
+				writeDebugLog(err, conf.DebugLogPath())
+				errLogger.Error(err)
+			}
+		} else {
+			writeDebugLog(err, conf.DebugLogPath())
+			errLogger.Error(err)
+		}
+
+	} else {
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
+	}
+	fmt.Fprintf(w, "%s", "")
+	debug.PrintStack()
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

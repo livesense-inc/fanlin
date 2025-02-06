@@ -241,9 +241,6 @@ func NewConfigure(confPath string) *Conf {
 	if err != nil {
 		return nil
 	}
-	if err != nil {
-		return nil
-	}
 	c := Conf{
 		c: conf,
 	}

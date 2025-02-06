@@ -47,21 +47,21 @@ var (
 )
 
 func showVersion() {
-	log.Print()
+	fmt.Println()
 	if buildVersion != "" {
-		log.Print("build version: ", buildVersion)
+		fmt.Println("build version: ", buildVersion)
 	} else {
-		log.Print("build version: ", buildHash)
+		fmt.Println("build version: ", buildHash)
 	}
-	log.Print("build date: ", buildDate)
-	log.Print("GO version: ", goversion)
+	fmt.Println("build date: ", buildDate)
+	fmt.Println("GO version: ", goversion)
 }
 
 func main() {
 	conf := func() *configure.Conf {
 		for _, confName := range confList {
 			if conf, path := configure.NewConfigure(confName); conf != nil {
-				log.Print("read configure. :", path)
+				fmt.Println("read configure. :", path)
 				return conf
 			}
 		}

@@ -47,28 +47,28 @@ var (
 )
 
 func showVersion() {
-	fmt.Println()
+	log.Print()
 	if buildVersion != "" {
-		fmt.Println("build version: ", buildVersion)
+		log.Print("build version: ", buildVersion)
 	} else {
-		fmt.Println("build version: ", buildHash)
+		log.Print("build version: ", buildHash)
 	}
-	fmt.Println("build date: ", buildDate)
-	fmt.Println("GO version: ", goversion)
+	log.Print("build date: ", buildDate)
+	log.Print("GO version: ", goversion)
 }
 
 func main() {
 	conf := func() *configure.Conf {
 		for _, confName := range confList {
-			conf := configure.NewConfigure(confName)
-			if conf != nil {
+			if conf, path := configure.NewConfigure(confName); conf != nil {
+				log.Print("read configure. :", path)
 				return conf
 			}
 		}
 		return nil
 	}()
 	if conf == nil {
-		log.Fatalln("Can not read configure.")
+		log.Fatal("Can not read configure.")
 	}
 
 	notFoundImagePath := flag.String("nfi", conf.NotFoundImagePath(), "not found image path")
@@ -98,7 +98,7 @@ func main() {
 	}
 
 	if *debug {
-		fmt.Println(conf)
+		log.Print(conf)
 	}
 
 	http.DefaultClient.Timeout = conf.BackendRequestTimeout()

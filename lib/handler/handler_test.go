@@ -30,7 +30,7 @@ func TestMakeMetricsHandler(t *testing.T) {
 }
 
 func BenchmarkMainHandler(b *testing.B) {
-	c := configure.NewConfigure("../test/test_conf9.json")
+	c, _ := configure.NewConfigure("../test/test_conf9.json")
 	if c == nil {
 		b.Fatal("Failed to build config")
 	}

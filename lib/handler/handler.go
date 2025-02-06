@@ -40,6 +40,52 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 	q = nil
 }
 
+func fallback(
+	w http.ResponseWriter,
+	r *http.Request,
+	conf *configure.Conf,
+	loggers map[string]*logrus.Logger,
+	err error,
+) {
+	create404Page(w, r, conf)
+	if err == nil {
+		return
+	}
+	if loggers != nil {
+		errLogger := func() *logrus.Entry {
+			logger := loggers["err"]
+			return logger.WithFields(logrus.Fields{
+				"UA":        r.UserAgent(),
+				"access_ip": r.RemoteAddr,
+				"url":       r.URL.String(),
+				"type":      r.Method,
+				"version":   r.Proto,
+			})
+		}()
+		if e, ok := err.(*imgproxyerr.Err); ok {
+			switch e.Type {
+			case imgproxyerr.WARNING:
+				os.Stderr = devNull
+				errLogger.Warn(err)
+			case imgproxyerr.ERROR:
+				writeDebugLog(err, conf.DebugLogPath())
+				errLogger.Error(err)
+			default:
+				writeDebugLog(err, conf.DebugLogPath())
+				errLogger.Error(err)
+			}
+		} else {
+			writeDebugLog(err, conf.DebugLogPath())
+			errLogger.Error(err)
+		}
+	} else {
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
+	}
+	fmt.Fprintf(w, "%s", "")
+	debug.PrintStack()
+}
+
 func writeDebugLog(err interface{}, debugFile string) {
 	stackWriter, _ := os.OpenFile(debugFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	t := time.Now()
@@ -158,52 +204,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s", "server error")
 	}
-}
-
-func fallback(
-	w http.ResponseWriter,
-	r *http.Request,
-	conf *configure.Conf,
-	loggers map[string]*logrus.Logger,
-	err error,
-) {
-	create404Page(w, r, conf)
-	if err == nil {
-		return
-	}
-	if loggers != nil {
-		errLogger := func() *logrus.Entry {
-			logger := loggers["err"]
-			return logger.WithFields(logrus.Fields{
-				"UA":        r.UserAgent(),
-				"access_ip": r.RemoteAddr,
-				"url":       r.URL.String(),
-				"type":      r.Method,
-				"version":   r.Proto,
-			})
-		}()
-		if e, ok := err.(*imgproxyerr.Err); ok {
-			switch e.Type {
-			case imgproxyerr.WARNING:
-				os.Stderr = devNull
-				errLogger.Warn(err)
-			case imgproxyerr.ERROR:
-				writeDebugLog(err, conf.DebugLogPath())
-				errLogger.Error(err)
-			default:
-				writeDebugLog(err, conf.DebugLogPath())
-				errLogger.Error(err)
-			}
-		} else {
-			writeDebugLog(err, conf.DebugLogPath())
-			errLogger.Error(err)
-		}
-	} else {
-		writeDebugLog(err, conf.DebugLogPath())
-		log.Println(err)
-	}
-	fmt.Fprintf(w, "%s", "")
-	debug.PrintStack()
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

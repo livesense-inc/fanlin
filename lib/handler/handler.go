@@ -198,7 +198,6 @@ func fallback(
 			writeDebugLog(err, conf.DebugLogPath())
 			errLogger.Error(err)
 		}
-
 	} else {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)

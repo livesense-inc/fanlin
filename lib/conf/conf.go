@@ -220,7 +220,7 @@ func (c *Conf) includeConfigure(mainConfPath string, pathList []string) {
 		if abs == "" {
 			continue
 		}
-		include, _ := NewConfigure(abs)
+		include := NewConfigure(abs)
 		if include == nil {
 			continue
 		}
@@ -231,19 +231,18 @@ func (c *Conf) includeConfigure(mainConfPath string, pathList []string) {
 	}
 }
 
-func NewConfigure(confPath string) (*Conf, string) {
+func NewConfigure(confPath string) *Conf {
 	var conf map[string]interface{}
 	bin, err := os.ReadFile(confPath)
 	if err != nil {
-		return nil, ""
+		return nil
 	}
 	err = json.Unmarshal(bin, &conf)
 	if err != nil {
-		return nil, ""
+		return nil
 	}
-	p, err := filepath.Abs(confPath)
 	if err != nil {
-		return nil, ""
+		return nil
 	}
 	c := Conf{
 		c: conf,
@@ -252,5 +251,5 @@ func NewConfigure(confPath string) (*Conf, string) {
 	c.includeConfigure(confPath, includes)
 
 	delete(c.c, "include")
-	return &c, p
+	return &c
 }

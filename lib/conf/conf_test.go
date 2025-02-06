@@ -7,7 +7,7 @@ import (
 var testConfig = "../test/test_conf.json"
 
 func TestReadConfigure(t *testing.T) {
-	conf, _ := NewConfigure(testConfig)
+	conf := NewConfigure(testConfig)
 	func() {
 		t.Log("test conf struct all.")
 		if conf == nil {

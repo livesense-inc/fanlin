@@ -21,7 +21,7 @@ func (c *Conf) UseMLCMYKConverter() bool {
 	}
 	r, ok := b.(bool)
 	if !ok {
-		panic("'use_ml_cmyk_converter' parameter is incorrect")
+		return false
 	}
 	return r
 }
@@ -33,7 +33,7 @@ func (c *Conf) MLCMYKConverterNetworkFilePath() string {
 	}
 	s, ok := i.(string)
 	if !ok {
-		panic("'ml_cmyk_converter_network_file_path' parameter is incorrect")
+		return ""
 	}
 	return s
 }
@@ -45,7 +45,7 @@ func (c *Conf) UseServerTiming() bool {
 	}
 	r, ok := b.(bool)
 	if !ok {
-		panic("'use_server_timing' parameter is incorrect")
+		return false
 	}
 	return r
 }
@@ -57,7 +57,7 @@ func (c *Conf) EnableMetricsEndpoint() bool {
 	}
 	r, ok := b.(bool)
 	if !ok {
-		panic("'enable_metrics_endpoint' parameter is incorrect")
+		return false
 	}
 	return r
 }
@@ -69,7 +69,7 @@ func (c *Conf) MaxClients() int {
 	}
 	n, ok := b.(float64)
 	if !ok {
-		panic("'max_clients' parameter is incorrect")
+		return 50
 	}
 	return int(n)
 }
@@ -145,7 +145,7 @@ func (c *Conf) BackendRequestTimeout() time.Duration {
 
 	d, err := time.ParseDuration(t)
 	if err != nil {
-		panic(err)
+		return 10 * time.Second
 	}
 	return d
 }

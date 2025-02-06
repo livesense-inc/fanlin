@@ -58,7 +58,7 @@ func TestGetImageBinary(t *testing.T) {
 	}
 	bin, err := io.ReadAll(result)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	if string(bin) != "It works!" {
 		t.Fatal(string(bin))

@@ -65,7 +65,7 @@ func makeRouter(conf *configure.Conf) *iradix.Tree {
 				prefix = fmt.Sprintf("/%s", prefix)
 			}
 			m := convertInterfaceToMap(meta)
-			router, _, _ = router.Insert([]byte(alias), provider{alias, m})
+			router, _, _ = router.Insert([]byte(prefix), provider{alias, m})
 		}
 	}
 	return router

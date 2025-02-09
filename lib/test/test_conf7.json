@@ -1,0 +1,80 @@
+{
+    "port": 8080,
+    "max_width": 1000,
+    "max_height": 1000,
+    "404_img_path": "../../img/404.png",
+    "access_log_path": "/dev/null",
+    "error_log_path": "/dev/null",
+    "providers": [
+        {
+            "/a" : {
+                "type" : "local",
+                "src" : "/tmp/a",
+                "priority": 0
+            }
+        },
+        {
+            "/b" : {
+                "type" : "local",
+                "src" : "/tmp/b",
+                "priority": 1
+            }
+        },
+        {
+            "/c" : {
+                "type" : "local",
+                "src" : "/tmp/c",
+                "priority": 2
+            }
+        },
+        {
+            "/d" : {
+                "type" : "local",
+                "src" : "/tmp/d",
+                "priority": 3
+            }
+        },
+        {
+            "/e" : {
+                "type" : "local",
+                "src" : "/tmp/e",
+                "priority": 4
+            }
+        },
+        {
+            "/f" : {
+                "type" : "local",
+                "src" : "/tmp/f",
+                "priority": 5
+            }
+        },
+        {
+            "/g" : {
+                "type" : "local",
+                "src" : "/tmp/g",
+                "priority": 6
+            }
+        },
+        {
+            "/h" : {
+                "type" : "local",
+                "src" : "/tmp/h",
+                "priority": 7
+            }
+        },
+        {
+            "/i" : {
+                "type" : "local",
+                "src" : "/tmp/i",
+                "priority": 8
+            }
+        },
+        {
+            "/j" : {
+                "type" : "local",
+                "src" : "/tmp/j",
+                "priority": 9
+            }
+        }
+    ]
+}

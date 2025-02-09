@@ -48,7 +48,7 @@ func TestGetContent(t *testing.T) {
 }
 
 func BenchmarkGetContentFromSortedList(b *testing.B) {
-	conf := configure.NewConfigure("../test/test_conf8.json")
+	conf := configure.NewConfigure("../test/test_conf7.json")
 	SetUpProviders(conf)
 	useRouter = false
 	b.ResetTimer()
@@ -60,7 +60,7 @@ func BenchmarkGetContentFromSortedList(b *testing.B) {
 }
 
 func BenchmarkGetContentByRouter(b *testing.B) {
-	conf := configure.NewConfigure("../test/test_conf8.json")
+	conf := configure.NewConfigure("../test/test_conf7.json")
 	SetUpProviders(conf)
 	useRouter = true
 	b.ResetTimer()

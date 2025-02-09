@@ -7,6 +7,13 @@
     "error_log_path": "/dev/null",
     "providers": [
         {
+            "/" : {
+                "type" : "local",
+                "src" : "/tmp",
+                "priority": 0
+            }
+        },
+        {
             "/foo" : {
                 "type" : "local",
                 "src" : "/tmp/foo",
@@ -67,76 +74,6 @@
                 "type" : "local",
                 "src" : "/tmp/foobarbazgquuuuuu",
                 "priority": 1
-            }
-        },
-        {
-            "/" : {
-                "type" : "local",
-                "src" : "/tmp",
-                "priority": 0
-            }
-        },
-        {
-            "/dir1" : {
-                "type" : "local",
-                "src" : "/tmp/dir1",
-                "priority": 0
-            }
-        },
-        {
-            "/dir2" : {
-                "type" : "local",
-                "src" : "/tmp/dir2",
-                "priority": 0
-            }
-        },
-        {
-            "/dir3" : {
-                "type" : "local",
-                "src" : "/tmp/dir3",
-                "priority": 0
-            }
-        },
-        {
-            "/dir4" : {
-                "type" : "local",
-                "src" : "/tmp/dir4",
-                "priority": 0
-            }
-        },
-        {
-            "/dir5" : {
-                "type" : "local",
-                "src" : "/tmp/dir5",
-                "priority": 0
-            }
-        },
-        {
-            "/dir6" : {
-                "type" : "local",
-                "src" : "/tmp/dir6",
-                "priority": 0
-            }
-        },
-        {
-            "/dir7" : {
-                "type" : "local",
-                "src" : "/tmp/dir7",
-                "priority": 0
-            }
-        },
-        {
-            "/dir8" : {
-                "type" : "local",
-                "src" : "/tmp/dir8",
-                "priority": 0
-            }
-        },
-        {
-            "/dir9" : {
-                "type" : "local",
-                "src" : "/tmp/dir9",
-                "priority": 0
             }
         }
     ]

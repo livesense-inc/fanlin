@@ -53,7 +53,7 @@ func BenchmarkGetContentFromSortedList(b *testing.B) {
 	useRouter = false
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		if got := GetContent("/foo", conf); got == nil {
+		if got := GetContent("/j/image.jpg", conf); got == nil {
 			b.Fatalf("no content")
 		}
 	}
@@ -65,7 +65,9 @@ func BenchmarkGetContentByRouter(b *testing.B) {
 	useRouter = true
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		if got := GetContent("/foobarbazgquuuuuu", conf); got == nil {
+		if got := GetContent("/j/image.jpg", conf); got == nil {
+			b.Fatalf("no content")
+		} else if got.SourcePlace != "/tmp/j/image.jpg" {
 			b.Fatalf("no content")
 		}
 	}

@@ -207,3 +207,7 @@ func MakeMetricsHandler(conf *configure.Conf, logger *log.Logger) http.Handler {
 		),
 	)
 }
+
+func Initialize(conf *configure.Conf) {
+	content.SetUpProviders(conf)
+}

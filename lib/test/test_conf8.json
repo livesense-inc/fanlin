@@ -1,0 +1,143 @@
+{
+    "port": 8080,
+    "max_width": 1000,
+    "max_height": 1000,
+    "404_img_path": "../../img/404.png",
+    "access_log_path": "/dev/null",
+    "error_log_path": "/dev/null",
+    "providers": [
+        {
+            "/foo" : {
+                "type" : "local",
+                "src" : "/tmp/foo",
+                "priority": 9
+            }
+        },
+        {
+            "/foobar" : {
+                "type" : "local",
+                "src" : "/tmp/foobar",
+                "priority": 8
+            }
+        },
+        {
+            "/foobarbaz" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbaz",
+                "priority": 7
+            }
+        },
+        {
+            "/foobarbazgqu" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbazgqu",
+                "priority": 6
+            }
+        },
+        {
+            "/foobarbazgquu" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbazgquu",
+                "priority": 5
+            }
+        },
+        {
+            "/foobarbazgquuu" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbazgquuu",
+                "priority": 4
+            }
+        },
+        {
+            "/foobarbazgquuuu" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbazgquuuu",
+                "priority": 3
+            }
+        },
+        {
+            "/foobarbazgquuuuu" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbazgquuuuu",
+                "priority": 2
+            }
+        },
+        {
+            "/foobarbazgquuuuuu" : {
+                "type" : "local",
+                "src" : "/tmp/foobarbazgquuuuuu",
+                "priority": 1
+            }
+        },
+        {
+            "/" : {
+                "type" : "local",
+                "src" : "/tmp",
+                "priority": 0
+            }
+        },
+        {
+            "/dir1" : {
+                "type" : "local",
+                "src" : "/tmp/dir1",
+                "priority": 0
+            }
+        },
+        {
+            "/dir2" : {
+                "type" : "local",
+                "src" : "/tmp/dir2",
+                "priority": 0
+            }
+        },
+        {
+            "/dir3" : {
+                "type" : "local",
+                "src" : "/tmp/dir3",
+                "priority": 0
+            }
+        },
+        {
+            "/dir4" : {
+                "type" : "local",
+                "src" : "/tmp/dir4",
+                "priority": 0
+            }
+        },
+        {
+            "/dir5" : {
+                "type" : "local",
+                "src" : "/tmp/dir5",
+                "priority": 0
+            }
+        },
+        {
+            "/dir6" : {
+                "type" : "local",
+                "src" : "/tmp/dir6",
+                "priority": 0
+            }
+        },
+        {
+            "/dir7" : {
+                "type" : "local",
+                "src" : "/tmp/dir7",
+                "priority": 0
+            }
+        },
+        {
+            "/dir8" : {
+                "type" : "local",
+                "src" : "/tmp/dir8",
+                "priority": 0
+            }
+        },
+        {
+            "/dir9" : {
+                "type" : "local",
+                "src" : "/tmp/dir9",
+                "priority": 0
+            }
+        }
+    ]
+}

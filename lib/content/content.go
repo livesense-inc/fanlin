@@ -1,11 +1,13 @@
 package content
 
 import (
+	"fmt"
 	"net/url"
 	"sort"
 	"strings"
 
-	"github.com/livesense-inc/fanlin/lib/conf"
+	iradix "github.com/hashicorp/go-immutable-radix"
+	configure "github.com/livesense-inc/fanlin/lib/conf"
 )
 
 type Content struct {
@@ -19,12 +21,18 @@ type provider struct {
 	meta  map[string]interface{}
 }
 
-var providers []provider
+var (
+	providers []provider
+	router    *iradix.Tree
+	useRouter bool
+)
 
 const DEFAULT_PRIORITY float64 = 10.0
 
 func init() {
 	providers = nil
+	router = nil
+	useRouter = false
 }
 
 func getProviders(c *configure.Conf) []provider {
@@ -47,17 +55,32 @@ func getProviders(c *configure.Conf) []provider {
 	return ret
 }
 
-func getContent(urlPath string, p []provider) *Content {
+func makeRouter(conf *configure.Conf) *iradix.Tree {
+	// https://pkg.go.dev/github.com/hashicorp/go-immutable-radix
+	router := iradix.New()
+	for _, p := range conf.Providers() {
+		for alias, meta := range convertInterfaceToMap(p) {
+			prefix := strings.TrimSuffix(alias, "/")
+			if !strings.HasPrefix(prefix, "/") {
+				prefix = fmt.Sprintf("/%s", prefix)
+			}
+			m := convertInterfaceToMap(meta)
+			router, _, _ = router.Insert([]byte(alias), provider{alias, m})
+		}
+	}
+	return router
+}
+
+func getContent(urlPath string, p []provider, r *iradix.Tree, useRouter bool) *Content {
 	if urlPath == "/" || urlPath == "" {
+		return nil
+	}
+	targetProvider := searchProvider(urlPath, p, r, useRouter)
+	if targetProvider == nil {
 		return nil
 	}
 	var ret Content
 	ret.Meta = map[string]interface{}{}
-	index := serachProviderIndex(urlPath, p)
-	if index < 0 {
-		return nil
-	}
-	targetProvider := p[index]
 	for k, v := range targetProvider.meta {
 		switch k {
 		case "src":
@@ -77,13 +100,35 @@ func getContent(urlPath string, p []provider) *Content {
 	return &ret
 }
 
-func serachProviderIndex(urlPath string, p []provider) int {
-	for i, v := range p {
-		if strings.HasPrefix(urlPath, v.alias) {
-			return i
+func searchProvider(urlPath string, p []provider, r *iradix.Tree, useRouter bool) *provider {
+	if useRouter {
+		return searchProviderByRouter(urlPath, r)
+	}
+
+	return searchProviderFromSortedList(urlPath, p)
+}
+
+func searchProviderByRouter(urlPath string, r *iradix.Tree) *provider {
+	if _, value, ok := r.Root().LongestPrefix([]byte(urlPath)); ok {
+		if provider, ok := value.(provider); ok {
+			return &provider
 		}
 	}
-	return -1
+	return nil
+}
+
+func searchProviderFromSortedList(urlPath string, p []provider) *provider {
+	index := -1
+	for i, v := range p {
+		if strings.HasPrefix(urlPath, v.alias) {
+			index = i
+			break
+		}
+	}
+	if index == -1 {
+		return nil
+	}
+	return &p[index]
 }
 
 func convertInterfaceToMap(i interface{}) map[string]interface{} {
@@ -93,6 +138,18 @@ func convertInterfaceToMap(i interface{}) map[string]interface{} {
 	return map[string]interface{}(nil)
 }
 
+func SetUpProviders(conf *configure.Conf) {
+	providers = getProviders(conf)
+	router = makeRouter(conf)
+	priorities := make(map[float64]struct{}, len(providers))
+	for _, provider := range providers {
+		if p, ok := provider.meta["priority"].(float64); ok {
+			priorities[p] = struct{}{}
+		}
+	}
+	useRouter = len(priorities) <= 1
+}
+
 func GetContent(urlPath string, conf *configure.Conf) *Content {
 	if urlPath == "" {
 		return nil
@@ -100,10 +157,11 @@ func GetContent(urlPath string, conf *configure.Conf) *Content {
 	if conf == nil {
 		return nil
 	}
-
 	if providers == nil {
-		providers = getProviders(conf)
+		return nil
 	}
-
-	return getContent(urlPath, providers)
+	if router == nil {
+		return nil
+	}
+	return getContent(urlPath, providers, router, useRouter)
 }

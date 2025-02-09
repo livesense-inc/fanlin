@@ -10,6 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.54
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.74.1
 	github.com/chai2010/webp v1.1.1
+	github.com/hashicorp/go-immutable-radix v1.3.1
 	github.com/ieee0824/libcmyk v0.0.0-20171222081915-8cf9151a408c
 	github.com/ieee0824/logrus-formatter v1.0.0
 	github.com/mitchellh/go-server-timing v1.0.1
@@ -42,6 +43,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.0 // indirect
 	github.com/golang/gddo v0.0.0-20180823221919-9d8ff1c67be5 // indirect
+	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect

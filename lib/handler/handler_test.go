@@ -34,6 +34,7 @@ func BenchmarkMainHandler(b *testing.B) {
 	if c == nil {
 		b.Fatal("Failed to build config")
 	}
+	Initialize(c)
 
 	w := helper.NewNullResponseWriter()
 	r := &http.Request{

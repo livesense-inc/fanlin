@@ -104,6 +104,8 @@ func main() {
 	http.DefaultClient.Timeout = conf.BackendRequestTimeout()
 	runtime.GOMAXPROCS(conf.MaxProcess())
 
+	handler.Prepare(conf)
+
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		handler.MainHandler(w, r, conf, loggers)
 	}

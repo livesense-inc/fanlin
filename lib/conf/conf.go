@@ -235,16 +235,12 @@ func NewConfigure(confPath string) *Conf {
 	var conf map[string]interface{}
 	bin, err := os.ReadFile(confPath)
 	if err != nil {
-		fmt.Println(err)
 		return nil
 	}
 	err = json.Unmarshal(bin, &conf)
 	if err != nil {
-		fmt.Println(err)
 		return nil
 	}
-	p, _ := filepath.Abs(confPath)
-	fmt.Println("read configure. :", p)
 	c := Conf{
 		c: conf,
 	}

@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/livesense-inc/fanlin/lib/conf"
+	configure "github.com/livesense-inc/fanlin/lib/conf"
 )
 
 type Content struct {
@@ -93,16 +93,17 @@ func convertInterfaceToMap(i interface{}) map[string]interface{} {
 	return map[string]interface{}(nil)
 }
 
-func GetContent(urlPath string, conf *configure.Conf) *Content {
-	if urlPath == "" {
-		return nil
-	}
+func SetUpProviders(conf *configure.Conf) {
 	if conf == nil {
-		return nil
+		return
 	}
 
-	if providers == nil {
-		providers = getProviders(conf)
+	providers = getProviders(conf)
+}
+
+func GetContent(urlPath string, _conf *configure.Conf) *Content {
+	if urlPath == "" {
+		return nil
 	}
 
 	return getContent(urlPath, providers)

@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 
 	configure "github.com/livesense-inc/fanlin/lib/conf"
@@ -60,15 +61,19 @@ func showVersion() {
 func main() {
 	conf := func() *configure.Conf {
 		for _, confName := range confList {
-			conf := configure.NewConfigure(confName)
-			if conf != nil {
+			if conf := configure.NewConfigure(confName); conf != nil {
+				if p, err := filepath.Abs(confName); err != nil {
+					fmt.Println("read configure. :", confName)
+				} else {
+					fmt.Println("read configure. :", p)
+				}
 				return conf
 			}
 		}
 		return nil
 	}()
 	if conf == nil {
-		log.Fatalln("Can not read configure.")
+		log.Fatal("Can not read configure.")
 	}
 
 	notFoundImagePath := flag.String("nfi", conf.NotFoundImagePath(), "not found image path")
@@ -98,11 +103,13 @@ func main() {
 	}
 
 	if *debug {
-		fmt.Println(conf)
+		log.Print(conf)
 	}
 
 	http.DefaultClient.Timeout = conf.BackendRequestTimeout()
 	runtime.GOMAXPROCS(conf.MaxProcess())
+
+	handler.Prepare(conf)
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		handler.MainHandler(w, r, conf, loggers)

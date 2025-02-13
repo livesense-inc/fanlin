@@ -14,7 +14,7 @@ Amazon S3と外部HTTPサーバー上の画像をリアルタイムで加工す�
 * macOS
 
 ### Go Versions
-* go 1.19.x
+* `go.mod` ファイル参照
 
 ## 対応画像フォーマット
 * JPEG
@@ -35,7 +35,6 @@ $ sudo apt install libaom-dev
 ```
 
 ## Linux用にクロスコンパイルする
-### go1.19
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

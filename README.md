@@ -5,7 +5,7 @@
 English | [日本語](README.ja.md)
 
 ## abstract
-fanlin is image proxy server in native Go language.
+fanlin is image proxy server written in Go language.
 
 ## Support
 ### OS
@@ -13,7 +13,7 @@ fanlin is image proxy server in native Go language.
 * macOS
 
 ### Go Versions
-* go 1.19.x
+* Please see `go.mod`
 
 ### Image Format
 * JPEG
@@ -30,7 +30,6 @@ $ sudo apt install libaom-dev
 ```
 
 ## Cross compile for amd64 Linux
-### go 1.19
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin
 ```

@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"runtime"
+	"syscall"
+	"time"
 
 	configure "github.com/livesense-inc/fanlin/lib/conf"
 	"github.com/livesense-inc/fanlin/lib/handler"
@@ -126,15 +130,42 @@ func main() {
 		http.HandleFunc("/metrics", metricsHandler.ServeHTTP)
 	}
 
-	addr := fmt.Sprintf(":%d", conf.Port())
-	if n := conf.MaxClients(); n > 0 {
-		ln, err := net.Listen("tcp", addr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		lln := netutil.LimitListener(ln, n)
-		http.Serve(lln, nil)
-	} else {
-		http.ListenAndServe(addr, nil)
+	if err := runServer(fmt.Sprintf(":%d", conf.Port()), conf.MaxClients()); err != nil {
+		log.Fatal(err)
 	}
+
+	loggers["err"].Print("shut down")
+	os.Exit(0)
+}
+
+func runServer(addr string, maxClients int) error {
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	if maxClients > 0 {
+		listener = netutil.LimitListener(listener, maxClients)
+	}
+	defer listener.Close()
+
+	server := &http.Server{}
+
+	c := make(chan os.Signal, 1)
+	defer close(c)
+	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
+	defer signal.Stop(c)
+
+	go func(s *http.Server, c <-chan os.Signal) {
+		if _, ok := <-c; ok {
+			s.SetKeepAlivesEnabled(false)
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			_ = s.Shutdown(ctx)
+		}
+	}(server, c)
+
+	if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
+		return err
+	}
+	return nil
 }

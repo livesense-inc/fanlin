@@ -80,3 +80,4 @@ vendor/
 /*.out
 /*.test
 __debug_bin
+result.bin

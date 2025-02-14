@@ -1,0 +1,10 @@
+---
+services:
+  app:
+    build: .
+    image: fanlin
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./img:/var/lib/fanlin/img
+      - ./cmd/fanlin/sample-conf-container.json:/etc/fanlin.json

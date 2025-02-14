@@ -6,6 +6,9 @@ on:
   push:
     tags:
       - "v*"
+defaults:
+  run:
+    shell: bash
 concurrency: ${{ github.workflow }}
 jobs:
   executable-files:
@@ -45,3 +48,42 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  container:
+    name: Container
+    if: github.repository == 'livesense-inc/fanlin'
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    concurrency: ${{ github.workflow }}
+    permissions:
+      packages: write
+    env:
+      IMAGE_NAME: fanlin
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: docker build . -t $IMAGE_NAME
+
+      - name: Version
+        id: version
+        run: |
+          version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && version=$(echo $version | sed -e 's/^v//')
+          [ "$version" == "main" ] && version=latest
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Login
+        run: >
+          echo "${{ secrets.GITHUB_TOKEN }}"
+          | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Tag
+        id: tag
+        run: |
+          tag=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ steps.version.outputs.value }}
+          docker tag $IMAGE_NAME $tag
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Push
+        run: docker push ${{ steps.tag.outputs.value }}

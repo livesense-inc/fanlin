@@ -1,0 +1,8 @@
+.git
+.github
+*.txt
+*.md
+*.json
+*.yaml
+__debug_bin
+result.bin

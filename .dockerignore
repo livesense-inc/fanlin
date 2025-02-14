@@ -1,0 +1,14 @@
+.git
+.github
+*.log
+*.out
+*.test
+*.txt
+*.md
+*.json
+*.yaml
+__debug_bin
+result.bin
+/img
+/cmd/fanlin/server
+/lib/test

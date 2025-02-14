@@ -69,7 +69,7 @@ jobs:
         run: |
           version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && version=$(echo $version | sed -e 's/^v//')
-          [ "$version" == "main" ] && version=latest
+          [ "$version" == "master" ] && version=latest
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
       - name: Login

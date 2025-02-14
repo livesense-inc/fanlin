@@ -53,7 +53,6 @@ jobs:
     if: github.repository == 'livesense-inc/fanlin'
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    concurrency: ${{ github.workflow }}
     permissions:
       packages: write
     env:

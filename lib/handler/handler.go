@@ -141,7 +141,10 @@ func MainHandler(
 	m.Stop()
 
 	m = timing.NewMetric("f_encode").Start()
-	if err := encodeImage(img, q, w); err != nil {
+	if q.UseAVIF() {
+		w.Header().Set("Content-Type", "image/avif")
+	}
+	if err := encodeImage(w, img, q); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
 
@@ -179,16 +182,15 @@ func decodeImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepro
 }
 
 func encodeImage(
+	w io.Writer,
 	img *imageprocessor.Image,
 	q *query.Query,
-	w http.ResponseWriter,
 ) (err error) {
 	switch img.GetFormat() {
 	case "jpeg":
 		if q.UseWebP() {
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), false)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodeJpeg(w, img.GetImg(), q.Quality())
@@ -198,7 +200,6 @@ func encodeImage(
 			useLossless := (q.Quality() == 100)
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodePNG(w, img.GetImg(), q.Quality())
@@ -208,7 +209,6 @@ func encodeImage(
 			useLossless := (q.Quality() == 100)
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodeGIF(w, img.GetImg(), q.Quality())
@@ -217,13 +217,11 @@ func encodeImage(
 		useLossless := (q.Quality() == 100)
 		err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 	case "avif":
-		w.Header().Set("Content-Type", "image/avif")
 		err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 	default:
 		if q.UseWebP() {
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), false)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodeJpeg(w, img.GetImg(), q.Quality())

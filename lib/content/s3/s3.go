@@ -4,11 +4,14 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/url"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/livesense-inc/fanlin/lib/content"
@@ -19,7 +22,7 @@ import (
 var s3GetSourceFunc = getS3ImageBinary
 
 // Test dedicated function
-func setS3GetFunc(f func(cfg *aws.Config, bucket, key string) (io.Reader, error)) {
+func setS3GetFunc(f func(cli *s3.Client, bucket, key string) (io.Reader, error)) {
 	s3GetSourceFunc = f
 }
 
@@ -46,13 +49,56 @@ func GetImageBinary(c *content.Content) (io.Reader, error) {
 				return nil, err
 			}
 		}
+		useMock := false
+		if v, ok := c.Meta["use_mock"]; ok {
+			if b, ok := v.(bool); ok {
+				useMock = b
+			}
+		}
+		cli, err := makeClient(region, useMock)
+		if err != nil {
+			return nil, err
+		}
+		return s3GetSourceFunc(cli, bucket, path)
+	}
+	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
+}
+
+func makeClient(region string, useMock bool) (*s3.Client, error) {
+	if !useMock {
 		cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 		if err != nil {
 			return nil, err
 		}
-		return s3GetSourceFunc(&cfg, bucket, path)
+		return s3.NewFromConfig(cfg), nil
 	}
-	return nil, imgproxyerr.New(imgproxyerr.ERROR, errors.New("can not parse configure"))
+
+	cfg, err := config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(
+				"AAAAAAAAAAAAAAAAAAAA",
+				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+				"",
+			),
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return s3.NewFromConfig(
+		cfg,
+		s3.WithEndpointResolverV2(
+			s3.EndpointResolverV2(
+				s3.NewDefaultEndpointResolverV2(),
+			),
+		),
+		func(o *s3.Options) {
+			o.BaseEndpoint = aws.String("http://localhost:4567")
+			o.UsePathStyle = true
+		},
+	), nil
 }
 
 func NormalizePath(path string, form string) (string, error) {
@@ -69,8 +115,9 @@ func NormalizePath(path string, form string) (string, error) {
 	return "", imgproxyerr.New(imgproxyerr.WARNING, errors.New("invalid normalization form("+form+")"))
 }
 
-func getS3ImageBinary(cfg *aws.Config, bucket, key string) (io.Reader, error) {
-	downloader := s3manager.NewDownloader(s3.NewFromConfig(*cfg))
+func getS3ImageBinary(cli *s3.Client, bucket, key string) (io.Reader, error) {
+	key = strings.TrimPrefix(key, "/")
+	downloader := s3manager.NewDownloader(cli)
 	buf := s3manager.NewWriteAtBuffer([]byte{})
 	input := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
@@ -78,9 +125,9 @@ func getS3ImageBinary(cfg *aws.Config, bucket, key string) (io.Reader, error) {
 	}
 	_, err := downloader.Download(context.TODO(), buf, input)
 	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, fmt.Errorf("bucket=%s, key=%s: %w", bucket, key, err))
 	}
-	return bytes.NewReader(buf.Bytes()), imgproxyerr.New(imgproxyerr.ERROR, err)
+	return bytes.NewReader(buf.Bytes()), nil
 }
 
 func init() {

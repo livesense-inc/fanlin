@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/livesense-inc/fanlin/lib/content"
 )
 
@@ -24,11 +24,9 @@ func initialize() {
 	testKey = "test/test.jpg"
 }
 
-func mockS3GetFunc(config *aws.Config, bucket, key string) (io.Reader, error) {
-	if config == nil {
-		return strings.NewReader("failed"), errors.New("config is empty")
-	} else if config.Region != testRegion {
-		return strings.NewReader("failed"), errors.New("Mismatch of the config region. region: " + config.Region + ", testRegion: " + testRegion)
+func mockS3GetFunc(client *s3.Client, bucket, key string) (io.Reader, error) {
+	if client == nil {
+		return strings.NewReader("failed"), errors.New("client is empty")
 	} else if bucket == "" {
 		return strings.NewReader("failed"), errors.New("bucket is empty")
 	} else if bucket != testBucket {

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -115,6 +116,9 @@ func NormalizePath(path string, form string) (string, error) {
 }
 
 func getS3ImageBinary(cli *s3.Client, bucket, key string) (io.Reader, error) {
+	if strings.HasPrefix(key, "/") {
+		key = strings.TrimPrefix(key, "/")
+	}
 	downloader := s3manager.NewDownloader(cli)
 	buf := s3manager.NewWriteAtBuffer([]byte{})
 	input := &s3.GetObjectInput{

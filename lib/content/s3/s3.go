@@ -116,9 +116,7 @@ func NormalizePath(path string, form string) (string, error) {
 }
 
 func getS3ImageBinary(cli *s3.Client, bucket, key string) (io.Reader, error) {
-	if strings.HasPrefix(key, "/") {
-		key = strings.TrimPrefix(key, "/")
-	}
+	key = strings.TrimPrefix(key, "/")
 	downloader := s3manager.NewDownloader(cli)
 	buf := s3manager.NewWriteAtBuffer([]byte{})
 	input := &s3.GetObjectInput{

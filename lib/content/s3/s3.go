@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/url"
 
@@ -122,9 +123,9 @@ func getS3ImageBinary(cli *s3.Client, bucket, key string) (io.Reader, error) {
 	}
 	_, err := downloader.Download(context.TODO(), buf, input)
 	if err != nil {
-		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, fmt.Errorf("bucket=%s, key=%s: %w", bucket, key, err))
 	}
-	return bytes.NewReader(buf.Bytes()), imgproxyerr.New(imgproxyerr.ERROR, err)
+	return bytes.NewReader(buf.Bytes()), nil
 }
 
 func init() {

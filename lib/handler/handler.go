@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -97,8 +97,12 @@ func writeDebugLog(err interface{}, debugFile string) {
 	os.Stderr = stackWriter
 }
 
-func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, loggers map[string]*logrus.Logger) {
-	timing := servertiming.FromContext(r.Context())
+func MainHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+	conf *configure.Conf,
+	loggers map[string]*logrus.Logger,
+) {
 	accessLogger := loggers["access"]
 	accessLogger.WithFields(logrus.Fields{
 		"UA":        r.UserAgent(),
@@ -106,36 +110,67 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		"url":       r.URL.String(),
 	}).Info()
 
+	timing := servertiming.FromContext(r.Context())
+
 	m := timing.NewMetric("f_load").Start()
-	q := query.NewQueryFromGet(r)
-	ctt := content.GetContent(r.URL.Path, conf)
-	if ctt == nil {
+	buf, err := getImage(r.URL.Path, conf)
+	if err != nil {
+		fallback(
+			w, r, conf, loggers,
+			imgproxyerr.New(imgproxyerr.WARNING, fmt.Errorf("failed to get image data: %w", err)),
+		)
+		return
+	}
+	if buf == nil {
 		create404Page(w, r, conf)
 		return
 	}
-	imageBuffer, err := content.GetImageBinary(ctt)
+	m.Stop()
+
+	q := query.NewQueryFromGet(r)
+
+	m = timing.NewMetric("f_decode").Start()
+	img, err := decodeImage(buf, conf, q)
 	if err != nil {
-		imageBuffer = nil
 		fallback(
 			w, r, conf, loggers,
-			imgproxyerr.New(imgproxyerr.WARNING, errors.New("can not get image data:"+err.Error())),
+			imgproxyerr.New(imgproxyerr.ERROR, fmt.Errorf("failed to decode image data: %w", err)),
 		)
 		return
 	}
 	m.Stop()
 
-	m = timing.NewMetric("f_decode").Start()
-	img, err := imageprocessor.DecodeImage(imageBuffer)
+	m = timing.NewMetric("f_encode").Start()
+	if q.UseAVIF() {
+		w.Header().Set("Content-Type", "image/avif")
+	}
+	if err := encodeImage(w, img, q); err != nil {
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
+
+		// The following writing to the headers will be ignored if the body was wrote with some bytes.
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%s", "server error")
+	}
+	m.Stop()
+}
+
+func getImage(reqPath string, conf *configure.Conf) (io.Reader, error) {
+	ctt := content.GetContent(reqPath, conf)
+	if ctt == nil {
+		return nil, nil
+	}
+	return content.GetImageBinary(ctt)
+}
+
+func decodeImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imageprocessor.Image, error) {
+	img, err := imageprocessor.DecodeImage(buf)
 	if err != nil {
-		imageBuffer = nil
-		img = nil
-		fallback(w, r, conf, loggers, err)
-		return
+		return nil, err
 	}
 	if conf.UseMLCMYKConverter() {
 		if err := img.ConvertColor(conf.MLCMYKConverterNetworkFilePath()); err != nil {
-			fallback(w, r, conf, loggers, imgproxyerr.New(imgproxyerr.ERROR, err))
-			return
+			return nil, err
 		}
 	}
 	mx, my := conf.MaxSize()
@@ -143,15 +178,19 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		img.Crop(q.Bounds().W, q.Bounds().H)
 	}
 	img.ResizeAndFill(q.Bounds().W, q.Bounds().H, *q.FillColor(), mx, my)
-	m.Stop()
+	return img, nil
+}
 
-	m = timing.NewMetric("f_encode").Start()
+func encodeImage(
+	w io.Writer,
+	img *imageprocessor.Image,
+	q *query.Query,
+) (err error) {
 	switch img.GetFormat() {
 	case "jpeg":
 		if q.UseWebP() {
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), false)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodeJpeg(w, img.GetImg(), q.Quality())
@@ -161,7 +200,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 			useLossless := (q.Quality() == 100)
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodePNG(w, img.GetImg(), q.Quality())
@@ -171,7 +209,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 			useLossless := (q.Quality() == 100)
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodeGIF(w, img.GetImg(), q.Quality())
@@ -180,30 +217,17 @@ func MainHandler(w http.ResponseWriter, r *http.Request, conf *configure.Conf, l
 		useLossless := (q.Quality() == 100)
 		err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), useLossless)
 	case "avif":
-		w.Header().Set("Content-Type", "image/avif")
 		err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 	default:
 		if q.UseWebP() {
 			err = imageprocessor.EncodeWebP(w, img.GetImg(), q.Quality(), false)
 		} else if q.UseAVIF() {
-			w.Header().Set("Content-Type", "image/avif")
 			err = imageprocessor.EncodeAVIF(w, img.GetImg(), q.Quality())
 		} else {
 			err = imageprocessor.EncodeJpeg(w, img.GetImg(), q.Quality())
 		}
 	}
-	m.Stop()
-
-	if err != nil {
-		img = nil
-		imageBuffer = nil
-		writeDebugLog(err, conf.DebugLogPath())
-		log.Println(err)
-
-		// The following writing to the headers will be ignored if the body was wrote with some bytes.
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "%s", "server error")
-	}
+	return
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {

@@ -131,6 +131,32 @@ fanlin outputs following timings:
 - f_decode: The time for decode and format source image.
 - f_encode: The time for encode to final image format.
 
+## Local test with Amazon S3 mock server
+If you specify `use_mock` attribute as `true` in `providers` directive, fanlin behaves local access mode to refer a mock server compatible with Amazon S3.
+
+```json
+{
+    "providers": [
+        {
+            "foo" : {
+                "type": "s3",
+                "src": "s3://local-test/images",
+                "region": "ap-northeast-1",
+                "norm_form": "nfd",
+                "use_mock": true
+            }
+        },
+    ]
+}
+```
+
+Also, It requires booting the mock server in advance.
+
+```
+$ docker compose up
+$ make create-s3-bucket
+$ make copy-object SRC=img/Lenna.jpg DEST=images/Lenna.jpg
+```
 
 ## LICENSE
 Written in Go and licensed under [the MIT License](https://opensource.org/licenses/MIT), it can also be used as a library.

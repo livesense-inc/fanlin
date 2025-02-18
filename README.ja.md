@@ -146,9 +146,16 @@ Server-Timingの出力によって、システムの内部構成やパフォー�
 
 ```json
 {
+    "port": 3000,
+    "max_width": 2000,
+    "max_height": 1000,
+    "404_img_path": "img/404.png",
+    "access_log_path": "/dev/stdout",
+    "error_log_path": "/dev/stderr",
+    "max_clients": 50,
     "providers": [
         {
-            "foo" : {
+            "/foo": {
                 "type": "s3",
                 "src": "s3://local-test/images",
                 "region": "ap-northeast-1",
@@ -156,6 +163,19 @@ Server-Timingの出力によって、システムの内部構成やパフォー�
                 "use_mock": true
             }
         },
+        {
+            "/bar": {
+                "type": "web",
+                "src": "http://localhost:3000/foo"
+            }
+        },
+        {
+            "/baz": {
+                "type": "local",
+                "src": "img"
+            }
+        }
+
     ]
 }
 ```
@@ -166,4 +186,13 @@ fanlin 起動前に Docker compose でモックサーバーを起動しておい
 $ docker compose up
 $ make create-s3-bucket
 $ make copy-object SRC=img/Lenna.jpg DEST=images/Lenna.jpg
+$ make run
+```
+
+これでローカルで動作確認ができます。
+
+```
+$ curl -I 'http://localhost:3000/foo/Lenna.jpg?w=300&h=200&rgb=64,64,64'
+$ curl -I 'http://localhost:3000/bar/Lenna.jpg?w=300&h=200&rgb=64,64,64'
+$ curl -I 'http://localhost:3000/baz/Lenna.jpg?w=300&h=200&rgb=64,64,64'
 ```

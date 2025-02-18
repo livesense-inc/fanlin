@@ -142,7 +142,7 @@ Server-Timingの出力によって、システムの内部構成やパフォー�
 - f_encode: 最終出力フォーマットへのエンコード時間
 
 ## モックサーバーを利用してAmazon S3バックエンドの動作確認を手元でする
-`providers` directive にて `use_mock` 属性を `true` 指定すると fanlin はローカルのモックサーバーを参照するように動作します。
+`providers` directive にて `use_mock` 属性を `true` に指定すると fanlin はローカルのモックサーバーを参照するように動作します。
 
 ```json
 {

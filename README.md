@@ -62,7 +62,7 @@ On Unix, Linux and macOS, fanlin programs read startup options from the followin
 ### example
 
 #### fanlin.json
-```
+```json
 {
     "port": 8080,
     "max_width": 1000,

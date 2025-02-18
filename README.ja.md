@@ -1,7 +1,7 @@
 # fanlin
 
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
-![Test](https://github.com/livesense-inc/fanlin/actions/workflows/test.yaml/badge.svg?branch=master)
+![Test](https://github.com/livesense-inc/fanlin/actions/workflows/test.yml/badge.svg?branch=master)
 ![Release](https://github.com/livesense-inc/fanlin/actions/workflows/release.yaml/badge.svg)
 
 [English](README.md) | 日本語

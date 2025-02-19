@@ -1,6 +1,8 @@
 # fanlin
 
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+![Test](https://github.com/livesense-inc/fanlin/actions/workflows/test.yml/badge.svg?branch=master)
+![Release](https://github.com/livesense-inc/fanlin/actions/workflows/release.yaml/badge.svg)
 
 [English](README.md) | 日本語
 
@@ -69,7 +71,7 @@ $ go test -cover ./...
 
 ## 設定項目に関して
 だいたいこんな感じでかけます
-```
+```json
 {
     "port": 8080,
     "max_width": 1000,
@@ -138,3 +140,59 @@ Server-Timingの出力によって、システムの内部構成やパフォー�
 - f_load: ソース画像のロード時間
 - f_decode: ソース画像のデコードと加工時間
 - f_encode: 最終出力フォーマットへのエンコード時間
+
+## モックサーバーを利用してAmazon S3バックエンドの動作確認を手元でする
+`providers` directive にて `use_mock` 属性を `true` に指定すると fanlin はローカルのモックサーバーを参照するように動作します。
+
+```json
+{
+    "port": 3000,
+    "max_width": 2000,
+    "max_height": 1000,
+    "404_img_path": "img/404.png",
+    "access_log_path": "/dev/stdout",
+    "error_log_path": "/dev/stderr",
+    "max_clients": 50,
+    "providers": [
+        {
+            "/foo": {
+                "type": "s3",
+                "src": "s3://local-test/images",
+                "region": "ap-northeast-1",
+                "norm_form": "nfd",
+                "use_mock": true
+            }
+        },
+        {
+            "/bar": {
+                "type": "web",
+                "src": "http://localhost:3000/foo"
+            }
+        },
+        {
+            "/baz": {
+                "type": "local",
+                "src": "img"
+            }
+        }
+
+    ]
+}
+```
+
+fanlin 起動前に Docker compose でモックサーバーを起動しておいてください。
+
+```
+$ docker compose up
+$ make create-s3-bucket
+$ make copy-object SRC=img/Lenna.jpg DEST=images/Lenna.jpg
+$ make run
+```
+
+これでローカルで動作確認ができます。
+
+```
+$ curl -I 'http://localhost:3000/foo/Lenna.jpg?w=300&h=200&rgb=64,64,64'
+$ curl -I 'http://localhost:3000/bar/Lenna.jpg?w=300&h=200&rgb=64,64,64'
+$ curl -I 'http://localhost:3000/baz/Lenna.jpg?w=300&h=200&rgb=64,64,64'
+```

@@ -129,8 +129,8 @@ func MainHandler(
 
 	q := query.NewQueryFromGet(r)
 
-	m = timing.NewMetric("f_decode").Start()
-	img, err := decodeImage(buf, conf, q)
+	m = timing.NewMetric("f_process").Start()
+	img, err := processImage(buf, conf, q)
 	if err != nil {
 		fallback(
 			w, r, conf, loggers,
@@ -140,7 +140,6 @@ func MainHandler(
 	}
 	m.Stop()
 
-	m = timing.NewMetric("f_encode").Start()
 	if q.UseAVIF() {
 		w.Header().Set("Content-Type", "image/avif")
 	}
@@ -152,7 +151,6 @@ func MainHandler(
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s", "server error")
 	}
-	m.Stop()
 }
 
 func getImage(reqPath string, conf *configure.Conf) (io.Reader, error) {
@@ -163,7 +161,7 @@ func getImage(reqPath string, conf *configure.Conf) (io.Reader, error) {
 	return content.GetImageBinary(ctt)
 }
 
-func decodeImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imageprocessor.Image, error) {
+func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imageprocessor.Image, error) {
 	img, err := imageprocessor.DecodeImage(buf)
 	if err != nil {
 		return nil, err

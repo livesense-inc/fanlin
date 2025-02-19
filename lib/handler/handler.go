@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -30,14 +31,21 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 	q := query.NewQueryFromGet(r)
 
 	maxW, maxH := conf.MaxSize()
-	w.WriteHeader(404)
-	if err := imageprocessor.Set404Image(w, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
+	w.WriteHeader(http.StatusNotFound)
+	var b bytes.Buffer
+	if err := imageprocessor.Set404Image(&b, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
 		fmt.Fprintf(w, "%s", "404 Not found.")
+		return
 	}
-
-	q = nil
+	if n, err := io.Copy(w, &b); err != nil {
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
+		if n == 0 {
+			fmt.Fprintf(w, "%s", "404 Not found.")
+		}
+	}
 }
 
 func fallback(
@@ -134,22 +142,34 @@ func MainHandler(
 	if err != nil {
 		fallback(
 			w, r, conf, loggers,
-			imgproxyerr.New(imgproxyerr.ERROR, fmt.Errorf("failed to decode image data: %w", err)),
+			imgproxyerr.New(imgproxyerr.ERROR, fmt.Errorf("failed to process image data: %w", err)),
 		)
 		return
 	}
 	m.Stop()
 
+	m = timing.NewMetric("f_encode").Start()
+	var b bytes.Buffer
+	if err := encodeImage(&b, img, q); err != nil {
+		writeDebugLog(err, conf.DebugLogPath())
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%s", "server error")
+		return
+	}
+	m.Stop()
+
+	w.WriteHeader(http.StatusOK)
 	if q.UseAVIF() {
 		w.Header().Set("Content-Type", "image/avif")
 	}
-	if err := encodeImage(w, img, q); err != nil {
+	if n, err := io.Copy(w, &b); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
-
-		// The following writing to the headers will be ignored if the body was wrote with some bytes.
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "%s", "server error")
+		if n == 0 {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s", "server error")
+		}
 	}
 }
 
@@ -229,7 +249,7 @@ func encodeImage(
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "%s", "")
 }
 

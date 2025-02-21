@@ -31,7 +31,7 @@ func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf)
 
 	maxW, maxH := conf.MaxSize()
 	w.WriteHeader(404)
-	if err := imageprocessor.Set404Image(w, conf.NotFoundImagePath(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
+	if err := imageprocessor.Set404Image(w, content.GetNoContentImage(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
 		fmt.Fprintf(w, "%s", "404 Not found.")
@@ -247,6 +247,10 @@ func MakeMetricsHandler(conf *configure.Conf, logger *log.Logger) http.Handler {
 	)
 }
 
-func Prepare(conf *configure.Conf) {
+func Prepare(conf *configure.Conf) error {
 	content.SetUpProviders(conf)
+	if err := content.SetupNoContentImage(conf); err != nil {
+		return err
+	}
+	return nil
 }

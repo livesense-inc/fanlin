@@ -1,7 +1,10 @@
 package content
 
 import (
+	"bytes"
+	"io"
 	"net/url"
+	"os"
 	"sort"
 	"strings"
 
@@ -19,12 +22,16 @@ type provider struct {
 	meta  map[string]interface{}
 }
 
-var providers []provider
+var (
+	providers      []provider
+	noContentImage []byte
+)
 
 const DEFAULT_PRIORITY float64 = 10.0
 
 func init() {
 	providers = nil
+	noContentImage = nil
 }
 
 func getProviders(c *configure.Conf) []provider {
@@ -93,12 +100,38 @@ func convertInterfaceToMap(i interface{}) map[string]interface{} {
 	return map[string]interface{}(nil)
 }
 
+func loadFile(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	var b bytes.Buffer
+	if _, err := io.Copy(&b, f); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func SetupNoContentImage(conf *configure.Conf) (err error) {
+	if conf == nil {
+		return
+	}
+
+	noContentImage, err = loadFile(conf.NotFoundImagePath())
+	return
+}
+
 func SetUpProviders(conf *configure.Conf) {
 	if conf == nil {
 		return
 	}
 
 	providers = getProviders(conf)
+}
+
+func GetNoContentImage() io.Reader {
+	return bytes.NewReader(noContentImage)
 }
 
 func GetContent(urlPath string, _conf *configure.Conf) *Content {

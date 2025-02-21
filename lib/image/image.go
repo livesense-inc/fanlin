@@ -11,7 +11,6 @@ import (
 	"image/png"
 	"io"
 	"math"
-	"os"
 	"sync"
 
 	"github.com/BurntSushi/graphics-go/graphics"
@@ -311,12 +310,8 @@ func (i *Image) GetFormat() string {
 	return i.format
 }
 
-func Set404Image(buf io.Writer, path string, w uint, h uint, c color.Color, maxW uint, maxH uint) error {
-	f, err := os.Open(path)
-	if err != nil {
-		return imgproxyerr.New(imgproxyerr.ERROR, err)
-	}
-	img, err := DecodeImage(f)
+func Set404Image(buf io.Writer, data io.Reader, w uint, h uint, c color.Color, maxW uint, maxH uint) error {
+	img, err := DecodeImage(data)
 	if err != nil {
 		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}

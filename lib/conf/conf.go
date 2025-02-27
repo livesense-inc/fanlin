@@ -153,17 +153,17 @@ func (c *Conf) BackendRequestTimeout() time.Duration {
 func (c *Conf) ServerTimeout() time.Duration {
 	tstr, ok := c.c["server_timeout"]
 	if !ok {
-		return 30 * time.Second
+		return 0 * time.Second
 	}
 
 	t, ok := tstr.(string)
 	if !ok {
-		return 30 * time.Second
+		return 0 * time.Second
 	}
 
 	d, err := time.ParseDuration(t)
 	if err != nil {
-		return 30 * time.Second
+		return 0 * time.Second
 	}
 	return d
 }
@@ -171,17 +171,17 @@ func (c *Conf) ServerTimeout() time.Duration {
 func (c *Conf) ServerIdleTimeout() time.Duration {
 	tstr, ok := c.c["server_idle_timeout"]
 	if !ok {
-		return 65 * time.Second
+		return 0 * time.Second
 	}
 
 	t, ok := tstr.(string)
 	if !ok {
-		return 65 * time.Second
+		return 0 * time.Second
 	}
 
 	d, err := time.ParseDuration(t)
 	if err != nil {
-		return 65 * time.Second
+		return 0 * time.Second
 	}
 	return d
 }

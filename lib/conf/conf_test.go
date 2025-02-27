@@ -62,7 +62,7 @@ func TestReadConfigure(t *testing.T) {
 		t.Log("server_timeout test")
 		n := conf.ServerTimeout()
 		if n != 30*time.Second {
-			t.Fatalf("value is %d", n)
+			t.Errorf("value is %d", n)
 		}
 	}()
 
@@ -70,7 +70,7 @@ func TestReadConfigure(t *testing.T) {
 		t.Log("server_idle_timeout test")
 		n := conf.ServerIdleTimeout()
 		if n != 65*time.Second {
-			t.Fatalf("value is %d", n)
+			t.Errorf("value is %d", n)
 		}
 	}()
 }

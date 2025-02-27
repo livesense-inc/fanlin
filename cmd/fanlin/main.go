@@ -150,10 +150,13 @@ func runServer(conf *configure.Conf) error {
 	}
 	defer listener.Close()
 
-	server := &http.Server{
-		ReadTimeout:  conf.ServerTimeout(),
-		WriteTimeout: conf.ServerTimeout(),
-		IdleTimeout:  conf.ServerIdleTimeout(),
+	server := &http.Server{}
+	if conf.ServerTimeout() > 0*time.Second {
+		server.ReadTimeout = conf.ServerTimeout()
+		server.WriteTimeout = conf.ServerTimeout()
+	}
+	if conf.ServerIdleTimeout() > 0*time.Second {
+		server.IdleTimeout = conf.ServerIdleTimeout()
 	}
 
 	c := make(chan os.Signal, 1)

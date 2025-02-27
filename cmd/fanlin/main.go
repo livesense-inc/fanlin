@@ -132,7 +132,7 @@ func main() {
 		http.HandleFunc("/metrics", metricsHandler.ServeHTTP)
 	}
 
-	if err := runServer(fmt.Sprintf(":%d", conf.Port()), conf.MaxClients()); err != nil {
+	if err := runServer(conf); err != nil {
 		log.Fatal(err)
 	}
 
@@ -140,17 +140,21 @@ func main() {
 	os.Exit(0)
 }
 
-func runServer(addr string, maxClients int) error {
-	listener, err := net.Listen("tcp", addr)
+func runServer(conf *configure.Conf) error {
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", conf.Port()))
 	if err != nil {
 		return err
 	}
-	if maxClients > 0 {
-		listener = netutil.LimitListener(listener, maxClients)
+	if conf.MaxClients() > 0 {
+		listener = netutil.LimitListener(listener, conf.MaxClients())
 	}
 	defer listener.Close()
 
-	server := &http.Server{}
+	server := &http.Server{
+		ReadTimeout:  conf.ServerTimeout(),
+		WriteTimeout: conf.ServerTimeout(),
+		IdleTimeout:  conf.ServerIdleTimeout(),
+	}
 
 	c := make(chan os.Signal, 1)
 	defer close(c)

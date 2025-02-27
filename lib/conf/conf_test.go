@@ -2,6 +2,7 @@ package configure
 
 import (
 	"testing"
+	"time"
 )
 
 var testConfig = "../test/test_conf.json"
@@ -53,6 +54,22 @@ func TestReadConfigure(t *testing.T) {
 		t.Log("max_clients test")
 		n := conf.MaxClients()
 		if n != 50 {
+			t.Fatalf("value is %d", n)
+		}
+	}()
+
+	func() {
+		t.Log("server_timeout test")
+		n := conf.ServerTimeout()
+		if n != 30*time.Second {
+			t.Fatalf("value is %d", n)
+		}
+	}()
+
+	func() {
+		t.Log("server_idle_timeout test")
+		n := conf.ServerIdleTimeout()
+		if n != 65*time.Second {
 			t.Fatalf("value is %d", n)
 		}
 	}()

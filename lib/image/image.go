@@ -225,6 +225,8 @@ func resizeAndFillImage(img image.Image, w uint, h uint, c color.Color, maxWidth
 	}
 	ch0 := make(chan image.Image)
 	ch1 := make(chan *image.RGBA)
+	defer close(ch0)
+	defer close(ch1)
 
 	// ココらへんの並列化はベンチマーク次第で変更する
 	go func() {

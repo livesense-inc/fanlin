@@ -28,16 +28,19 @@ var devNull, _ = os.Open("/dev/null")
 
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
-
-	maxW, maxH := conf.MaxSize()
+	width, height := getWidthAndHeight(conf, q)
 	w.WriteHeader(404)
-	if err := imageprocessor.Set404Image(w, content.GetNoContentImage(), q.Bounds().W, q.Bounds().H, *q.FillColor(), maxW, maxH); err != nil {
+	if err := imageprocessor.Set404Image(
+		w,
+		content.GetNoContentImage(),
+		width,
+		height,
+		*q.FillColor(),
+	); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
 		fmt.Fprintf(w, "%s", "404 Not found.")
 	}
-
-	q = nil
 }
 
 func fallback(
@@ -171,12 +174,23 @@ func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepr
 			return nil, err
 		}
 	}
-	mx, my := conf.MaxSize()
+	img.ApplyOrientation()
+	w, h := getWidthAndHeight(conf, q)
 	if q.Crop() {
-		img.Crop(q.Bounds().W, q.Bounds().H)
+		img.Crop(w, h)
+	} else {
+		img.ResizeAndFill(w, h, *q.FillColor())
 	}
-	img.ResizeAndFill(q.Bounds().W, q.Bounds().H, *q.FillColor(), mx, my)
+	img.Process()
 	return img, nil
+}
+
+func getWidthAndHeight(conf *configure.Conf, q *query.Query) (w uint, h uint) {
+	mW, mX := conf.MaxSize()
+	b := q.Bounds()
+	w = min(b.W, mW)
+	h = min(b.H, mX)
+	return
 }
 
 func encodeImage(

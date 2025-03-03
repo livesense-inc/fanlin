@@ -158,10 +158,10 @@ func MainHandler(
 	}
 	m.Stop()
 
-	w.WriteHeader(http.StatusOK)
 	if q.UseAVIF() {
 		w.Header().Set("Content-Type", "image/avif")
 	}
+	w.WriteHeader(http.StatusOK)
 	if _, err := io.Copy(w, &b); err != nil {
 		loggers["err"].Print("failed to write data to response:", err)
 	}

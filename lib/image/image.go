@@ -83,13 +83,6 @@ func (i *Image) ConvertColor(networkPath string) error {
 	return nil
 }
 
-func max(v uint, max uint) uint {
-	if v > max {
-		return max
-	}
-	return v
-}
-
 func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
 	if *img == nil {
 		return imgproxyerr.New(imgproxyerr.WARNING, errors.New("img is nil"))

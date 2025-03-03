@@ -38,14 +38,12 @@ func TestEncodeJpeg(t *testing.T) {
 	}
 
 	var b bytes.Buffer
-	err = EncodeJpeg(&b, img.GetImg(), -1)
-	if err != nil {
+	if err := EncodeJpeg(&b, img.GetImg(), -1); err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
-	img, err = DecodeImage(confBin)
-	if err == nil {
+	if _, err := DecodeImage(confBin); err == nil {
 		t.Fatal("no error")
 	}
 	b.Reset()
@@ -63,8 +61,7 @@ func BenchmarkEncodeJpeg(b *testing.B) {
 		}
 
 		var buf bytes.Buffer
-		err = EncodeJpeg(&buf, img.GetImg(), -1)
-		if err != nil {
+		if err := EncodeJpeg(&buf, img.GetImg(), -1); err != nil {
 			log.Fatalf("err is %v.", err)
 		}
 		buf.Reset()
@@ -82,14 +79,12 @@ func TestEncodePNG(t *testing.T) {
 	}
 
 	var b bytes.Buffer
-	err = EncodePNG(&b, img.GetImg(), -1)
-	if err != nil {
+	if err := EncodePNG(&b, img.GetImg(), -1); err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
-	img, err = DecodeImage(confBin)
-	if err == nil {
+	if _, err := DecodeImage(confBin); err == nil {
 		t.Fatal("no error")
 	}
 	b.Reset()
@@ -106,14 +101,12 @@ func TestEncodeGIF(t *testing.T) {
 	}
 
 	var b bytes.Buffer
-	err = EncodeGIF(&b, img.GetImg(), -1)
-	if err != nil {
+	if err := EncodeGIF(&b, img.GetImg(), -1); err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
-	img, err = DecodeImage(confBin)
-	if err == nil {
+	if _, err = DecodeImage(confBin); err == nil {
 		t.Fatal("no error")
 	}
 	b.Reset()
@@ -131,8 +124,7 @@ func TestEncodeWebP(t *testing.T) {
 	}
 
 	var b bytes.Buffer
-	err = EncodeWebP(&b, img.GetImg(), -1, true)
-	if err != nil {
+	if err := EncodeWebP(&b, img.GetImg(), -1, true); err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
@@ -147,15 +139,13 @@ func TestEncodeWebP(t *testing.T) {
 		t.Fatalf("format is %v, expected webp", format)
 	}
 
-	err = EncodeWebP(&b, img.GetImg(), -1, false)
-	if err != nil {
+	if err := EncodeWebP(&b, img.GetImg(), -1, false); err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
 	// error
-	img, err = DecodeImage(confBin)
-	if err == nil {
+	if _, err := DecodeImage(confBin); err == nil {
 		t.Fatal("no error")
 	}
 	b.Reset()
@@ -174,8 +164,7 @@ func TestEncodeAVIF(t *testing.T) {
 	}
 	b.Reset()
 
-	img, err = DecodeImage(confBin)
-	if err == nil {
+	if _, err := DecodeImage(confBin); err == nil {
 		t.Fatal("no error")
 	}
 	b.Reset()

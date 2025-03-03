@@ -29,7 +29,7 @@ var devNull, _ = os.Open("/dev/null")
 
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
-	width, height := getWidthAndHeight(conf, q)
+	width, height := clampBounds(conf, q)
 	w.WriteHeader(http.StatusNotFound)
 	var b bytes.Buffer
 	if err := imageprocessor.Set404Image(
@@ -186,7 +186,7 @@ func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepr
 		}
 	}
 	img.ApplyOrientation()
-	w, h := getWidthAndHeight(conf, q)
+	w, h := clampBounds(conf, q)
 	if q.Crop() {
 		img.Crop(w, h)
 	} else {
@@ -196,7 +196,7 @@ func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepr
 	return img, nil
 }
 
-func getWidthAndHeight(conf *configure.Conf, q *query.Query) (w uint, h uint) {
+func clampBounds(conf *configure.Conf, q *query.Query) (w uint, h uint) {
 	mW, mX := conf.MaxSize()
 	b := q.Bounds()
 	w = min(b.W, mW)

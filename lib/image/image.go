@@ -263,6 +263,7 @@ func Set404Image(buf io.Writer, data io.Reader, w uint, h uint, c color.Color) e
 		return imgproxyerr.New(imgproxyerr.ERROR, err)
 	}
 	img.ResizeAndFill(w, h, c)
+	img.Process()
 	return EncodeJpeg(buf, img.GetImg(), jpeg.DefaultQuality)
 }
 

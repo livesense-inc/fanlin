@@ -48,6 +48,7 @@ func BenchmarkMainHandler(b *testing.B) {
 				q := url.Values{}
 				q.Set("w", "300")
 				q.Set("h", "200")
+				q.Set("rgb", "32,32,32")
 				return q.Encode()
 			}(),
 		},

@@ -150,6 +150,42 @@ func (c *Conf) BackendRequestTimeout() time.Duration {
 	return d
 }
 
+func (c *Conf) ServerTimeout() time.Duration {
+	tstr, ok := c.c["server_timeout"]
+	if !ok {
+		return 0 * time.Second
+	}
+
+	t, ok := tstr.(string)
+	if !ok {
+		return 0 * time.Second
+	}
+
+	d, err := time.ParseDuration(t)
+	if err != nil {
+		return 0 * time.Second
+	}
+	return d
+}
+
+func (c *Conf) ServerIdleTimeout() time.Duration {
+	tstr, ok := c.c["server_idle_timeout"]
+	if !ok {
+		return 0 * time.Second
+	}
+
+	t, ok := tstr.(string)
+	if !ok {
+		return 0 * time.Second
+	}
+
+	d, err := time.ParseDuration(t)
+	if err != nil {
+		return 0 * time.Second
+	}
+	return d
+}
+
 func (c *Conf) Port() int {
 	port := c.c["port"]
 	return convInterfaceToInt(port, 8080)

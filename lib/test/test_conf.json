@@ -4,5 +4,7 @@
     "max_height": 5000,
     "use_server_timing": true,
     "enable_metrics_endpoint": true,
-    "max_clients": 50
+    "max_clients": 50,
+    "server_timeout": "30s",
+    "server_idle_timeout": "65s"
 }

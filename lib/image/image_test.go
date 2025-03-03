@@ -2,7 +2,6 @@ package imageprocessor
 
 import (
 	"bytes"
-	"image/color"
 	"log"
 	"os"
 	"testing"
@@ -28,121 +27,121 @@ var (
 	confBin, _         = os.Open(confPath)
 )
 
-var ResizeImage = resizeImage
-var ResizeAndFillImage = resizeAndFillImage
-var Crop = crop
-
 func TestEncodeJpeg(t *testing.T) {
-	img, _ := DecodeImage(jpegBin)
+	img, err := DecodeImage(jpegBin)
+	if err != nil {
+		t.Fatal(err)
+	}
 	jpegBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "jpeg" {
 		t.Fatalf("format is %v, expected jpeg", format)
 	}
 
 	var b bytes.Buffer
-	err := EncodeJpeg(&b, img.GetImg(), -1)
+	err = EncodeJpeg(&b, img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin)
-	confBin.Seek(0, 0)
-	err = EncodeJpeg(&b, img.GetImg(), 50)
+	img, err = DecodeImage(confBin)
 	if err == nil {
-		t.Fatalf("err is %v.", err)
+		t.Fatal("no error")
 	}
 	b.Reset()
 }
 
 func BenchmarkEncodeJpeg(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		img, _ := DecodeImage(jpegBin)
+		img, err := DecodeImage(jpegBin)
+		if err != nil {
+			b.Fatal(err)
+		}
 		jpegBin.Seek(0, 0)
 		if format := img.GetFormat(); format != "jpeg" {
 			log.Fatalf("format is %v, expected jpeg", format)
 		}
 
-		var b bytes.Buffer
-		err := EncodeJpeg(&b, img.GetImg(), -1)
+		var buf bytes.Buffer
+		err = EncodeJpeg(&buf, img.GetImg(), -1)
 		if err != nil {
 			log.Fatalf("err is %v.", err)
 		}
-		b.Reset()
-
-		img, _ = DecodeImage(confBin)
-		confBin.Seek(0, 0)
-		err = EncodeJpeg(&b, img.GetImg(), 50)
-		if err == nil {
-			log.Fatalf("err is %v.", err)
-		}
-		b.Reset()
+		buf.Reset()
 	}
 }
 
 func TestEncodePNG(t *testing.T) {
-	img, _ := DecodeImage(pngBin)
+	img, err := DecodeImage(pngBin)
+	if err != nil {
+		t.Fatal(err)
+	}
 	pngBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "png" {
 		t.Fatalf("format is %v, expected png", format)
 	}
 
 	var b bytes.Buffer
-	err := EncodePNG(&b, img.GetImg(), -1)
+	err = EncodePNG(&b, img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin)
-	confBin.Seek(0, 0)
-	err = EncodePNG(&b, img.GetImg(), 50)
+	img, err = DecodeImage(confBin)
 	if err == nil {
-		t.Fatalf("err is %v.", err)
+		t.Fatal("no error")
 	}
 	b.Reset()
 }
 
 func TestEncodeGIF(t *testing.T) {
-	img, _ := DecodeImage(gifBin)
+	img, err := DecodeImage(gifBin)
+	if err != nil {
+		t.Fatal(err)
+	}
 	gifBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "gif" {
 		t.Fatalf("format is %v, expected png", format)
 	}
 
 	var b bytes.Buffer
-	err := EncodeGIF(&b, img.GetImg(), -1)
+	err = EncodeGIF(&b, img.GetImg(), -1)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin)
-	confBin.Seek(0, 0)
-	err = EncodeGIF(&b, img.GetImg(), 50)
+	img, err = DecodeImage(confBin)
 	if err == nil {
-		t.Fatalf("err is %v.", err)
+		t.Fatal("no error")
 	}
 	b.Reset()
 }
 
 func TestEncodeWebP(t *testing.T) {
 	// Lossless
-	img, _ := DecodeImage(webpLosslessBin)
+	img, err := DecodeImage(webpLosslessBin)
+	if err != nil {
+		t.Fatal(err)
+	}
 	webpLosslessBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "webp" {
 		t.Fatalf("format is %v, expected webp", format)
 	}
 
 	var b bytes.Buffer
-	err := EncodeWebP(&b, img.GetImg(), -1, true)
+	err = EncodeWebP(&b, img.GetImg(), -1, true)
 	if err != nil {
 		t.Fatalf("err is %v.", err)
 	}
 	b.Reset()
 
 	// Lossy
-	img, _ = DecodeImage(webpLossyBin)
+	img, err = DecodeImage(webpLossyBin)
+	if err != nil {
+		t.Fatal(err)
+	}
 	webpLossyBin.Seek(0, 0)
 	if format := img.GetFormat(); format != "webp" {
 		t.Fatalf("format is %v, expected webp", format)
@@ -155,11 +154,9 @@ func TestEncodeWebP(t *testing.T) {
 	b.Reset()
 
 	// error
-	img, _ = DecodeImage(confBin)
-	confBin.Seek(0, 0)
-	err = EncodeWebP(&b, img.GetImg(), 50, true)
+	img, err = DecodeImage(confBin)
 	if err == nil {
-		t.Fatalf("err is %v.", err)
+		t.Fatal("no error")
 	}
 	b.Reset()
 }
@@ -167,318 +164,62 @@ func TestEncodeWebP(t *testing.T) {
 func TestEncodeAVIF(t *testing.T) {
 	var b bytes.Buffer
 
-	img, _ := DecodeImage(pngBin)
+	img, err := DecodeImage(pngBin)
+	if err != nil {
+		t.Fatal(err)
+	}
 	pngBin.Seek(0, 0)
 	if err := EncodeAVIF(&b, img.GetImg(), 50); err != nil {
 		t.Fatal(err)
 	}
 	b.Reset()
 
-	img, _ = DecodeImage(confBin)
-	pngBin.Seek(0, 0)
-	if err := EncodeAVIF(&b, img.GetImg(), 50); err == nil {
-		t.Fatal("err is nil")
+	img, err = DecodeImage(confBin)
+	if err == nil {
+		t.Fatal("no error")
 	}
 	b.Reset()
 }
 
 func TestDecodeImage(t *testing.T) {
-	img, err := DecodeImage(jpegBin)
-	jpegBin.Seek(0, 0)
-	if err != nil {
+	if _, err := DecodeImage(jpegBin); err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
-	if img == nil {
-		t.Fatalf("can not decode.")
-	}
+	jpegBin.Seek(0, 0)
 
-	img, err = DecodeImage(bmpBin)
-	bmpBin.Seek(0, 0)
-	if err != nil {
+	if _, err := DecodeImage(bmpBin); err != nil {
 		t.Fatalf("err is not nil. : %v", err)
 	}
-	if img == nil {
-		t.Fatalf("img.%v", img)
-	}
+	bmpBin.Seek(0, 0)
 
-	img, err = DecodeImage(pngBin)
+	if _, err := DecodeImage(pngBin); err != nil {
+		t.Log(err)
+		t.Fatalf("err is not nil.")
+	}
 	pngBin.Seek(0, 0)
-	if err != nil {
+
+	if _, err := DecodeImage(gifBin); err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
-	if img == nil {
-		t.Fatalf("can not decode.")
-	}
-
-	img, err = DecodeImage(gifBin)
 	gifBin.Seek(0, 0)
-	if err != nil {
+
+	if _, err := DecodeImage(webpLosslessBin); err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
-	if img == nil {
-		t.Fatalf("can not decode.")
-	}
-
-	img, err = DecodeImage(webpLosslessBin)
 	webpLosslessBin.Seek(0, 0)
-	if err != nil {
+
+	if _, err := DecodeImage(webpLossyBin); err != nil {
 		t.Log(err)
 		t.Fatalf("err is not nil.")
 	}
-	if img == nil {
-		t.Fatalf("can not decode.")
-	}
-
-	img, err = DecodeImage(webpLossyBin)
 	webpLossyBin.Seek(0, 0)
-	if err != nil {
-		t.Log(err)
-		t.Fatalf("err is not nil.")
-	}
-	if img == nil {
-		t.Fatalf("can not decode.")
-	}
 
-	img, err = DecodeImage(confBin)
-	confBin.Seek(0, 0)
-	if err == nil {
+	if _, err := DecodeImage(confBin); err == nil {
 		t.Log(err)
 		t.Fatalf("err is nil")
 	}
-
-	if img == nil {
-		t.Fatalf("can not decode.")
-	}
-}
-
-func TestResizeImage(t *testing.T) {
-	img, _ := DecodeImage(confBin)
 	confBin.Seek(0, 0)
-
-	resizeImg := ResizeImage(*img.GetImg(), 100, 100, 10000, 10000)
-	if resizeImg != nil {
-		t.Fatalf("value is not nil.")
-	}
-
-	img, _ = DecodeImage(jpegBin)
-	jpegBin.Seek(0, 0)
-	ii := *img.GetImg()
-	jpegRect := ii.Bounds()
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X*2), uint(jpegRect.Max.Y*2), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X), uint(jpegRect.Max.Y), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X*100000), uint(jpegRect.Max.Y*100000), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X), uint(jpegRect.Max.Y*100000), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X*100000), uint(jpegRect.Max.Y), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X), uint(jpegRect.Max.Y+1000), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X+1000), uint(jpegRect.Max.Y), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X), uint(jpegRect.Max.Y-100), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), uint(jpegRect.Max.X-100), uint(jpegRect.Max.Y), 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-
-	resizeImg = ResizeImage(*img.GetImg(), 0, 0, 10000, 10000)
-	if resizeImg == nil {
-		t.Fatalf("value is nil.")
-	}
-}
-
-func TestResizeAndFillImage(t *testing.T) {
-	c := color.RGBA{
-		R: 0xff,
-		G: 0xff,
-		B: 0xff,
-		A: 0xff,
-	}
-	img, _ := DecodeImage(confBin)
-	confBin.Seek(0, 0)
-
-	fillImg := ResizeAndFillImage(*img.GetImg(), 100, 100, c, 10000, 10000)
-	if fillImg != nil {
-		t.Fatalf("value is not nil.")
-	}
-
-	img, _ = DecodeImage(pngBin)
-	pngBin.Seek(0, 0)
-
-	fillImg = ResizeAndFillImage(*img.GetImg(), 100, 100, c, 10000, 10000)
-	if fillImg == nil {
-		t.Fatalf("value is nil.")
-	}
-	if fillImg.Bounds().Max.X != 100 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-	if fillImg.Bounds().Max.Y != 100 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-
-	fillImg = ResizeAndFillImage(*img.GetImg(), 1000, 100, c, 10000, 10000)
-	if fillImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if fillImg.Bounds().Max.X != 1000 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-	if fillImg.Bounds().Max.Y != 100 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-
-	fillImg = ResizeAndFillImage(*img.GetImg(), 100, 1000, c, 10000, 10000)
-	if fillImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if fillImg.Bounds().Max.X != 100 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-	if fillImg.Bounds().Max.Y != 1000 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-
-	fillImg = ResizeAndFillImage(*img.GetImg(), 5000, 5000, c, 10000, 10000)
-	if fillImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if fillImg.Bounds().Max.X != 5000 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-	if fillImg.Bounds().Max.Y != 5000 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-
-	fillImg = ResizeAndFillImage(*img.GetImg(), 0, 0, c, 10000, 10000)
-	if fillImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if fillImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-	if fillImg.Bounds().Max.Y != 512 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-
-	fillImg = ResizeAndFillImage(*img.GetImg(), 1000000, 1000000, c, 10000, 10000)
-	if fillImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if fillImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-	if fillImg.Bounds().Max.Y != 512 {
-		t.Fatalf("x is %v.", fillImg.Bounds().Max.X)
-	}
-}
-
-func TestCrop(t *testing.T) {
-	img, _ := DecodeImage(confBin)
-	confBin.Seek(0, 0)
-
-	cropImg := Crop(*img.GetImg(), 100, 100)
-	if cropImg != nil {
-		t.Fatalf("value is not nil.")
-	}
-
-	img, _ = DecodeImage(pngBin)
-	pngBin.Seek(0, 0)
-
-	cropImg = Crop(*img.GetImg(), 100, 100)
-	if cropImg == nil {
-		t.Fatalf("value is nil.")
-	}
-	if cropImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
-	}
-	if cropImg.Bounds().Max.Y != 512 {
-		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
-	}
-
-	cropImg = Crop(*img.GetImg(), 1000, 100)
-	if cropImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if cropImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
-	}
-	if cropImg.Bounds().Max.Y != 51 {
-		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
-	}
-
-	cropImg = Crop(*img.GetImg(), 100, 1000)
-	if cropImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if cropImg.Bounds().Max.X != 51 {
-		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
-	}
-	if cropImg.Bounds().Max.Y != 512 {
-		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
-	}
-
-	cropImg = Crop(*img.GetImg(), 5000, 5000)
-	if cropImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if cropImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
-	}
-	if cropImg.Bounds().Max.Y != 512 {
-		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
-	}
-
-	cropImg = Crop(*img.GetImg(), 0, 0)
-	if cropImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if cropImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
-	}
-	if cropImg.Bounds().Max.Y != 512 {
-		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
-	}
-
-	cropImg = Crop(*img.GetImg(), 1000000, 1000000)
-	if cropImg == nil {
-		t.Fatalf("value is not nil.")
-	}
-	if cropImg.Bounds().Max.X != 512 {
-		t.Fatalf("x is %v.", cropImg.Bounds().Max.X)
-	}
-	if cropImg.Bounds().Max.Y != 512 {
-		t.Fatalf("y is %v.", cropImg.Bounds().Max.Y)
-	}
 }

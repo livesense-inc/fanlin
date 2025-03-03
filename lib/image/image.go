@@ -191,14 +191,16 @@ func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
 
 func DecodeImage(r io.Reader) (*Image, error) {
 	img, format, orientation, err := decode(r)
-	wrapper := Image{
+	if err != nil {
+		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
+	}
+	return &Image{
 		img:         img,
 		format:      format,
 		orientation: orientation,
 		outerBounds: img.Bounds(),
 		filter:      gift.New(),
-	}
-	return &wrapper, imgproxyerr.New(imgproxyerr.WARNING, err)
+	}, nil
 }
 
 func (i *Image) Process() {
@@ -252,6 +254,9 @@ func (i *Image) ApplyOrientation() {
 }
 
 func (i *Image) GetImg() *image.Image {
+	if i.img == nil {
+		return nil
+	}
 	return &i.img
 }
 

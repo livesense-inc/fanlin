@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var getRquest, _ = http.NewRequest("GET", "http://exsample.com/?w=100&h=100&psrc=http://google.co.jp/&rgb=255,255,255&crop=true&quality=75", nil)
+var getRquest, _ = http.NewRequest("GET", "https://example.com/?w=300&h=200&rgb=255,255,255&crop=true&quality=75", nil)
 
 func TestNewGet(t *testing.T) {
 	q := NewQueryFromGet(getRquest)
@@ -17,18 +17,10 @@ func TestNewGet(t *testing.T) {
 
 func TestBounds(t *testing.T) {
 	q := NewQueryFromGet(getRquest)
-	b := Bounds{100, 100}
+	b := Bounds{300, 200}
 
 	if *q.Bounds() != b {
 		t.Fatalf("Bounds: %v.", *q.Bounds())
-	}
-}
-
-func TestPreliminaryImageSource(t *testing.T) {
-	q := NewQueryFromGet(getRquest)
-
-	if q.PreliminaryImageSource() != "http://google.co.jp/" {
-		t.Fatalf("psrc is %v.", q.PreliminaryImageSource())
 	}
 }
 
@@ -53,6 +45,14 @@ func TestQuality(t *testing.T) {
 
 	if q.Quality() != 75 {
 		t.Fatalf("quality is %d.", q.Quality())
+	}
+}
+
+func TestWebP(t *testing.T) {
+	q := NewQueryFromGet(getRquest)
+
+	if q.UseWebP() {
+		t.Fatalf("webp is true.")
 	}
 }
 

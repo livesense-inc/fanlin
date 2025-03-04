@@ -13,13 +13,12 @@ type Bounds struct {
 }
 
 type Query struct {
-	b                      Bounds
-	preliminaryImageSource string
-	fillColor              color.Color
-	crop                   bool
-	quality                int
-	useWebp                bool
-	useAvif                bool
+	b         Bounds
+	fillColor color.Color
+	crop      bool
+	quality   int
+	useWebp   bool
+	useAvif   bool
 }
 
 func NewQueryFromGet(r *http.Request) *Query {
@@ -63,7 +62,6 @@ func NewQueryFromGet(r *http.Request) *Query {
 
 	q.b.H = uint(h)
 	q.b.W = uint(w)
-	q.preliminaryImageSource = params.Get("psrc")
 	q.fillColor = c
 	q.crop = crop
 	q.quality = quality
@@ -74,10 +72,6 @@ func NewQueryFromGet(r *http.Request) *Query {
 
 func (q *Query) Bounds() *Bounds {
 	return &q.b
-}
-
-func (q *Query) PreliminaryImageSource() string {
-	return q.preliminaryImageSource
 }
 
 func (q *Query) FillColor() *color.Color {

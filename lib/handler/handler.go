@@ -29,18 +29,15 @@ var devNull, _ = os.Open("/dev/null")
 
 func create404Page(w http.ResponseWriter, r *http.Request, conf *configure.Conf) {
 	q := query.NewQueryFromGet(r)
-
-	maxW, maxH := conf.MaxSize()
+	width, height := clampBounds(conf, q)
 	w.WriteHeader(http.StatusNotFound)
 	var b bytes.Buffer
 	if err := imageprocessor.Set404Image(
 		&b,
 		content.GetNoContentImage(),
-		q.Bounds().W,
-		q.Bounds().H,
+		width,
+		height,
 		*q.FillColor(),
-		maxW,
-		maxH,
 	); err != nil {
 		writeDebugLog(err, conf.DebugLogPath())
 		log.Println(err)
@@ -161,10 +158,10 @@ func MainHandler(
 	}
 	m.Stop()
 
-	w.WriteHeader(http.StatusOK)
 	if q.UseAVIF() {
 		w.Header().Set("Content-Type", "image/avif")
 	}
+	w.WriteHeader(http.StatusOK)
 	if _, err := io.Copy(w, &b); err != nil {
 		loggers["err"].Print("failed to write data to response:", err)
 	}
@@ -188,12 +185,23 @@ func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepr
 			return nil, err
 		}
 	}
-	mx, my := conf.MaxSize()
+	img.ApplyOrientation()
+	w, h := clampBounds(conf, q)
 	if q.Crop() {
-		img.Crop(q.Bounds().W, q.Bounds().H)
+		img.Crop(w, h)
+	} else {
+		img.ResizeAndFill(w, h, *q.FillColor())
 	}
-	img.ResizeAndFill(q.Bounds().W, q.Bounds().H, *q.FillColor(), mx, my)
+	img.Process()
 	return img, nil
+}
+
+func clampBounds(conf *configure.Conf, q *query.Query) (w uint, h uint) {
+	mW, mX := conf.MaxSize()
+	b := q.Bounds()
+	w = min(b.W, mW)
+	h = min(b.H, mX)
+	return
 }
 
 func encodeImage(

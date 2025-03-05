@@ -70,7 +70,12 @@ func makeClient(region string, useMock bool) (*s3.Client, error) {
 		if err != nil {
 			return nil, err
 		}
-		return s3.NewFromConfig(cfg), nil
+		return s3.NewFromConfig(
+			cfg,
+			func(o *s3.Options) {
+				o.DisableLogOutputChecksumValidationSkipped = true
+			},
+		), nil
 	}
 
 	cfg, err := config.LoadDefaultConfig(
@@ -97,6 +102,7 @@ func makeClient(region string, useMock bool) (*s3.Client, error) {
 		func(o *s3.Options) {
 			o.BaseEndpoint = aws.String("http://localhost:4567")
 			o.UsePathStyle = true
+			o.DisableLogOutputChecksumValidationSkipped = true
 		},
 	), nil
 }

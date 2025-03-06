@@ -82,21 +82,21 @@ $ go test -cover ./...
     "use_server_timing": true,
     "providers": [
         {
-            "alias/0" : {
+            "/alias/0" : {
                 "type" : "web",
                 "src" : "http://aaa.com/bbb",
                 "priority" : 10
             }
         },
         {
-            "alias/1" : {
+            "/alias/1" : {
                 "type" : "web",
                 "src" : "https://ccc.com",
                 "priority" : 20
             }
         },
         {
-            "alias/3" : {
+            "/alias/3" : {
                 "type" : "s3",
                 "src" : "s3://bucket/path",
                 "region" : "ap-northeast-1",

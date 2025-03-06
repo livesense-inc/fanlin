@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime/debug"
 	"time"
 
 	configure "github.com/livesense-inc/fanlin/lib/conf"
@@ -90,7 +89,6 @@ func fallback(
 		log.Println(err)
 	}
 	fmt.Fprintf(w, "%s", "")
-	debug.PrintStack()
 }
 
 func writeDebugLog(err interface{}, debugFile string) {

@@ -240,6 +240,14 @@ func (i *Image) Crop(w, h uint) {
 	i.outerBounds = image.Rect(0, 0, int(w), int(h))
 }
 
+func (i *Image) Invert() {
+	i.filter.Add(gift.Invert())
+}
+
+func (i *Image) Grayscale() {
+	i.filter.Add(gift.Grayscale())
+}
+
 func (i *Image) ApplyOrientation() {
 	if affine, ok := affines[i.orientation]; ok {
 		i.filter.Add(affine)

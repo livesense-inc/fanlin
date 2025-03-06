@@ -190,6 +190,11 @@ func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepr
 	} else {
 		img.ResizeAndFill(w, h, *q.FillColor())
 	}
+	if q.Grayscale() {
+		img.Grayscale()
+	} else if q.Inverse() {
+		img.Invert()
+	}
 	img.Process()
 	return img, nil
 }

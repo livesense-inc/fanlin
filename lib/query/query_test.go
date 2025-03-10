@@ -48,6 +48,22 @@ func TestQuality(t *testing.T) {
 	}
 }
 
+func TestGrayscale(t *testing.T) {
+	q := NewQueryFromGet(getRquest)
+
+	if q.Grayscale() {
+		t.Fatalf("grayscale is true.")
+	}
+}
+
+func TestInverse(t *testing.T) {
+	q := NewQueryFromGet(getRquest)
+
+	if q.Inverse() {
+		t.Fatalf("inverse is true.")
+	}
+}
+
 func TestWebP(t *testing.T) {
 	q := NewQueryFromGet(getRquest)
 

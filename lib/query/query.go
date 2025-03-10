@@ -17,6 +17,8 @@ type Query struct {
 	fillColor color.Color
 	crop      bool
 	quality   int
+	grayscale bool
+	inverse   bool
 	useWebp   bool
 	useAvif   bool
 }
@@ -50,6 +52,16 @@ func NewQueryFromGet(r *http.Request) *Query {
 		crop = false
 	}
 
+	grayscale, err := strconv.ParseBool(params.Get("grayscale"))
+	if err != nil {
+		grayscale = false
+	}
+
+	inverse, err := strconv.ParseBool(params.Get("inverse"))
+	if err != nil {
+		inverse = false
+	}
+
 	webp, err := strconv.ParseBool(params.Get("webp"))
 	if err != nil {
 		webp = false
@@ -65,6 +77,8 @@ func NewQueryFromGet(r *http.Request) *Query {
 	q.fillColor = c
 	q.crop = crop
 	q.quality = quality
+	q.grayscale = grayscale
+	q.inverse = inverse
 	q.useWebp = webp
 	q.useAvif = avif
 	return &q
@@ -84,6 +98,14 @@ func (q *Query) Crop() bool {
 
 func (q *Query) Quality() int {
 	return q.quality
+}
+
+func (q *Query) Grayscale() bool {
+	return q.grayscale
+}
+
+func (q *Query) Inverse() bool {
+	return q.inverse
 }
 
 func (q *Query) UseWebP() bool {

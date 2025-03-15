@@ -90,16 +90,19 @@ func (i *Image) ConvertColor(networkPath string) error {
 	return nil
 }
 
-func (i *Image) ConvertColorWithICCProfile() error {
+func (i *Image) ConvertColorWithICCProfile() {
 	switch src := i.img.(type) {
 	case *image.CMYK:
+		if i.iccProfile == nil {
+			return
+		}
 		srcProf := lcms.OpenProfileFromMem(i.iccProfile)
 		defer srcProf.CloseProfile()
 		dstProf := lcms.CreateSRGBProfile()
 		defer dstProf.CloseProfile()
 		transform := lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
 		if transform == nil {
-			return nil
+			return
 		}
 		defer transform.DeleteTransform()
 		dst := image.NewRGBA(i.img.Bounds())
@@ -110,10 +113,7 @@ func (i *Image) ConvertColorWithICCProfile() error {
 			}
 		}
 		i.img = dst
-	default:
-		return nil
 	}
-	return nil
 }
 
 func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {

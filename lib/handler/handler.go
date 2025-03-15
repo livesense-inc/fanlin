@@ -183,9 +183,7 @@ func processImage(buf io.Reader, conf *configure.Conf, q *query.Query) (*imagepr
 			return nil, err
 		}
 	} else if conf.UseICCProfileCMYKConverter() {
-		if err := img.ConvertColorWithICCProfile(); err != nil {
-			return nil, err
-		}
+		img.ConvertColorWithICCProfile()
 	}
 	img.ApplyOrientation()
 	w, h := clampBounds(conf, q)

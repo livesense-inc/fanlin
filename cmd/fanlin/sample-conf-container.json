@@ -8,6 +8,7 @@
     "use_server_timing": true,
     "enable_metrics_endpoint": true,
     "max_clients": 50,
+    "use_icc_profile_cmyk_converter": true,
     "providers": [
         {
             "/" : {

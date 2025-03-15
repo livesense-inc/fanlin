@@ -29,7 +29,7 @@ func getSize(input io.Reader) (int, error) {
 
 	ret := int(buf[0])<<8 + int(buf[1]) - 2
 	if ret < 0 {
-		return ret, errors.New("Invalid segment length")
+		return ret, errors.New("invalid segment length")
 	}
 
 	return ret, nil
@@ -44,7 +44,7 @@ func GetICCBuf(input io.Reader) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	} else if buf[0] != 0xFF && buf[1] != soiMarker {
-		return nil, errors.New("No SOI Marker")
+		return nil, errors.New("no SOI Marker")
 	}
 
 	var icc_data [][]byte
@@ -124,7 +124,7 @@ func GetICCBuf(input io.Reader) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		} else if seqno == 0 {
-			return nil, errors.New("Invalid sequence number.")
+			return nil, errors.New("invalid sequence number.")
 		}
 
 		num, err := in.ReadByte()
@@ -134,11 +134,11 @@ func GetICCBuf(input io.Reader) ([]byte, error) {
 			num_markers = int(num)
 			icc_data = make([][]byte, num_markers)
 		} else if int(num) != num_markers {
-			return nil, errors.New("Invalid ICC segment (num_markers != cur_num_markers)")
+			return nil, errors.New("invalid ICC segment (num_markers != cur_num_markers)")
 		}
 
 		if int(seqno) > num_markers {
-			return nil, errors.New("Invalid ICC segment (seqno > num_markers)")
+			return nil, errors.New("invalid ICC segment (seqno > num_markers)")
 		}
 
 		icc_data[seqno-1] = make([]byte, size-iccHeaderLen)

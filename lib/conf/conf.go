@@ -38,6 +38,18 @@ func (c *Conf) MLCMYKConverterNetworkFilePath() string {
 	return s
 }
 
+func (c *Conf) UseICCProfileCMYKConverter() bool {
+	b, ok := c.c["use_icc_profile_cmyk_converter"]
+	if !ok {
+		return false
+	}
+	r, ok := b.(bool)
+	if !ok {
+		return false
+	}
+	return r
+}
+
 func (c *Conf) UseServerTiming() bool {
 	b, ok := c.c["use_server_timing"]
 	if !ok {

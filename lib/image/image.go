@@ -93,10 +93,11 @@ func (i *Image) ConvertColor(networkPath string) error {
 func (i *Image) ConvertColorWithICCProfile() {
 	switch src := i.img.(type) {
 	case *image.CMYK:
-		if i.iccProfile == nil {
-			return
+		b := i.iccProfile
+		if b == nil {
+			b = defaultICCProfile
 		}
-		srcProf := lcms.OpenProfileFromMem(i.iccProfile)
+		srcProf := lcms.OpenProfileFromMem(b)
 		defer srcProf.CloseProfile()
 		dstProf := lcms.CreateSRGBProfile()
 		defer dstProf.CloseProfile()
@@ -219,9 +220,6 @@ func DecodeImage(r io.Reader) (*Image, error) {
 	img, format, orientation, iccProfile, err := decode(r)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
-	}
-	if iccProfile == nil {
-		iccProfile = defaultICCProfile
 	}
 	return &Image{
 		img:         img,

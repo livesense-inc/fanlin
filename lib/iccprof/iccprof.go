@@ -124,7 +124,7 @@ func GetICCBuf(input io.Reader) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		} else if seqno == 0 {
-			return nil, errors.New("invalid sequence number.")
+			return nil, errors.New("invalid sequence number")
 		}
 
 		num, err := in.ReadByte()

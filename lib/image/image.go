@@ -330,24 +330,15 @@ func readOrientation(r io.Reader) (o int, err error) {
 
 func decode(r io.Reader) (d image.Image, format string, o int, p []byte, err error) {
 	var buf bytes.Buffer
-	tee := io.TeeReader(r, &buf)
 
+	tee := io.TeeReader(r, &buf)
 	d, format, err = image.Decode(tee)
 	if err != nil {
 		return
 	}
 
 	raw := buf.Bytes()
-
-	o, err = readOrientation(bytes.NewReader(raw))
-	if err != nil {
-		return
-	}
-
-	p, err = iccprof.GetICCBuf(bytes.NewReader(raw))
-	if err != nil {
-		return
-	}
-
+	o, _ = readOrientation(bytes.NewReader(raw))
+	p, _ = iccprof.GetICCBuf(bytes.NewReader(raw))
 	return
 }

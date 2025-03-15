@@ -2,6 +2,7 @@ package imageprocessor
 
 import (
 	"bytes"
+	_ "embed"
 	"errors"
 	"image"
 	"image/color"
@@ -18,6 +19,8 @@ import (
 	"github.com/disintegration/gift"
 	"github.com/ieee0824/libcmyk"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
+	"github.com/livesense-inc/fanlin/lib/iccprof"
+	"github.com/livesense-inc/fanlin/lib/lcms"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
 )
@@ -34,10 +37,14 @@ var affines = map[int]gift.Filter{
 
 var mlConverterCache = &sync.Map{}
 
+//go:embed default.icc
+var defaultICCProfile []byte
+
 type Image struct {
 	img         image.Image
 	format      string
 	orientation int
+	iccProfile  []byte
 	fillColor   color.Color
 	outerBounds image.Rectangle
 	filter      *gift.GIFT
@@ -81,6 +88,33 @@ func (i *Image) ConvertColor(networkPath string) error {
 	}
 	i.img = ret
 	return nil
+}
+
+func (i *Image) ConvertColorWithICCProfile() {
+	switch src := i.img.(type) {
+	case *image.CMYK:
+		b := i.iccProfile
+		if b == nil {
+			b = defaultICCProfile
+		}
+		srcProf := lcms.OpenProfileFromMem(b)
+		defer srcProf.CloseProfile()
+		dstProf := lcms.CreateSRGBProfile()
+		defer dstProf.CloseProfile()
+		transform := lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
+		if transform == nil {
+			return
+		}
+		defer transform.DeleteTransform()
+		dst := image.NewRGBA(i.img.Bounds())
+		transform.DoTransform(src.Pix, dst.Pix, len(src.Pix))
+		for i := range dst.Pix {
+			if i > 0 && (i+1)%4 == 0 {
+				dst.Pix[i] = 255 // Alpha
+			}
+		}
+		i.img = dst
+	}
 }
 
 func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
@@ -183,7 +217,7 @@ func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
 }
 
 func DecodeImage(r io.Reader) (*Image, error) {
-	img, format, orientation, err := decode(r)
+	img, format, orientation, iccProfile, err := decode(r)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
@@ -191,6 +225,7 @@ func DecodeImage(r io.Reader) (*Image, error) {
 		img:         img,
 		format:      format,
 		orientation: orientation,
+		iccProfile:  iccProfile,
 		outerBounds: img.Bounds(),
 		filter:      gift.New(),
 	}, nil
@@ -291,15 +326,17 @@ func readOrientation(r io.Reader) (o int, err error) {
 	return
 }
 
-func decode(r io.Reader) (d image.Image, format string, o int, err error) {
+func decode(r io.Reader) (d image.Image, format string, o int, p []byte, err error) {
 	var buf bytes.Buffer
-	tee := io.TeeReader(r, &buf)
 
+	tee := io.TeeReader(r, &buf)
 	d, format, err = image.Decode(tee)
 	if err != nil {
 		return
 	}
 
-	o, _ = readOrientation(&buf)
+	raw := buf.Bytes()
+	o, _ = readOrientation(bytes.NewReader(raw))
+	p, _ = iccprof.GetICCBuf(bytes.NewReader(raw))
 	return
 }

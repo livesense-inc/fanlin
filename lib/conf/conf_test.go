@@ -73,4 +73,12 @@ func TestReadConfigure(t *testing.T) {
 			t.Errorf("value is %d", n)
 		}
 	}()
+
+	func() {
+		t.Log("use_icc_profile_cmyk_converter test")
+		ok := conf.UseICCProfileCMYKConverter()
+		if ok {
+			t.Errorf("value is %v", ok)
+		}
+	}()
 }

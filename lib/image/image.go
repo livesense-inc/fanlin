@@ -109,7 +109,7 @@ func (i *Image) ConvertColorWithICCProfile() {
 		dst := image.NewRGBA(i.img.Bounds())
 		transform.DoTransform(src.Pix, dst.Pix, len(src.Pix))
 		for i := range dst.Pix {
-			if i > 0 && (i+1)%4 == 0 {
+			if (i+1)%4 == 0 {
 				dst.Pix[i] = 255 // Alpha
 			}
 		}

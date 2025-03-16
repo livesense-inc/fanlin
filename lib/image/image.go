@@ -101,6 +101,7 @@ func (i *Image) ConvertColorWithICCProfile() {
 		defer srcProf.CloseProfile()
 		dstProf := lcms.CreateSRGBProfile()
 		defer dstProf.CloseProfile()
+		// OPTIMIZE: 40ms elapsed for creation of a transform object
 		transform := lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
 		if transform == nil {
 			return

@@ -12,6 +12,7 @@ import (
 	"image/png"
 	"io"
 	"math"
+	"runtime"
 	"sync"
 
 	"github.com/Kagami/go-avif"
@@ -19,7 +20,6 @@ import (
 	"github.com/disintegration/gift"
 	"github.com/ieee0824/libcmyk"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
-	"github.com/livesense-inc/fanlin/lib/iccprof"
 	"github.com/livesense-inc/fanlin/lib/lcms"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
@@ -40,11 +40,12 @@ var mlConverterCache = &sync.Map{}
 //go:embed default.icc
 var defaultICCProfile []byte
 
+var cmykToRGBTransformer *lcms.Transform
+
 type Image struct {
 	img         image.Image
 	format      string
 	orientation int
-	iccProfile  []byte
 	fillColor   color.Color
 	outerBounds image.Rectangle
 	filter      *gift.GIFT
@@ -93,22 +94,11 @@ func (i *Image) ConvertColor(networkPath string) error {
 func (i *Image) ConvertColorWithICCProfile() {
 	switch src := i.img.(type) {
 	case *image.CMYK:
-		b := i.iccProfile
-		if b == nil {
-			b = defaultICCProfile
-		}
-		srcProf := lcms.OpenProfileFromMem(b)
-		defer srcProf.CloseProfile()
-		dstProf := lcms.CreateSRGBProfile()
-		defer dstProf.CloseProfile()
-		// OPTIMIZE: 40ms elapsed for creation of a transform object
-		transform := lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
-		if transform == nil {
+		if cmykToRGBTransformer == nil {
 			return
 		}
-		defer transform.DeleteTransform()
 		dst := image.NewRGBA(i.img.Bounds())
-		transform.DoTransform(src.Pix, dst.Pix, len(src.Pix))
+		cmykToRGBTransformer.DoTransform(src.Pix, dst.Pix, len(src.Pix))
 		for i := range dst.Pix {
 			if (i+1)%4 == 0 {
 				dst.Pix[i] = 255 // Alpha
@@ -218,7 +208,7 @@ func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
 }
 
 func DecodeImage(r io.Reader) (*Image, error) {
-	img, format, orientation, iccProfile, err := decode(r)
+	img, format, orientation, err := decode(r)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
@@ -226,7 +216,6 @@ func DecodeImage(r io.Reader) (*Image, error) {
 		img:         img,
 		format:      format,
 		orientation: orientation,
-		iccProfile:  iccProfile,
 		outerBounds: img.Bounds(),
 		filter:      gift.New(),
 	}, nil
@@ -327,9 +316,8 @@ func readOrientation(r io.Reader) (o int, err error) {
 	return
 }
 
-func decode(r io.Reader) (d image.Image, format string, o int, p []byte, err error) {
+func decode(r io.Reader) (d image.Image, format string, o int, err error) {
 	var buf bytes.Buffer
-
 	tee := io.TeeReader(r, &buf)
 	d, format, err = image.Decode(tee)
 	if err != nil {
@@ -338,6 +326,25 @@ func decode(r io.Reader) (d image.Image, format string, o int, p []byte, err err
 
 	raw := buf.Bytes()
 	o, _ = readOrientation(bytes.NewReader(raw))
-	p, _ = iccprof.GetICCBuf(bytes.NewReader(raw))
 	return
+}
+
+func SetUpColorConverter() {
+	srcProf := lcms.OpenProfileFromMem(defaultICCProfile)
+	if srcProf == nil {
+		return
+	}
+	defer srcProf.CloseProfile()
+	dstProf := lcms.CreateSRGBProfile()
+	if dstProf == nil {
+		return
+	}
+	defer dstProf.CloseProfile()
+	cmykToRGBTransformer = lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
+	if cmykToRGBTransformer == nil {
+		return
+	}
+	runtime.SetFinalizer(cmykToRGBTransformer, func(t *lcms.Transform) {
+		t.DeleteTransform()
+	})
 }

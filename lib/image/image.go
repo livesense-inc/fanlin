@@ -19,9 +19,9 @@ import (
 	"github.com/disintegration/gift"
 	"github.com/ieee0824/libcmyk"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
-	"github.com/livesense-inc/fanlin/lib/iccprof"
 	"github.com/livesense-inc/fanlin/lib/lcms"
 	"github.com/rwcarlsen/goexif/exif"
+	"github.com/rwcarlsen/goexif/mknote"
 	_ "golang.org/x/image/bmp"
 )
 
@@ -218,18 +218,11 @@ func EncodeAVIF(buf io.Writer, img *image.Image, q int) error {
 }
 
 func DecodeImage(r io.Reader) (*Image, error) {
-	img, format, orientation, iccProfile, err := decode(r)
+	img, err := decode(r)
 	if err != nil {
 		return nil, imgproxyerr.New(imgproxyerr.WARNING, err)
 	}
-	return &Image{
-		img:         img,
-		format:      format,
-		orientation: orientation,
-		iccProfile:  iccProfile,
-		outerBounds: img.Bounds(),
-		filter:      gift.New(),
-	}, nil
+	return img, nil
 }
 
 func (i *Image) Process() {
@@ -311,33 +304,36 @@ func Set404Image(buf io.Writer, data io.Reader, w uint, h uint, c color.Color) e
 	return EncodeJpeg(buf, img.GetImg(), jpeg.DefaultQuality)
 }
 
-func readOrientation(r io.Reader) (o int, err error) {
-	e, err := exif.Decode(r)
-	if err != nil {
-		return
-	}
-	tag, err := e.Get(exif.Orientation)
-	if err != nil {
-		return
-	}
-	o, err = tag.Int(0)
-	if err != nil {
-		return
-	}
-	return
-}
-
-func decode(r io.Reader) (d image.Image, format string, o int, p []byte, err error) {
+func decode(r io.Reader) (*Image, error) {
 	var buf bytes.Buffer
-
 	tee := io.TeeReader(r, &buf)
-	d, format, err = image.Decode(tee)
+	img, format, err := image.Decode(tee)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	raw := buf.Bytes()
-	o, _ = readOrientation(bytes.NewReader(raw))
-	p, _ = iccprof.GetICCBuf(bytes.NewReader(raw))
-	return
+	orientation := 0
+	var iccProfile []byte
+	if x, err := exif.Decode(bytes.NewReader(raw)); err == nil {
+		if tag, err := x.Get(exif.Orientation); err == nil {
+			orientation, _ = tag.Int(0)
+		}
+		if tag, err := x.Get(mknote.ICCProfile); err == nil {
+			iccProfile = tag.Val
+		}
+	}
+
+	return &Image{
+		img:         img,
+		format:      format,
+		orientation: orientation,
+		iccProfile:  iccProfile,
+		outerBounds: img.Bounds(),
+		filter:      gift.New(),
+	}, nil
+}
+
+func SetUp() {
+	exif.RegisterParsers(mknote.All...)
 }

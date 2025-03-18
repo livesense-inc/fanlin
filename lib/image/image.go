@@ -2,6 +2,7 @@ package imageprocessor
 
 import (
 	"bytes"
+	_ "embed"
 	"errors"
 	"image"
 	"image/color"
@@ -11,6 +12,7 @@ import (
 	"image/png"
 	"io"
 	"math"
+	"runtime"
 	"sync"
 
 	"github.com/Kagami/go-avif"
@@ -18,6 +20,7 @@ import (
 	"github.com/disintegration/gift"
 	"github.com/ieee0824/libcmyk"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
+	"github.com/livesense-inc/go-lcms/lcms"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
 )
@@ -33,6 +36,11 @@ var affines = map[int]gift.Filter{
 }
 
 var mlConverterCache = &sync.Map{}
+
+//go:embed default.icc
+var defaultICCProfile []byte
+
+var cmykToRGBTransformer *lcms.Transform
 
 type Image struct {
 	img         image.Image
@@ -81,6 +89,23 @@ func (i *Image) ConvertColor(networkPath string) error {
 	}
 	i.img = ret
 	return nil
+}
+
+func (i *Image) ConvertColorWithICCProfile() {
+	switch src := i.img.(type) {
+	case *image.CMYK:
+		if cmykToRGBTransformer == nil {
+			return
+		}
+		dst := image.NewRGBA(i.img.Bounds())
+		cmykToRGBTransformer.DoTransform(src.Pix, dst.Pix, len(src.Pix))
+		for i := range dst.Pix {
+			if (i+1)%4 == 0 {
+				dst.Pix[i] = 255 // Alpha
+			}
+		}
+		i.img = dst
+	}
 }
 
 func EncodeJpeg(buf io.Writer, img *image.Image, q int) error {
@@ -294,12 +319,32 @@ func readOrientation(r io.Reader) (o int, err error) {
 func decode(r io.Reader) (d image.Image, format string, o int, err error) {
 	var buf bytes.Buffer
 	tee := io.TeeReader(r, &buf)
-
 	d, format, err = image.Decode(tee)
 	if err != nil {
 		return
 	}
 
-	o, _ = readOrientation(&buf)
+	raw := buf.Bytes()
+	o, _ = readOrientation(bytes.NewReader(raw))
 	return
+}
+
+func SetUpColorConverter() {
+	srcProf := lcms.OpenProfileFromMem(defaultICCProfile)
+	if srcProf == nil {
+		return
+	}
+	defer srcProf.CloseProfile()
+	dstProf := lcms.CreateSRGBProfile()
+	if dstProf == nil {
+		return
+	}
+	defer dstProf.CloseProfile()
+	cmykToRGBTransformer = lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
+	if cmykToRGBTransformer == nil {
+		return
+	}
+	runtime.SetFinalizer(cmykToRGBTransformer, func(t *lcms.Transform) {
+		t.DeleteTransform()
+	})
 }

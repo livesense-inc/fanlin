@@ -31,6 +31,12 @@ Make sure libaom is installed for AVIF format encoding.
 $ sudo apt install libaom-dev
 ```
 
+Also, we need the following dependency for the conversion between CMYK and RGB color spaces with ICC profiles.
+
+```
+$ sudo apt install liblcms2-dev
+```
+
 ## Cross compile for amd64 Linux
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin

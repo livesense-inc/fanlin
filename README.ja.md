@@ -36,6 +36,12 @@ AVIFフォーマットのエンコードのためにlibaomが必要です。事�
 $ sudo apt install libaom-dev
 ```
 
+また、ICCプロファイルを利用してCMYKをRGBに変換するための以下も必要です。
+
+```
+$ sudo apt install liblcms2-dev
+```
+
 ## Linux用にクロスコンパイルする
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin

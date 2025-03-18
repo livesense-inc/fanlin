@@ -20,7 +20,7 @@ import (
 	"github.com/disintegration/gift"
 	"github.com/ieee0824/libcmyk"
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
-	"github.com/livesense-inc/fanlin/lib/lcms"
+	"github.com/livesense-inc/go-lcms/lcms"
 	"github.com/rwcarlsen/goexif/exif"
 	_ "golang.org/x/image/bmp"
 )

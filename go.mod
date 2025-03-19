@@ -13,7 +13,7 @@ require (
 	github.com/disintegration/gift v1.2.1
 	github.com/ieee0824/libcmyk v0.0.0-20171222081915-8cf9151a408c
 	github.com/ieee0824/logrus-formatter v1.0.0
-	github.com/livesense-inc/go-lcms v0.0.1
+	github.com/livesense-inc/go-lcms v0.1.0
 	github.com/mitchellh/go-server-timing v1.0.1
 	github.com/prometheus/client_golang v1.21.1
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd

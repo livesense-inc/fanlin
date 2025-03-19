@@ -282,6 +282,8 @@ func Prepare(conf *configure.Conf) error {
 	if err := content.SetupNoContentImage(conf); err != nil {
 		return err
 	}
-	imageprocessor.SetUpColorConverter()
+	if err := imageprocessor.SetUpColorConverter(); err != nil {
+		return err
+	}
 	return nil
 }

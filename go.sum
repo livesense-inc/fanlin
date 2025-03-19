@@ -65,8 +65,8 @@ github.com/klauspost/compress v1.17.11/go.mod h1:pMDklpSncoRMuLFrf1W9Ss9KT+0rH90
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
-github.com/livesense-inc/go-lcms v0.0.1 h1:A4NBwiJjIwpJnh7SGVe1qYXMzPNHtXrijicSAfSsZW8=
-github.com/livesense-inc/go-lcms v0.0.1/go.mod h1:Jd/5ZbbCThy7Ohr0WX6ASlvqjck/vLEARBcR4wItHcw=
+github.com/livesense-inc/go-lcms v0.1.0 h1:pREwySZrWwwkHXN6QzsVkztyXEHzTPnf1wNu7/A5pbQ=
+github.com/livesense-inc/go-lcms v0.1.0/go.mod h1:Jd/5ZbbCThy7Ohr0WX6ASlvqjck/vLEARBcR4wItHcw=
 github.com/mitchellh/go-server-timing v1.0.1 h1:f00/aIe8T3MrnLhQHu3tSWvnwc5GV/p5eutuu3hF/tE=
 github.com/mitchellh/go-server-timing v1.0.1/go.mod h1:Mo6GKi9FSLwWFAMn3bqVPWe20y5ri5QGQuO9D9MCOxk=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=

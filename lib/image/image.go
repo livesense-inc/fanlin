@@ -98,7 +98,7 @@ func (i *Image) ConvertColorWithICCProfile() {
 			return
 		}
 		dst := image.NewRGBA(i.img.Bounds())
-		cmykToRGBTransformer.DoTransform(src.Pix, dst.Pix, len(src.Pix))
+		cmykToRGBTransformer.DoTransform(src.Pix, dst.Pix, len(src.Pix)/4)
 		for i := range dst.Pix {
 			if (i+1)%4 == 0 {
 				dst.Pix[i] = 255 // Alpha
@@ -329,22 +329,27 @@ func decode(r io.Reader) (d image.Image, format string, o int, err error) {
 	return
 }
 
-func SetUpColorConverter() {
-	srcProf := lcms.OpenProfileFromMem(defaultICCProfile)
-	if srcProf == nil {
-		return
+func SetUpColorConverter() error {
+	srcProf, err := lcms.OpenProfileFromMem(defaultICCProfile)
+	if err != nil {
+		return err
 	}
 	defer srcProf.CloseProfile()
-	dstProf := lcms.CreateSRGBProfile()
-	if dstProf == nil {
-		return
+
+	dstProf, err := lcms.CreateSRGBProfile()
+	if err != nil {
+		return err
 	}
 	defer dstProf.CloseProfile()
-	cmykToRGBTransformer = lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
-	if cmykToRGBTransformer == nil {
-		return
+
+	t, err := lcms.CreateTransform(srcProf, lcms.TYPE_CMYK_8, dstProf, lcms.TYPE_RGBA_8)
+	if err != nil {
+		return err
 	}
+	cmykToRGBTransformer = t
 	runtime.SetFinalizer(cmykToRGBTransformer, func(t *lcms.Transform) {
 		t.DeleteTransform()
 	})
+
+	return nil
 }

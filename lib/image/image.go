@@ -22,7 +22,7 @@ import (
 	imgproxyerr "github.com/livesense-inc/fanlin/lib/error"
 	"github.com/livesense-inc/go-lcms/lcms"
 	"github.com/rwcarlsen/goexif/exif"
-	_ "github.com/strukturag/libheif/go/heif"
+	_ "github.com/strukturag/libheif-go"
 	_ "golang.org/x/image/bmp"
 )
 

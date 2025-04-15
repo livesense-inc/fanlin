@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libaom-dev liblcms2-dev
+          sudo apt install -y libaom-dev liblcms2-dev libheif-dev
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5

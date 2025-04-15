@@ -1,12 +1,13 @@
 FROM golang:1-bookworm AS builder
 RUN set -eux; \
   apt-get update -y; \
-  apt-get install -y --no-install-recommends \
+  apt-get install -y \
     ca-certificates \
     build-essential \
     make \
     libaom-dev \
-    liblcms2-dev
+    liblcms2-dev \
+    libheif-dev
 WORKDIR /usr/src/app
 COPY . .
 RUN make build

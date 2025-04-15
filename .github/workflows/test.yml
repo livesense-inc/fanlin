@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libaom-dev liblcms2-dev
+          sudo apt install -y libaom-dev liblcms2-dev libheif-dev
 
       - name: Get dependencies
         run: go mod download
@@ -53,7 +53,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libaom-dev liblcms2-dev
+          sudo apt install -y libaom-dev liblcms2-dev libheif-dev
 
       - name: Download modules
         run: go mod download
@@ -83,7 +83,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libaom-dev liblcms2-dev
+          sudo apt install -y libaom-dev liblcms2-dev libheif-dev
 
       - name: Download modules
         run: go mod download
@@ -113,7 +113,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libaom-dev liblcms2-dev
+          sudo apt install -y libaom-dev liblcms2-dev libheif-dev
 
       - name: Download modules
         run: go mod download

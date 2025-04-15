@@ -18,6 +18,7 @@ require (
 	github.com/prometheus/client_golang v1.21.1
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sirupsen/logrus v1.9.3
+	github.com/strukturag/libheif v1.17.6
 	golang.org/x/image v0.25.0
 	golang.org/x/net v0.37.0
 	golang.org/x/text v0.23.0

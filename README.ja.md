@@ -48,7 +48,6 @@ $ sudo apt install liblcms2-dev
 $ sudo apt install libheif-dev
 ```
 
-
 ## Linux用にクロスコンパイルする
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin

@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.62
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.66
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.78.2
-	github.com/chai2010/webp v1.1.1
+	github.com/chai2010/webp v1.4.0
 	github.com/disintegration/gift v1.2.1
 	github.com/ieee0824/libcmyk v0.0.0-20171222081915-8cf9151a408c
 	github.com/ieee0824/logrus-formatter v1.0.0

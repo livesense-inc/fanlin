@@ -38,6 +38,12 @@ Also, we need the following dependency for the conversion between CMYK and RGB c
 $ sudo apt install liblcms2-dev
 ```
 
+Additionally, you need a libheif to decode HEIF format images.
+
+```
+$ sudo apt install libheif-dev
+```
+
 ## Cross compile for amd64 Linux
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin

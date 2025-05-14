@@ -43,6 +43,12 @@ $ sudo apt install libaom-dev
 $ sudo apt install liblcms2-dev
 ```
 
+さらに、HEIFフォーマット画像のデコードのために以下のライブラリが必要です。
+
+```
+$ sudo apt install libheif-dev
+```
+
 ## Linux用にクロスコンパイルする
 ```
 $ GOOS=linux GOARCH=amd64 go build github.com/livesense-inc/fanlin/cmd/fanlin

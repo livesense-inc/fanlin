@@ -1,6 +1,7 @@
 # fanlin
 
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/livesense-inc/fanlin)
 ![Test](https://github.com/livesense-inc/fanlin/actions/workflows/test.yml/badge.svg?branch=master)
 ![Release](https://github.com/livesense-inc/fanlin/actions/workflows/release.yaml/badge.svg)
 

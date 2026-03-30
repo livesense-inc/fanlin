@@ -1,6 +1,6 @@
 module github.com/livesense-inc/fanlin
 
-go 1.23.5
+go 1.25.0
 
 require (
 	github.com/Kagami/go-avif v0.1.0
@@ -18,9 +18,9 @@ require (
 	github.com/prometheus/client_golang v1.21.1
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sirupsen/logrus v1.9.3
-	golang.org/x/image v0.25.0
+	golang.org/x/image v0.38.0
 	golang.org/x/net v0.38.0
-	golang.org/x/text v0.23.0
+	golang.org/x/text v0.35.0
 )
 
 require (
